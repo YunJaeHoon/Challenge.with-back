@@ -24,11 +24,22 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	// 테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Spring Web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Spring Data JPA
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+
+	// MariaDB
+	implementation("org.mariadb.jdbc:mariadb-java-client")
 }
 
 tasks.named('test') {

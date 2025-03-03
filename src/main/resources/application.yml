@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: Challenge.with-back
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_SCHEMA}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
