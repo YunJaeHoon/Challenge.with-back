@@ -7,3 +7,7 @@ spring:
     url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_SCHEMA}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO}
