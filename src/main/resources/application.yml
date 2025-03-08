@@ -1,6 +1,7 @@
 spring:
   application:
     name: Challenge.with-back
+    version: ${VERSION}
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
