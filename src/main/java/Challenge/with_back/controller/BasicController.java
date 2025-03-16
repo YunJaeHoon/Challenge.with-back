@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class BasicController
 {
-    // 백엔드 서버 연결 테스트
-    @GetMapping("/check-connection")
-    public ResponseEntity<SuccessResponseDto> checkConnection(@Value("${spring.application.version}") String version)
+    // 버전 확인 테스트
+    @GetMapping("/version")
+    public ResponseEntity<SuccessResponseDto> getVersion(@Value("${spring.application.version}") String version)
     {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .message("백엔드 서버와 연결을 성공적으로 완료하였습니다.")
+                        .message("버전 확인을 성공적으로 완료하였습니다.")
                         .data(version)
                         .build());
     }
