@@ -1,4 +1,4 @@
-package Challenge.with_back.error;
+package Challenge.with_back.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

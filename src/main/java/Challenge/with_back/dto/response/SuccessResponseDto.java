@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class SuccessResponseDto
 {
+    private final String code;
     private final String message;
     private final Object data;
 }
