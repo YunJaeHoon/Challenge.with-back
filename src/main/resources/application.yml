@@ -1,14 +1,19 @@
 spring:
+
+  ## 기본 설정
   application:
     name: Challenge.with-back
-    version: ${VERSION}
+    version: v1.0.0
 
+  ## MariaDB
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_SCHEMA}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
+  ## DDL 작동 방식
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO}
+

@@ -1,6 +1,6 @@
-package Challenge.with_back.error;
+package Challenge.with_back.exception;
 
-import Challenge.with_back.dto.response.CustomErrorCode;
+import Challenge.with_back.dto.response.CustomExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,6 +8,6 @@ import lombok.Getter;
 @Getter
 public class CustomException extends RuntimeException
 {
-    private CustomErrorCode errorCode;
+    private CustomExceptionCode errorCode;
     private Object data;
 }

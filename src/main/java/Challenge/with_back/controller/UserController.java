@@ -1,0 +1,35 @@
+package Challenge.with_back.controller;
+
+import Challenge.with_back.dto.response.CustomSuccessCode;
+import Challenge.with_back.dto.response.SuccessResponseDto;
+import Challenge.with_back.dto.user.JoinDto;
+import Challenge.with_back.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class UserController
+{
+    private final UserService userService;
+
+    // 회원가입
+    @PostMapping("/join")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<SuccessResponseDto> join(@RequestBody JoinDto joinDto)
+    {
+        userService.join(joinDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("회원가입을 성공적으로 완료하였습니다.")
+                        .data(null)
+                        .build());
+    }
+}
