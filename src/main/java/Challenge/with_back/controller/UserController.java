@@ -3,6 +3,7 @@ package Challenge.with_back.controller;
 import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.user.JoinDto;
+import Challenge.with_back.enums.account.AccountRole;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ public class UserController
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> join(@RequestBody JoinDto joinDto)
     {
-        userService.join(joinDto);
+        userService.createUser(joinDto, AccountRole.USER);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()

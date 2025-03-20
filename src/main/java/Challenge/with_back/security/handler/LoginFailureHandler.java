@@ -26,7 +26,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException
     {
-        ObjectMapper objectMapper = new ObjectMapper();;
+        ObjectMapper objectMapper = new ObjectMapper();
         ExceptionResponseDto responseDto = ExceptionResponseDto.builder().build();
 
         if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {

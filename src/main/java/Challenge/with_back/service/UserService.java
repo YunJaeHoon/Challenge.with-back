@@ -19,9 +19,9 @@ public class UserService
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    // 회원가입
+    // 계정 생성
     @Transactional
-    public void join(JoinDto dto)
+    public void createUser(JoinDto dto, AccountRole role)
     {
         User user = User.builder()
                 .loginMethod(LoginMethod.NORMAL)
@@ -34,7 +34,7 @@ public class UserService
                 .premiumExpirationDate(LocalDate.now().minusDays(1))
                 .countUnreadNotification(0)
                 .paymentInformationEmail(dto.getEmail())
-                .accountRole(AccountRole.USER)
+                .accountRole(role)
                 .build();
 
         userRepository.save(user);
