@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum CustomExceptionCode
 {
+    // OAuth 2.0 예외
+    PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "제공자를 찾을 수 없습니다."),
+    NOT_VALID_PROVIDER(HttpStatus.UNAUTHORIZED, "제공자를 찾을 수 없습니다."),
+
     // 계정 관련 예외
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
 

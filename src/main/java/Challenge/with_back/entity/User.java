@@ -34,7 +34,6 @@ public class User extends BasicEntity
     private String email;
 
     // 비밀번호
-    @NotNull
     @Column(length = 255)
     private String password;
 

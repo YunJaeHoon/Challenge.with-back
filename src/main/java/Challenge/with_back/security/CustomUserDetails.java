@@ -16,13 +16,20 @@ import java.util.Map;
 
 @Getter
 @EqualsAndHashCode
-public class CustomUserDetails implements UserDetails
+public class CustomUserDetails implements UserDetails, OAuth2User
 {
     private final User user;
+    private Map<String, Object> attributes;
 
-    // 일반 로그인
+    // 일반 로그인 생성자
     public CustomUserDetails(User user) {
         this.user = user;
+    }
+
+    // OAuth 2.0 로그인 생성자
+    public CustomUserDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
     }
 
     @Override
@@ -59,5 +66,15 @@ public class CustomUserDetails implements UserDetails
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return Map.of();
+    }
+
+    @Override
+    public String getName() {
+        return user.getEmail();
     }
 }

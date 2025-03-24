@@ -29,7 +29,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler
                 .data(null)
                 .build();
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));
         response.getWriter().flush();

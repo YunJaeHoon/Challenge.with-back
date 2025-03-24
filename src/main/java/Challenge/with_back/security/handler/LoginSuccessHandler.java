@@ -37,7 +37,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 
         // remember-me 값 추출
         String rememberMeParam = request.getParameter("remember-me");
-        boolean rememberMe = rememberMeParam != null && rememberMeParam.equalsIgnoreCase("true");
+        boolean rememberMe;
+
+        if(rememberMeParam == null)
+            rememberMe = true;
+        else
+            rememberMe = rememberMeParam.equalsIgnoreCase("true");
 
         // 토큰 생성
         String accessToken = jwtUtil.getToken(user.getId(), true);

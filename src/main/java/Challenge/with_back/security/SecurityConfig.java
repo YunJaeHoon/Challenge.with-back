@@ -5,6 +5,7 @@ import Challenge.with_back.security.exception.CustomAccessDeniedHandler;
 import Challenge.with_back.security.exception.CustomAuthenticationEntryPoint;
 import Challenge.with_back.security.handler.LoginFailureHandler;
 import Challenge.with_back.security.handler.LoginSuccessHandler;
+import Challenge.with_back.security.oauth2.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig
 {
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     // 필터 클래스
     private final JwtFilter jwtFilter;
@@ -69,6 +71,14 @@ public class SecurityConfig
                         .successHandler(loginSuccessHandler)
                         .failureHandler(loginFailureHandler))
                 .userDetailsService(customUserDetailsService);
+
+        // OAuth 2.0 로그인 설정
+        httpSecurity
+                .oauth2Login(loginConfig -> loginConfig
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .successHandler(loginSuccessHandler)
+                );
 
         // 예외 처리 설정
         httpSecurity
