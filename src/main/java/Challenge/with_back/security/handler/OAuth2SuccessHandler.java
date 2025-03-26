@@ -1,6 +1,5 @@
 package Challenge.with_back.security.handler;
 
-import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.token.TokenDto;
 import Challenge.with_back.entity.User;
@@ -8,10 +7,11 @@ import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -20,43 +20,49 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class LoginSuccessHandler implements AuthenticationSuccessHandler
+public class OAuth2SuccessHandler implements AuthenticationSuccessHandler
 {
     private final JwtUtil jwtUtil;
+
+    @Value("${ACCESS_TOKEN_VALID_TIME}")
+    private String accessTokenValidTime;
+
+    @Value("${REFRESH_TOKEN_VALID_TIME}")
+    private String refreshTokenValidTime;
+
+    @Value("${FRONTEND_URL}")
+    private String frontendURL;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException
     {
-        ObjectMapper objectMapper = new ObjectMapper();
-
         // 계정 정보
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
 
-        // remember-me 값 추출
-        String rememberMeParam = request.getParameter("remember-me");
-        boolean rememberMe = "true".equalsIgnoreCase(rememberMeParam);
-
         // 토큰 생성
         String accessToken = jwtUtil.getToken(user.getId(), true);
-        String refreshToken = rememberMe ? jwtUtil.getToken(user.getId(), false) : null;
+        String refreshToken = jwtUtil.getToken(user.getId(), false);
 
-        TokenDto data = TokenDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        // Access token 쿠키 생성
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(Integer.parseInt(accessTokenValidTime));
 
-        SuccessResponseDto responseDto = SuccessResponseDto.builder()
-                .code(rememberMe ? "SUCCESS_REMEMBER" : "SUCCESS_FORGET")
-                .data(data)
-                .message("로그인을 성공하였습니다.")
-                .build();
+        // Refresh token 쿠키 생성
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(Integer.parseInt(refreshTokenValidTime));
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responseDto));
-        response.getWriter().flush();
+        // 쿠키 저장
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+        // 리다이렉트
+        response.sendRedirect(frontendURL + "/oauth2-callback");
     }
 }
