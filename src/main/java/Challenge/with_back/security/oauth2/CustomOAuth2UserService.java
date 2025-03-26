@@ -51,7 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
         String email = oAuth2UserInfo.getEmail();
         String name = oAuth2UserInfo.getName();
 
-        Optional<User> existedUser = userRepository.findByEmail(email);
+        Optional<User> existedUser = userRepository.findByEmailAndLoginMethod(email, loginMethod);
         User user;
 
         if(existedUser.isPresent()) {

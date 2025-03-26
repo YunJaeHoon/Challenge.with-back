@@ -46,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter
                 // 존재하는 계정인지 체크
                 if(user != null)
                 {
-                    UserDetails userDetails = customUserDetailService.loadUserByUsername(user.getEmail());
+                    UserDetails userDetails = customUserDetailService.loadUserByUsernameAndLoginMethod(user.getEmail(), user.getLoginMethod());
 
                     if(userDetails != null)
                     {
