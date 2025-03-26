@@ -29,19 +29,28 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String provider = userRequest.getClientRegistration().getRegistrationId();
 
-        OAuth2UserInfo oAuth2UserInfo = null;
+        OAuth2UserInfo oAuth2UserInfo;
+        LoginMethod loginMethod;
 
         if(provider.equals("google")) {
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+            loginMethod = LoginMethod.GOOGLE;
+        } else if (provider.equals("kakao")) {
+            oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
+            loginMethod = LoginMethod.KAKAO;
+        } else if (provider.equals("naver")) {
+            oAuth2UserInfo = new NaverUserInfo(oAuth2User.getAttributes());
+            loginMethod = LoginMethod.NAVER;
         } else {
             throw new CustomException(CustomExceptionCode.PROVIDER_NOT_FOUND, provider);
         }
 
-        if(oAuth2UserInfo.getEmail() == null)
+        if(oAuth2UserInfo.getEmail() == null || oAuth2UserInfo.getName() == null)
             throw new CustomException(CustomExceptionCode.NOT_VALID_PROVIDER, null);
 
         String email = oAuth2UserInfo.getEmail();
         String name = oAuth2UserInfo.getName();
+
         Optional<User> existedUser = userRepository.findByEmail(email);
         User user;
 
@@ -49,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
             user = existedUser.get();
         } else {
             user = User.builder()
-                    .loginMethod(LoginMethod.GOOGLE)
+                    .loginMethod(loginMethod)
                     .email(email)
                     .password("")
                     .nickname(name)

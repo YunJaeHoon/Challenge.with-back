@@ -1,32 +1,33 @@
 package Challenge.with_back.security.oauth2;
 
-
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
 @AllArgsConstructor
-public class GoogleUserInfo implements OAuth2UserInfo
+@Slf4j
+public class KakaoUserInfo implements OAuth2UserInfo
 {
     private Map<String, Object> attributes;
 
     @Override
     public String getProvider() {
-        return "google";
+        return "kakao";
     }
 
     @Override
     public String getProviderId() {
-        return attributes.get("sub").toString();
+        return attributes.get("id").toString();
     }
 
     @Override
     public String getEmail() {
-        return attributes.get("email").toString();
+        return ((Map<?, ?>) attributes.get("kakao_account")).get("email").toString();
     }
 
     @Override
     public String getName() {
-        return attributes.get("name").toString();
+        return ((Map<?, ?>) ((Map<?, ?>) attributes.get("kakao_account")).get("profile")).get("nickname").toString();
     }
 }

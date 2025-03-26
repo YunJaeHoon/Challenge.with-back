@@ -1,32 +1,31 @@
 package Challenge.with_back.security.oauth2;
 
-
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
 @AllArgsConstructor
-public class GoogleUserInfo implements OAuth2UserInfo
+public class NaverUserInfo implements OAuth2UserInfo
 {
     private Map<String, Object> attributes;
 
     @Override
     public String getProvider() {
-        return "google";
+        return "naver";
     }
 
     @Override
     public String getProviderId() {
-        return attributes.get("sub").toString();
+        return ((Map<?, ?>) attributes.get("response")).get("id").toString();
     }
 
     @Override
     public String getEmail() {
-        return attributes.get("email").toString();
+        return ((Map<?, ?>) attributes.get("response")).get("email").toString();
     }
 
     @Override
     public String getName() {
-        return attributes.get("name").toString();
+        return ((Map<?, ?>) attributes.get("response")).get("name").toString();
     }
 }
