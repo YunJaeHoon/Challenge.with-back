@@ -3,13 +3,16 @@ package Challenge.with_back.controller;
 import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.user.JoinDto;
+import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
+import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,6 +34,22 @@ public class UserController
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("회원가입을 성공적으로 완료하였습니다.")
                         .data(null)
+                        .build());
+    }
+
+    // 권한 확인
+    @GetMapping("/user/role")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> getRole(@AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        AccountRole role = userService.getRole(user);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("권한을 성공적으로 확인하였습니다.")
+                        .data(role)
                         .build());
     }
 }

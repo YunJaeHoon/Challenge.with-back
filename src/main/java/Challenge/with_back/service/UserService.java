@@ -39,4 +39,10 @@ public class UserService
 
         userRepository.save(user);
     }
+
+    // 권한 확인
+    public AccountRole getRole(User user)
+    {
+        return user.getAccountRole();
+    }
 }
