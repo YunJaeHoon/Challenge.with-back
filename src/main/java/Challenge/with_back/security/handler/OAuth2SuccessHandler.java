@@ -1,6 +1,7 @@
 package Challenge.with_back.security.handler;
 
 import Challenge.with_back.entity.User;
+import Challenge.with_back.repository.UserRepository;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -20,11 +22,13 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler
 {
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Value("${FRONTEND_URL}")
     private String frontendURL;
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException
@@ -42,6 +46,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler
 
         // Refresh token 쿠키 생성
         Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, false);
+
+        // Refresh token 갱신
+        user.renewalRefreshToken(refreshToken);
+        userRepository.save(user);
 
         // 쿠키 저장
         response.addCookie(accessTokenCookie);

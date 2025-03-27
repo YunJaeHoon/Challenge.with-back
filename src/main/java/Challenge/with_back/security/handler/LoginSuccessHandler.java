@@ -3,6 +3,7 @@ package Challenge.with_back.security.handler;
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.entity.User;
+import Challenge.with_back.repository.UserRepository;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -22,8 +24,10 @@ import java.io.IOException;
 public class LoginSuccessHandler implements AuthenticationSuccessHandler
 {
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException
@@ -49,6 +53,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
         {
             String refreshToken = jwtUtil.getToken(user.getId(), false);
             Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, false);
+
+            user.renewalRefreshToken(refreshToken);
+            userRepository.save(user);
 
             response.addCookie(refreshTokenCookie);
         }
