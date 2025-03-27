@@ -2,10 +2,12 @@ package Challenge.with_back.controller;
 
 import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
+import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
 import Challenge.with_back.security.CustomUserDetails;
+import Challenge.with_back.security.JwtUtil;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController
 {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     // 회원가입
     @PostMapping("/join")
@@ -50,6 +53,21 @@ public class UserController
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("권한을 성공적으로 확인하였습니다.")
                         .data(role)
+                        .build());
+    }
+
+    // Access token 재발급
+    @PostMapping("/reissue-access-token")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<SuccessResponseDto> reissueAccessToken(@CookieValue(name = "refreshToken", required = false) String refreshToken)
+    {
+        AccessTokenDto dto = userService.reissueAccessToken(refreshToken);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("Access token을 성공적으로 재발급하였습니다.")
+                        .data(dto)
                         .build());
     }
 }

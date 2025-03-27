@@ -74,7 +74,7 @@ public class JwtUtil
         }
     }
 
-    // 토큰에서 User 엔티티 추출
+    // 토큰에서 User id 추출
     public Long getId(String token)
     {
         if(checkToken(token))

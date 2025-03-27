@@ -46,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
         }
 
         if(oAuth2UserInfo.getEmail() == null || oAuth2UserInfo.getName() == null)
-            throw new CustomException(CustomExceptionCode.NOT_VALID_PROVIDER, null);
+            throw new CustomException(CustomExceptionCode.INVALID_PROVIDER, null);
 
         String email = oAuth2UserInfo.getEmail();
         String name = oAuth2UserInfo.getName();
