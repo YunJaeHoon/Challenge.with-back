@@ -1,11 +1,8 @@
 package Challenge.with_back.security.handler;
 
-import Challenge.with_back.dto.response.SuccessResponseDto;
-import Challenge.with_back.dto.token.TokenDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,12 +21,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler
 {
     private final JwtUtil jwtUtil;
 
-    @Value("${ACCESS_TOKEN_VALID_TIME}")
-    private String accessTokenValidTime;
-
-    @Value("${REFRESH_TOKEN_VALID_TIME}")
-    private String refreshTokenValidTime;
-
     @Value("${FRONTEND_URL}")
     private String frontendURL;
 
@@ -47,16 +38,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler
         String refreshToken = jwtUtil.getToken(user.getId(), false);
 
         // Access token 쿠키 생성
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(Integer.parseInt(accessTokenValidTime));
+        Cookie accessTokenCookie = jwtUtil.parseTokenToCookie(accessToken, true);
 
         // Refresh token 쿠키 생성
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(Integer.parseInt(refreshTokenValidTime));
+        Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, false);
 
         // 쿠키 저장
         response.addCookie(accessTokenCookie);

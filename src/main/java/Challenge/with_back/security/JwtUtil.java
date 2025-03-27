@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +47,20 @@ public class JwtUtil
                 .setExpiration(Date.from(expiresAt.toInstant()))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    // 토큰을 쿠키로 변환
+    public Cookie parseTokenToCookie(String token, boolean isAccessToken)
+    {
+        Cookie cookie = new Cookie(isAccessToken ? "accessToken" : "refreshToken", token);
+
+        cookie.setHttpOnly(!isAccessToken);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(isAccessToken ? accessTokenValidTime : refreshTokenValidTime);
+        cookie.setAttribute("SameSite", "Strict");
+
+        return cookie;
     }
 
     // 토큰 검증

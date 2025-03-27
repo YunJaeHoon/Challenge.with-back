@@ -1,17 +1,16 @@
 package Challenge.with_back.security.handler;
 
-import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
-import Challenge.with_back.dto.token.TokenDto;
+import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -39,14 +38,20 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
         String rememberMeParam = request.getParameter("remember-me");
         boolean rememberMe = "true".equalsIgnoreCase(rememberMeParam);
 
-        // 토큰 생성
+        // Access token 생성
         String accessToken = jwtUtil.getToken(user.getId(), true);
-        String refreshToken = rememberMe ? jwtUtil.getToken(user.getId(), false) : null;
 
-        TokenDto data = TokenDto.builder()
+        AccessTokenDto data = AccessTokenDto.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
+
+        if(rememberMe)
+        {
+            String refreshToken = jwtUtil.getToken(user.getId(), false);
+            Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, false);
+
+            response.addCookie(refreshTokenCookie);
+        }
 
         SuccessResponseDto responseDto = SuccessResponseDto.builder()
                 .code(rememberMe ? "SUCCESS_REMEMBER" : "SUCCESS_FORGET")
