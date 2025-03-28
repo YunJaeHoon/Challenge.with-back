@@ -8,6 +8,7 @@ import Challenge.with_back.exception.CustomException;
 import Challenge.with_back.repository.UserRepository;
 import Challenge.with_back.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -22,6 +23,9 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService
 {
     private final UserRepository userRepository;
+
+    @Value("${PROFILE_IMAGE_BUCKET_URL}")
+    String profileImageBucketUrl;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException
@@ -62,7 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
                     .email(email)
                     .password("")
                     .nickname(name)
-                    .profileImageUrl("/기본경로")
+                    .profileImageUrl(profileImageBucketUrl + "/profile-image_basic.svg")
                     .selfIntroduction("")
                     .allowEmailMarketing(true)
                     .premiumExpirationDate(LocalDate.now().minusDays(1))

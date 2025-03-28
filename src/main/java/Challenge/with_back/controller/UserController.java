@@ -3,6 +3,7 @@ package Challenge.with_back.controller;
 import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.token.AccessTokenDto;
+import Challenge.with_back.dto.user.BasicUserInfoDto;
 import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
@@ -53,6 +54,22 @@ public class UserController
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("권한을 성공적으로 확인하였습니다.")
                         .data(role)
+                        .build());
+    }
+
+    // 사용자 기본 정보 조회
+    @GetMapping("/user/basic-info")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> getBasicInfo(@AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        BasicUserInfoDto dto = userService.getBasicInfo(user);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("사용자 기본 정보를 성공적으로 조회하였습니다.")
+                        .data(dto)
                         .build());
     }
 

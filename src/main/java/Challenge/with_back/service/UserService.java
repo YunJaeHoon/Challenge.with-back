@@ -2,6 +2,7 @@ package Challenge.with_back.service;
 
 import Challenge.with_back.dto.response.CustomExceptionCode;
 import Challenge.with_back.dto.token.AccessTokenDto;
+import Challenge.with_back.dto.user.BasicUserInfoDto;
 import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
@@ -10,6 +11,7 @@ import Challenge.with_back.exception.CustomException;
 import Challenge.with_back.repository.UserRepository;
 import Challenge.with_back.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,9 @@ public class UserService
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Value("${PROFILE_IMAGE_BUCKET_URL}")
+    String profileImageBucketUrl;
+
     // 계정 생성
     @Transactional
     public void createUser(JoinDto dto, AccountRole role)
@@ -33,7 +38,7 @@ public class UserService
                 .email(dto.getEmail())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .nickname(dto.getNickname())
-                .profileImageUrl("/기본경로")
+                .profileImageUrl(profileImageBucketUrl + "/profile-image_basic.svg")
                 .selfIntroduction("")
                 .allowEmailMarketing(dto.isAllowEmailMarketing())
                 .premiumExpirationDate(LocalDate.now().minusDays(1))
@@ -49,6 +54,18 @@ public class UserService
     public AccountRole getRole(User user)
     {
         return user.getAccountRole();
+    }
+
+    // 사용자 기본 정보 조회
+    public BasicUserInfoDto getBasicInfo(User user)
+    {
+        return BasicUserInfoDto.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .profileImageUrl(user.getProfileImageUrl())
+                .isPremium(user.getPremiumExpirationDate().isAfter(LocalDate.now()))
+                .countUnreadNotification(user.getCountUnreadNotification())
+                .build();
     }
 
     // Access token 재발급
