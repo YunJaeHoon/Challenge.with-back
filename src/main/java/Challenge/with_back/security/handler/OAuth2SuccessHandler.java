@@ -22,7 +22,6 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler
 {
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
 
     @Value("${FRONTEND_URL}")
     private String frontendURL;
@@ -46,10 +45,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler
 
         // Refresh token 쿠키 생성
         Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, false);
-
-        // Refresh token 갱신
-        user.renewalRefreshToken(refreshToken);
-        userRepository.save(user);
 
         // 쿠키 저장
         response.addCookie(accessTokenCookie);

@@ -24,7 +24,6 @@ import java.io.IOException;
 public class LoginSuccessHandler implements AuthenticationSuccessHandler
 {
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -53,9 +52,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
         {
             String refreshToken = jwtUtil.getToken(user.getId(), false);
             Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, false);
-
-            user.renewalRefreshToken(refreshToken);
-            userRepository.save(user);
 
             response.addCookie(refreshTokenCookie);
         }

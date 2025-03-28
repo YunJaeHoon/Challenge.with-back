@@ -69,10 +69,6 @@ public class User extends BasicEntity
     @Column(length = 255)
     private String paymentInformationEmail;
 
-    // Refresh token
-    @Column(length = 255)
-    private String refreshToken;
-
     // 권한
     @NotNull
     @Convert(converter = AccountRoleConverter.class)
@@ -91,10 +87,5 @@ public class User extends BasicEntity
         this.countUnreadNotification = countUnreadNotification;
         this.paymentInformationEmail = paymentInformationEmail;
         this.accountRole = accountRole;
-    }
-
-    // Refresh token 갱신
-    public void renewalRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 }

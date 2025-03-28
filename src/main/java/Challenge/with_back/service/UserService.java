@@ -67,10 +67,6 @@ public class UserService
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, id));
 
-        // 만료된 토큰인지 체크
-        if(!user.getRefreshToken().equals(refreshToken))
-            throw new CustomException(CustomExceptionCode.EXPIRED_REFRESH_TOKEN, refreshToken);
-
         // Access token 발급
         String accessToken = jwtUtil.getToken(id, true);
 
