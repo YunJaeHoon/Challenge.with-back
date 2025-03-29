@@ -8,12 +8,14 @@ import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
+import Challenge.with_back.factoryMethod.email.factory.JoinVerificationCodeFactory;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,8 @@ public class UserController
 {
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final JoinVerificationCodeFactory joinVerificationCodeFactory;
+    private final JavaMailSender javaMailSender;
 
     // 회원가입
     @PostMapping("/join")
@@ -93,9 +97,7 @@ public class UserController
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
     {
-        String verificationCode = userService.createVerificationCode(dto.getEmail());
-        String content = userService.getEmailContentForJoinVerificationCode(verificationCode);
-        userService.sendEmail(dto.getEmail(), "Challenge,with 인증번호", content);
+        joinVerificationCodeFactory.sendEmail(javaMailSender, dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
