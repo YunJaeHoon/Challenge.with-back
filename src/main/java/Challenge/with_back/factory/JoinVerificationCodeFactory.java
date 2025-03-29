@@ -1,17 +1,15 @@
-package Challenge.with_back.factoryMethod.email.factory;
+package Challenge.with_back.factory;
 
 import Challenge.with_back.entity.VerificationCode;
-import Challenge.with_back.factoryMethod.email.product.Email;
-import Challenge.with_back.factoryMethod.email.product.JoinVerificationCode;
+import Challenge.with_back.product.Email;
+import Challenge.with_back.product.JoinVerificationCode;
 import Challenge.with_back.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Component

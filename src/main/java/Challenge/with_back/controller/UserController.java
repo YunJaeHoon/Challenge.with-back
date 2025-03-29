@@ -8,7 +8,7 @@ import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
-import Challenge.with_back.factoryMethod.email.factory.JoinVerificationCodeFactory;
+import Challenge.with_back.factory.JoinVerificationCodeFactory;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import Challenge.with_back.service.UserService;
