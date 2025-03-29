@@ -5,13 +5,13 @@ import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.dto.user.BasicUserInfoDto;
 import Challenge.with_back.dto.user.JoinDto;
+import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -85,6 +85,23 @@ public class UserController
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("Access token을 성공적으로 재발급하였습니다.")
                         .data(dto)
+                        .build());
+    }
+
+    // 회원가입 이메일 인증번호 전송
+    @PostMapping("/send-verification-code")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
+    {
+        String verificationCode = userService.createVerificationCode(dto.getEmail());
+        String content = userService.getEmailContentForJoinVerificationCode(verificationCode);
+        userService.sendEmail(dto.getEmail(), "Challenge,with 인증번호", content);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("인증번호 이메일을 성공적으로 전송하였습니다.")
+                        .data(null)
                         .build());
     }
 }

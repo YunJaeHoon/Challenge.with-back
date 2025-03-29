@@ -18,6 +18,9 @@ public enum CustomExceptionCode
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh token입니다."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 Refresh token입니다."),
 
+    // 이메일 예외
+    SEND_EMAIL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생하였습니다."),
+
     UNEXPECTED_ERROR(HttpStatus.UNAUTHORIZED, "예기치 못한 에러가 발생하였습니다.");
 
     private final HttpStatus httpStatus;

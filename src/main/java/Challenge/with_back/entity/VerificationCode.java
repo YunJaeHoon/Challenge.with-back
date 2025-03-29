@@ -28,9 +28,15 @@ public class VerificationCode extends BasicEntity
     @Column(columnDefinition = "char(8)")
     private String code;
 
+    // 틀린 개수
+    @NotNull
+    @Column(columnDefinition = "TINYINT")
+    private int countWrong;
+
     @Builder
-    public VerificationCode(String email, String code) {
+    public VerificationCode(String email, String code, int countWrong) {
         this.email = email;
         this.code = code;
+        this.countWrong = countWrong;
     }
 }
