@@ -1,8 +1,7 @@
-package Challenge.with_back.factory;
+package Challenge.with_back.factory.email;
 
-import Challenge.with_back.entity.VerificationCode;
-import Challenge.with_back.product.Email;
-import Challenge.with_back.product.JoinVerificationCode;
+import Challenge.with_back.product.email.Email;
+import Challenge.with_back.product.email.VerificationCode;
 import Challenge.with_back.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class JoinVerificationCodeFactory implements EmailFactory
+public class VerificationCodeFactory implements EmailFactory
 {
     private final VerificationCodeRepository verificationCodeRepository;
 
@@ -47,7 +46,7 @@ public class JoinVerificationCodeFactory implements EmailFactory
                 authenticationCode
         );
 
-        return JoinVerificationCode.builder()
+        return VerificationCode.builder()
                 .subject("Challenge,with 인증번호")
                 .content(content)
                 .build();
@@ -65,11 +64,11 @@ public class JoinVerificationCodeFactory implements EmailFactory
                 .collect(Collectors.joining());
 
         // 해당 이메일을 통해 이미 인증번호를 발급했다면 삭제
-        Optional<VerificationCode> existingVerificationCode = verificationCodeRepository.findByEmail(to);
+        Optional<Challenge.with_back.entity.VerificationCode> existingVerificationCode = verificationCodeRepository.findByEmail(to);
         existingVerificationCode.ifPresent(verificationCodeRepository::delete);
 
         // 새로운 인증번호 정보 등록
-        VerificationCode verificationCode = VerificationCode.builder()
+        Challenge.with_back.entity.VerificationCode verificationCode = Challenge.with_back.entity.VerificationCode.builder()
                 .email(to)
                 .code(authenticationNumber)
                 .countWrong(5)

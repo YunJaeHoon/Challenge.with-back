@@ -1,4 +1,4 @@
-package Challenge.with_back.product;
+package Challenge.with_back.product.email;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

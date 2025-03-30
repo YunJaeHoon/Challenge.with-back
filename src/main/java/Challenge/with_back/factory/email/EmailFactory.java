@@ -1,8 +1,8 @@
-package Challenge.with_back.factory;
+package Challenge.with_back.factory.email;
 
 import Challenge.with_back.dto.response.CustomExceptionCode;
 import Challenge.with_back.exception.CustomException;
-import Challenge.with_back.product.Email;
+import Challenge.with_back.product.email.Email;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

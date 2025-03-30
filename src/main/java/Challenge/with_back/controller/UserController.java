@@ -8,7 +8,7 @@ import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
-import Challenge.with_back.factory.JoinVerificationCodeFactory;
+import Challenge.with_back.factory.email.VerificationCodeFactory;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import Challenge.with_back.service.UserService;
@@ -27,7 +27,7 @@ public class UserController
 {
     private final UserService userService;
     private final JwtUtil jwtUtil;
-    private final JoinVerificationCodeFactory joinVerificationCodeFactory;
+    private final VerificationCodeFactory verificationCodeFactory;
     private final JavaMailSender javaMailSender;
 
     // 회원가입
@@ -97,7 +97,7 @@ public class UserController
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
     {
-        joinVerificationCodeFactory.sendEmail(javaMailSender, dto.getEmail());
+        verificationCodeFactory.sendEmail(javaMailSender, dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
