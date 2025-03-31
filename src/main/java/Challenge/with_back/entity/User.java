@@ -5,6 +5,7 @@ import Challenge.with_back.enums.account.LoginMethodConverter;
 import Challenge.with_back.enums.account.AccountRole;
 import Challenge.with_back.enums.account.AccountRoleConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class User extends BasicEntity
 
     // 이메일
     @NotNull
+    @Email
     @Column(length = 255)
     private String email;
 

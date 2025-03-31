@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -42,23 +43,49 @@ public class UserService
 
     // 계정 생성
     @Transactional
-    public void createUser(JoinDto dto, AccountRole role)
+    public void createUser(String email,
+                           String password,
+                           String nickname,
+                           boolean allowEmailMarketing,
+                           AccountRole role)
     {
         User user = User.builder()
                 .loginMethod(LoginMethod.NORMAL)
-                .email(dto.getEmail())
-                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
-                .nickname(dto.getNickname())
+                .email(email)
+                .password(bCryptPasswordEncoder.encode(password))
+                .nickname(nickname)
                 .profileImageUrl(profileImageBucketUrl + "/profile-image_basic.svg")
                 .selfIntroduction("")
-                .allowEmailMarketing(dto.isAllowEmailMarketing())
+                .allowEmailMarketing(allowEmailMarketing)
                 .premiumExpirationDate(LocalDate.now().minusDays(1))
                 .countUnreadNotification(0)
-                .paymentInformationEmail(dto.getEmail())
+                .paymentInformationEmail(email)
                 .accountRole(role)
                 .build();
 
         userRepository.save(user);
+    }
+
+    // 비밀번호 형식 체크
+    public void checkPasswordFormat(String password)
+    {
+        // 8 ~ 20자
+        // 영문, 숫자, 특수문자를 모두 포함
+        String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]{8,20}$";
+
+        if(!Pattern.matches(regex, password))
+            throw new CustomException(CustomExceptionCode.INVALID_PASSWORD_FORMAT, password);
+    }
+
+    // 닉네임 형식 체크
+    public void checkNicknameFormat(String nickname)
+    {
+        // 2 ~ 12자
+        // 영문, 한글, 숫자만 허용
+        String regex = "^[A-Za-z0-9가-힣]{2,12}$";
+
+        if(!Pattern.matches(regex, nickname))
+            throw new CustomException(CustomExceptionCode.INVALID_NICKNAME_FORMAT, nickname);
     }
 
     // 권한 확인
@@ -157,11 +184,10 @@ public class UserService
         verificationCode.ifPresent(verificationCodeRepository::delete);
     }
 
-    // 일반 로그인 사용자 중복 여부 확인
+    // 일반 로그인 사용자 계정 중복 확인
     public void checkNormalUserDuplication(String email)
     {
         if(userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL).isPresent())
             throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, email);
-
     }
 }

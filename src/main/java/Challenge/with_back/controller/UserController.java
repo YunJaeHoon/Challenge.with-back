@@ -36,9 +36,23 @@ public class UserController
     // 회원가입
     @PostMapping("/join")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<SuccessResponseDto> join(@RequestBody JoinDto joinDto)
+    public ResponseEntity<SuccessResponseDto> join(@RequestBody JoinDto dto)
     {
-        userService.createUser(joinDto, AccountRole.USER);
+        // 인증번호 일치 여부 확인
+        userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+
+        // 계정 중복 확인
+        userService.checkNormalUserDuplication(dto.getEmail());
+
+        // 데이터 형식 체크
+        userService.checkPasswordFormat(dto.getPassword());
+        userService.checkNicknameFormat(dto.getNickname());
+
+        // 계정 생성
+        userService.createUser(dto.getEmail(), dto.getPassword(), dto.getNickname(), dto.isAllowEmailMarketing(), AccountRole.USER);
+
+        // 인증번호 정보 삭제
+        userService.deleteVerificationCode(dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -95,7 +109,7 @@ public class UserController
                         .build());
     }
 
-    // 회원가입 이메일 인증번호 전송
+    // 이메일 인증번호 전송
     @PostMapping("/send-verification-code")
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
@@ -110,19 +124,33 @@ public class UserController
                         .build());
     }
 
-    // 회원가입 이메일 인증번호 확인
+    // 이메일 인증번호 확인
     @PostMapping("/check-verification-code")
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> checkVerificationCode(@RequestBody CheckVerificationCodeDto dto)
     {
         userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
         userService.checkVerificationCodeExpiration(dto.getEmail(), dto.getCode());
-        userService.checkNormalUserDuplication(dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("인증번호를 성공적으로 확인하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 일반 로그인 사용자 계정 중복 확인
+    @GetMapping("/user/check-normal-user-duplication")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<SuccessResponseDto> checkNormalUserDuplication(@RequestParam String email)
+    {
+        userService.checkNormalUserDuplication(email);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("일반 로그인 사용자 계정이 중복되지 않습니다.")
                         .data(null)
                         .build());
     }

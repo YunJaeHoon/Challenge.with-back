@@ -18,6 +18,8 @@ public enum CustomExceptionCode
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "Refresh token이 존재하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh token입니다."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 Refresh token입니다."),
+    INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 비밀번호입니다."),
+    INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 닉네임입니다."),
 
     // 이메일 예외
     SEND_EMAIL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생하였습니다."),
