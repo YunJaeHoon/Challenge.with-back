@@ -39,4 +39,9 @@ public class VerificationCode extends BasicEntity
         this.code = code;
         this.countWrong = countWrong;
     }
+
+    // 틀린 개수 증가
+    public void increaseCountWrong() {
+        this.countWrong++;
+    }
 }

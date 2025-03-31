@@ -1,19 +1,23 @@
 package Challenge.with_back.factory.email;
 
+import Challenge.with_back.dto.response.CustomExceptionCode;
+import Challenge.with_back.entity.VerificationCode;
+import Challenge.with_back.exception.CustomException;
 import Challenge.with_back.product.email.Email;
-import Challenge.with_back.product.email.VerificationCode;
+import Challenge.with_back.product.email.VerificationCodeEmail;
 import Challenge.with_back.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class VerificationCodeFactory implements EmailFactory
+public class VerificationCodeEmailFactory implements EmailFactory
 {
     private final VerificationCodeRepository verificationCodeRepository;
 
@@ -46,10 +50,45 @@ public class VerificationCodeFactory implements EmailFactory
                 authenticationCode
         );
 
-        return VerificationCode.builder()
+        return VerificationCodeEmail.builder()
                 .subject("Challenge,with 인증번호")
                 .content(content)
                 .build();
+    }
+
+    // 인증번호 확인
+    @Transactional(noRollbackFor = CustomException.class)
+    public void checkVerificationCode(String email, String code)
+    {
+        // 인증번호 존재 여부 확인
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.VERIFICATION_CODE_NOT_FOUND, null));
+
+        // 인증번호 만료 여부 확인
+        if(LocalDateTime.now().isAfter(verificationCode.getCreatedAt().plusMinutes(10)))
+        {
+            verificationCodeRepository.delete(verificationCode);
+
+            throw new CustomException(CustomExceptionCode.EXPIRED_VERIFICATION_CODE, null);
+        }
+
+        // 인증번호 일치 여부 확인
+        if(!verificationCode.getCode().equals(code))
+        {
+            if(verificationCode.getCountWrong() >= 5)
+            {
+                verificationCodeRepository.delete(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.TOO_MANY_WRONG_VERIFICATION_CODE, null);
+            }
+            else
+            {
+                verificationCode.increaseCountWrong();
+                verificationCodeRepository.save(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.WRONG_VERIFICATION_CODE, null);
+            }
+        }
     }
 
     // 인증번호 생성
@@ -71,7 +110,7 @@ public class VerificationCodeFactory implements EmailFactory
         Challenge.with_back.entity.VerificationCode verificationCode = Challenge.with_back.entity.VerificationCode.builder()
                 .email(to)
                 .code(authenticationNumber)
-                .countWrong(5)
+                .countWrong(0)
                 .build();
 
         verificationCodeRepository.save(verificationCode);

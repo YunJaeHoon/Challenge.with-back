@@ -4,11 +4,12 @@ import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.dto.user.BasicUserInfoDto;
+import Challenge.with_back.dto.user.CheckVerificationCodeDto;
 import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
-import Challenge.with_back.factory.email.VerificationCodeFactory;
+import Challenge.with_back.factory.email.VerificationCodeEmailFactory;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import Challenge.with_back.service.UserService;
@@ -27,7 +28,7 @@ public class UserController
 {
     private final UserService userService;
     private final JwtUtil jwtUtil;
-    private final VerificationCodeFactory verificationCodeFactory;
+    private final VerificationCodeEmailFactory verificationCodeEmailFactory;
     private final JavaMailSender javaMailSender;
 
     // 회원가입
@@ -97,12 +98,28 @@ public class UserController
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
     {
-        verificationCodeFactory.sendEmail(javaMailSender, dto.getEmail());
+        verificationCodeEmailFactory.sendEmail(javaMailSender, dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("인증번호 이메일을 성공적으로 전송하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 회원가입 이메일 인증번호 확인
+    @PostMapping("/check-verification-code")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<SuccessResponseDto> checkVerificationCode(@RequestBody CheckVerificationCodeDto dto)
+    {
+        verificationCodeEmailFactory.checkVerificationCode(dto.getEmail(), dto.getCode());
+        userService.checkNormalUserDuplication(dto.getEmail());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("인증번호를 성공적으로 확인하였습니다.")
                         .data(null)
                         .build());
     }

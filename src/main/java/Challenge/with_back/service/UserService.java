@@ -102,4 +102,12 @@ public class UserService
                 .accessToken(accessToken)
                 .build();
     }
+
+    // 일반 로그인 사용자 중복 여부 확인
+    public void checkNormalUserDuplication(String email)
+    {
+        if(userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, email);
+
+    }
 }
