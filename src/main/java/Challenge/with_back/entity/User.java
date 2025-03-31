@@ -88,4 +88,9 @@ public class User extends BasicEntity
         this.paymentInformationEmail = paymentInformationEmail;
         this.accountRole = accountRole;
     }
+
+    // 비밀번호 초기화
+    public void resetPassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

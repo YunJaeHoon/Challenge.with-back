@@ -1,34 +1,37 @@
 package Challenge.with_back.factory.email;
 
 import Challenge.with_back.dto.response.CustomExceptionCode;
-import Challenge.with_back.entity.VerificationCode;
+import Challenge.with_back.entity.User;
+import Challenge.with_back.enums.account.LoginMethod;
 import Challenge.with_back.exception.CustomException;
 import Challenge.with_back.product.email.Email;
-import Challenge.with_back.product.email.VerificationCodeEmail;
-import Challenge.with_back.repository.VerificationCodeRepository;
+import Challenge.with_back.product.email.ResetPasswordEmail;
+import Challenge.with_back.repository.UserRepository;
 import Challenge.with_back.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
-public class VerificationCodeEmailFactory implements EmailFactory
+public class ResetPasswordEmailFactory implements EmailFactory
 {
     private final UserService userService;
-    private final VerificationCodeRepository verificationCodeRepository;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     @Transactional
     public Email createEmail(String to)
     {
-        // 인증번호 생성
-        String authenticationCode = createVerificationCode(to);
+        // 비밀번호 초기화
+        String password = resetPassword(to);
 
         // 이메일 내용 생성
         String content = String.format(
@@ -43,43 +46,43 @@ public class VerificationCodeEmailFactory implements EmailFactory
                         <div style="width: 120%%; height: 0.62px; overflow: visible; background-color: #D4D4D4; margin-top: 50px;"></div>
                         <div style="font-size: 2.5rem; font-weight: 600; color: #373737; margin-top: 100px;">%s</div>
                         <div style="width: 100%%; font-size: 1.125rem; font-weight: 400; color: #373737; margin-top: 70px; margin-bottom: 70px;">
-                            Challenge.with 회원가입을 위한 인증번호입니다. <br />
-                            위 인증번호를 입력하여 본인 확인을 해주시기 바랍니다.
+                            Challenge.with 사용자 비밀번호가 정상적으로 초기화되었습니다. <br />
+                            위 비밀번호를 입력하여 로그인 해주시기 바랍니다.
                         </div>
                     </div>
                 """,
-                authenticationCode
+                password
         );
 
-        return VerificationCodeEmail.builder()
-                .subject("Challenge.with 인증번호")
+        return ResetPasswordEmail.builder()
+                .subject("Challenge.with 비밀번호 초기화")
                 .content(content)
                 .build();
     }
 
-    // 인증번호 생성
-    private String createVerificationCode(String to)
+    // 비밀번호 초기화
+    private String resetPassword(String email)
     {
-        // 무작위 인증번호를 생성하는 랜덤 객체
+        // 사용자 존재 여부 확인
+        User user = userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL)
+                .orElseThrow(() -> {
+                    userService.deleteVerificationCode(email);
+                    return new CustomException(CustomExceptionCode.USER_NOT_FOUND, email);
+                });
+
+        // 무작위 비밀번호를 생성하는 랜덤 객체
         SecureRandom secureRandom = new SecureRandom();
 
-        // 무작위 인증번호 생성
-        String authenticationNumber = secureRandom.ints(6, 0, 10)
-                .mapToObj(String::valueOf)
+        // 무작위 비밀번호 생성
+        String randomPassword = IntStream.range(0, 10)
+                .map(i -> secureRandom.nextInt(26) + 'a')
+                .mapToObj(c -> String.valueOf((char) c))
                 .collect(Collectors.joining());
 
-        // 해당 이메일을 통해 이미 인증번호를 발급했다면 삭제
-        userService.deleteVerificationCode(to);
+        // 변경사항 저장
+        user.resetPassword(bCryptPasswordEncoder.encode(randomPassword));
+        userRepository.save(user);
 
-        // 새로운 인증번호 정보 등록
-        Challenge.with_back.entity.VerificationCode verificationCode = Challenge.with_back.entity.VerificationCode.builder()
-                .email(to)
-                .code(authenticationNumber)
-                .countWrong(1)
-                .build();
-
-        verificationCodeRepository.save(verificationCode);
-
-        return authenticationNumber;
+        return randomPassword;
     }
 }

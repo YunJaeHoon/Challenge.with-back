@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
@@ -32,6 +33,7 @@ import java.util.Random;
 public class UserService
 {
     private final UserRepository userRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -101,6 +103,58 @@ public class UserService
         return AccessTokenDto.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    // 인증번호 일치 여부 확인
+    @Transactional(noRollbackFor = CustomException.class)
+    public void checkVerificationCodeCorrectness(String email, String code)
+    {
+        // 인증번호 존재 여부 확인
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.VERIFICATION_CODE_NOT_FOUND, email));
+
+        // 인증번호 일치 여부 확인
+        if(!verificationCode.getCode().equals(code))
+        {
+            if(verificationCode.getCountWrong() >= 5)
+            {
+                verificationCodeRepository.delete(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.TOO_MANY_WRONG_VERIFICATION_CODE, null);
+            }
+            else
+            {
+                verificationCode.increaseCountWrong();
+                verificationCodeRepository.save(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.WRONG_VERIFICATION_CODE, null);
+            }
+        }
+    }
+
+    // 인증번호 만료 여부 확인
+    @Transactional(noRollbackFor = CustomException.class)
+    public void checkVerificationCodeExpiration(String email, String code)
+    {
+        // 인증번호 존재 여부 확인
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.VERIFICATION_CODE_NOT_FOUND, email));
+
+        // 인증번호 만료 여부 확인
+        if(LocalDateTime.now().isAfter(verificationCode.getCreatedAt().plusMinutes(10)))
+        {
+            verificationCodeRepository.delete(verificationCode);
+
+            throw new CustomException(CustomExceptionCode.EXPIRED_VERIFICATION_CODE, null);
+        }
+    }
+
+    // 인증번호 삭제
+    @Transactional
+    public void deleteVerificationCode(String email)
+    {
+        Optional<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(email);
+        verificationCode.ifPresent(verificationCodeRepository::delete);
     }
 
     // 일반 로그인 사용자 중복 여부 확인

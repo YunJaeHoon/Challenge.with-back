@@ -9,6 +9,7 @@ import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.User;
 import Challenge.with_back.enums.account.AccountRole;
+import Challenge.with_back.factory.email.ResetPasswordEmailFactory;
 import Challenge.with_back.factory.email.VerificationCodeEmailFactory;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
@@ -29,6 +30,7 @@ public class UserController
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final VerificationCodeEmailFactory verificationCodeEmailFactory;
+    private final ResetPasswordEmailFactory resetPasswordEmailFactory;
     private final JavaMailSender javaMailSender;
 
     // 회원가입
@@ -113,13 +115,31 @@ public class UserController
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> checkVerificationCode(@RequestBody CheckVerificationCodeDto dto)
     {
-        verificationCodeEmailFactory.checkVerificationCode(dto.getEmail(), dto.getCode());
+        userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        userService.checkVerificationCodeExpiration(dto.getEmail(), dto.getCode());
         userService.checkNormalUserDuplication(dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("인증번호를 성공적으로 확인하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 비밀번호 초기화
+    @PostMapping("/user/reset-password")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<SuccessResponseDto> resetPassword(@RequestBody CheckVerificationCodeDto dto)
+    {
+        userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        resetPasswordEmailFactory.sendEmail(javaMailSender, dto.getEmail());
+        userService.deleteVerificationCode(dto.getEmail());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("비밀번호를 성공적으로 초기화하였습니다.")
                         .data(null)
                         .build());
     }
