@@ -23,11 +23,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -101,6 +104,7 @@ public class UserService
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .profileImageUrl(user.getProfileImageUrl())
+                .role(user.getAccountRole().name())
                 .isPremium(user.getPremiumExpirationDate().isAfter(LocalDate.now()))
                 .countUnreadNotification(user.getCountUnreadNotification())
                 .build();
@@ -130,6 +134,33 @@ public class UserService
         return AccessTokenDto.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    // 인증번호 생성
+    @Transactional
+    public String createVerificationCode(String to)
+    {
+        // 무작위 인증번호를 생성하는 랜덤 객체
+        SecureRandom secureRandom = new SecureRandom();
+
+        // 무작위 인증번호 생성
+        String authenticationNumber = secureRandom.ints(6, 0, 10)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining());
+
+        // 해당 이메일을 통해 이미 인증번호를 발급했다면 삭제
+        deleteVerificationCode(to);
+
+        // 새로운 인증번호 정보 등록
+        Challenge.with_back.entity.VerificationCode verificationCode = Challenge.with_back.entity.VerificationCode.builder()
+                .email(to)
+                .code(authenticationNumber)
+                .countWrong(1)
+                .build();
+
+        verificationCodeRepository.save(verificationCode);
+
+        return authenticationNumber;
     }
 
     // 인증번호 일치 여부 확인
@@ -189,5 +220,32 @@ public class UserService
     {
         if(userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL).isPresent())
             throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, email);
+    }
+
+    // 비밀번호 초기화
+    @Transactional(noRollbackFor = CustomException.class)
+    public String resetPassword(String email)
+    {
+        // 사용자 존재 여부 확인
+        User user = userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL)
+                .orElseThrow(() -> {
+                    deleteVerificationCode(email);
+                    return new CustomException(CustomExceptionCode.USER_NOT_FOUND, email);
+                });
+
+        // 무작위 비밀번호를 생성하는 랜덤 객체
+        SecureRandom secureRandom = new SecureRandom();
+
+        // 무작위 비밀번호 생성
+        String randomPassword = IntStream.range(0, 10)
+                .map(i -> secureRandom.nextInt(26) + 'a')
+                .mapToObj(c -> String.valueOf((char) c))
+                .collect(Collectors.joining());
+
+        // 변경사항 저장
+        user.resetPassword(bCryptPasswordEncoder.encode(randomPassword));
+        userRepository.save(user);
+
+        return randomPassword;
     }
 }

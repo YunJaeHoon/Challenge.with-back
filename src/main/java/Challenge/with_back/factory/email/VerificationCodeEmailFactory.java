@@ -24,11 +24,10 @@ public class VerificationCodeEmailFactory implements EmailFactory
     private final VerificationCodeRepository verificationCodeRepository;
 
     @Override
-    @Transactional
     public Email createEmail(String to)
     {
         // 인증번호 생성
-        String authenticationCode = createVerificationCode(to);
+        String authenticationCode = userService.createVerificationCode(to);
 
         // 이메일 내용 생성
         String content = String.format(
@@ -55,31 +54,5 @@ public class VerificationCodeEmailFactory implements EmailFactory
                 .subject("Challenge.with 인증번호")
                 .content(content)
                 .build();
-    }
-
-    // 인증번호 생성
-    private String createVerificationCode(String to)
-    {
-        // 무작위 인증번호를 생성하는 랜덤 객체
-        SecureRandom secureRandom = new SecureRandom();
-
-        // 무작위 인증번호 생성
-        String authenticationNumber = secureRandom.ints(6, 0, 10)
-                .mapToObj(String::valueOf)
-                .collect(Collectors.joining());
-
-        // 해당 이메일을 통해 이미 인증번호를 발급했다면 삭제
-        userService.deleteVerificationCode(to);
-
-        // 새로운 인증번호 정보 등록
-        Challenge.with_back.entity.VerificationCode verificationCode = Challenge.with_back.entity.VerificationCode.builder()
-                .email(to)
-                .code(authenticationNumber)
-                .countWrong(1)
-                .build();
-
-        verificationCodeRepository.save(verificationCode);
-
-        return authenticationNumber;
     }
 }

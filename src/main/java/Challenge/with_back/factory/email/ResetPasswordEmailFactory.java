@@ -27,11 +27,10 @@ public class ResetPasswordEmailFactory implements EmailFactory
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    @Transactional
     public Email createEmail(String to)
     {
         // 비밀번호 초기화
-        String password = resetPassword(to);
+        String password = userService.resetPassword(to);
 
         // 이메일 내용 생성
         String content = String.format(
@@ -58,31 +57,5 @@ public class ResetPasswordEmailFactory implements EmailFactory
                 .subject("Challenge.with 비밀번호 초기화")
                 .content(content)
                 .build();
-    }
-
-    // 비밀번호 초기화
-    private String resetPassword(String email)
-    {
-        // 사용자 존재 여부 확인
-        User user = userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL)
-                .orElseThrow(() -> {
-                    userService.deleteVerificationCode(email);
-                    return new CustomException(CustomExceptionCode.USER_NOT_FOUND, email);
-                });
-
-        // 무작위 비밀번호를 생성하는 랜덤 객체
-        SecureRandom secureRandom = new SecureRandom();
-
-        // 무작위 비밀번호 생성
-        String randomPassword = IntStream.range(0, 10)
-                .map(i -> secureRandom.nextInt(26) + 'a')
-                .mapToObj(c -> String.valueOf((char) c))
-                .collect(Collectors.joining());
-
-        // 변경사항 저장
-        user.resetPassword(bCryptPasswordEncoder.encode(randomPassword));
-        userRepository.save(user);
-
-        return randomPassword;
     }
 }
