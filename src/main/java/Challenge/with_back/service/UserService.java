@@ -216,10 +216,17 @@ public class UserService
     }
 
     // 일반 로그인 사용자 계정 중복 확인
-    public void checkNormalUserDuplication(String email)
+    public void shouldNotExistingUser(String email)
     {
         if(userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL).isPresent())
             throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, email);
+    }
+
+    // 일반 로그인 사용자 계정 존재 확인
+    public void shouldExistingUser(String email)
+    {
+        if(userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL).isEmpty())
+            throw new CustomException(CustomExceptionCode.USER_NOT_FOUND, email);
     }
 
     // 비밀번호 초기화
