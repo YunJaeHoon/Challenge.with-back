@@ -223,22 +223,18 @@ public class UserService
     }
 
     // 일반 로그인 사용자 계정 존재 확인
-    public void shouldExistingUser(String email)
+    public User shouldExistingUser(String email)
     {
-        if(userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL).isEmpty())
-            throw new CustomException(CustomExceptionCode.USER_NOT_FOUND, email);
+        return userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, email));
     }
 
     // 비밀번호 초기화
-    @Transactional(noRollbackFor = CustomException.class)
+    @Transactional
     public String resetPassword(String email)
     {
         // 사용자 존재 여부 확인
-        User user = userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL)
-                .orElseThrow(() -> {
-                    deleteVerificationCode(email);
-                    return new CustomException(CustomExceptionCode.USER_NOT_FOUND, email);
-                });
+        User user = shouldExistingUser(email);
 
         // 무작위 비밀번호를 생성하는 랜덤 객체
         SecureRandom secureRandom = new SecureRandom();

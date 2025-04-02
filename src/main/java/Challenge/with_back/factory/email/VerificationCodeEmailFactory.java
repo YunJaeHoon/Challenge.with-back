@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class VerificationCodeEmailFactory implements EmailFactory
 {
     private final UserService userService;
-    private final VerificationCodeRepository verificationCodeRepository;
 
     @Override
     public Email createEmail(String to)

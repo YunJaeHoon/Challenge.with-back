@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController
 {
     private final UserService userService;
-    private final JwtUtil jwtUtil;
     private final VerificationCodeEmailFactory verificationCodeEmailFactory;
     private final ResetPasswordEmailFactory resetPasswordEmailFactory;
     private final JavaMailSender javaMailSender;
