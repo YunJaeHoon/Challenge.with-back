@@ -1,22 +1,10 @@
-package Challenge.with_back.factory.email;
+package Challenge.with_back.domain.email;
 
-import Challenge.with_back.dto.response.CustomExceptionCode;
-import Challenge.with_back.entity.User;
-import Challenge.with_back.enums.account.LoginMethod;
-import Challenge.with_back.exception.CustomException;
-import Challenge.with_back.product.email.Email;
-import Challenge.with_back.product.email.ResetPasswordEmail;
 import Challenge.with_back.repository.UserRepository;
 import Challenge.with_back.service.UserService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.security.SecureRandom;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor

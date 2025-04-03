@@ -1,20 +1,8 @@
-package Challenge.with_back.factory.email;
+package Challenge.with_back.domain.email;
 
-import Challenge.with_back.dto.response.CustomExceptionCode;
-import Challenge.with_back.entity.VerificationCode;
-import Challenge.with_back.exception.CustomException;
-import Challenge.with_back.product.email.Email;
-import Challenge.with_back.product.email.VerificationCodeEmail;
-import Challenge.with_back.repository.VerificationCodeRepository;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
