@@ -1,14 +1,13 @@
 package Challenge.with_back.security;
 
 import Challenge.with_back.dto.response.CustomExceptionCode;
-import Challenge.with_back.entity.User;
+import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.enums.account.LoginMethod;
 import Challenge.with_back.exception.CustomException;
-import Challenge.with_back.repository.UserRepository;
+import Challenge.with_back.repository.rdbms.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

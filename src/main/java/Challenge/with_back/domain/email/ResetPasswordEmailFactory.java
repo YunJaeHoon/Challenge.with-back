@@ -1,6 +1,6 @@
 package Challenge.with_back.domain.email;
 
-import Challenge.with_back.repository.UserRepository;
+import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

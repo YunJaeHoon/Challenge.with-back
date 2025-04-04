@@ -1,0 +1,50 @@
+package Challenge.with_back.entity.rdbms;
+
+import Challenge.with_back.enums.challenge.ChallengeReportCategory;
+import Challenge.with_back.enums.challenge.ChallengeReportCategoryConverter;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class ReportChallenge extends BasicEntity
+{
+    @Id
+    @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // 신고자 계정
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user")
+    private User user;
+
+    // 신고 대상 챌린지
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "challenge")
+    private Challenge challenge;
+
+    // 분류
+    @NotNull
+    @Convert(converter = ChallengeReportCategoryConverter.class)
+    private ChallengeReportCategory category;
+
+    // 세부 내용
+    @Column(columnDefinition = "TEXT")
+    private String detail;
+
+    @Builder
+    public ReportChallenge(User user, Challenge challenge, ChallengeReportCategory category, String detail) {
+        this.user = user;
+        this.challenge = challenge;
+        this.category = category;
+        this.detail = detail;
+    }
+}

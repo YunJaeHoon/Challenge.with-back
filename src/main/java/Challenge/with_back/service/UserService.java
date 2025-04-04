@@ -3,22 +3,16 @@ package Challenge.with_back.service;
 import Challenge.with_back.dto.response.CustomExceptionCode;
 import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.dto.user.BasicUserInfoDto;
-import Challenge.with_back.dto.user.JoinDto;
-import Challenge.with_back.entity.User;
-import Challenge.with_back.entity.VerificationCode;
+import Challenge.with_back.entity.rdbms.User;
+import Challenge.with_back.entity.redis.VerificationCode;
 import Challenge.with_back.enums.account.AccountRole;
 import Challenge.with_back.enums.account.LoginMethod;
 import Challenge.with_back.exception.CustomException;
-import Challenge.with_back.repository.UserRepository;
-import Challenge.with_back.repository.VerificationCodeRepository;
+import Challenge.with_back.repository.rdbms.UserRepository;
+import Challenge.with_back.repository.redis.VerificationCodeRepository;
 import Challenge.with_back.security.JwtUtil;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +21,6 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -152,7 +145,7 @@ public class UserService
         deleteVerificationCode(to);
 
         // 새로운 인증번호 정보 등록
-        Challenge.with_back.entity.VerificationCode verificationCode = Challenge.with_back.entity.VerificationCode.builder()
+        VerificationCode verificationCode = VerificationCode.builder()
                 .email(to)
                 .code(authenticationNumber)
                 .countWrong(1)
@@ -187,23 +180,6 @@ public class UserService
 
                 throw new CustomException(CustomExceptionCode.WRONG_VERIFICATION_CODE, null);
             }
-        }
-    }
-
-    // 인증번호 만료 여부 확인
-    @Transactional(noRollbackFor = CustomException.class)
-    public void checkVerificationCodeExpiration(String email, String code)
-    {
-        // 인증번호 존재 여부 확인
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.VERIFICATION_CODE_NOT_FOUND, email));
-
-        // 인증번호 만료 여부 확인
-        if(LocalDateTime.now().isAfter(verificationCode.getCreatedAt().plusMinutes(10)))
-        {
-            verificationCodeRepository.delete(verificationCode);
-
-            throw new CustomException(CustomExceptionCode.EXPIRED_VERIFICATION_CODE, null);
         }
     }
 

@@ -1,6 +1,5 @@
 package Challenge.with_back.security;
 
-import Challenge.with_back.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

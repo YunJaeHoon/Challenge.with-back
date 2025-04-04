@@ -1,7 +1,6 @@
 package Challenge.with_back.security.handler;
 
-import Challenge.with_back.entity.User;
-import Challenge.with_back.repository.UserRepository;
+import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import jakarta.servlet.ServletException;

@@ -7,7 +7,7 @@ import Challenge.with_back.dto.user.BasicUserInfoDto;
 import Challenge.with_back.dto.user.CheckVerificationCodeDto;
 import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.dto.user.SendVerificationCodeDto;
-import Challenge.with_back.entity.User;
+import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.enums.account.AccountRole;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
@@ -112,7 +112,6 @@ public class UserController
     public ResponseEntity<SuccessResponseDto> checkVerificationCodeForJoin(@RequestBody CheckVerificationCodeDto dto)
     {
         userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
-        userService.checkVerificationCodeExpiration(dto.getEmail(), dto.getCode());
         userService.shouldNotExistingUser(dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -129,7 +128,6 @@ public class UserController
     public ResponseEntity<SuccessResponseDto> checkVerificationCodeForResetPassword(@RequestBody CheckVerificationCodeDto dto)
     {
         userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
-        userService.checkVerificationCodeExpiration(dto.getEmail(), dto.getCode());
         userService.shouldExistingUser(dto.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)

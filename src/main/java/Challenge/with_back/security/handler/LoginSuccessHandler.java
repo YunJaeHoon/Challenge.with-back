@@ -2,8 +2,7 @@ package Challenge.with_back.security.handler;
 
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.token.AccessTokenDto;
-import Challenge.with_back.entity.User;
-import Challenge.with_back.repository.UserRepository;
+import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

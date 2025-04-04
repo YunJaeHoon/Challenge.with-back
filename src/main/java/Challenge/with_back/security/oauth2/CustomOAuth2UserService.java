@@ -1,11 +1,11 @@
 package Challenge.with_back.security.oauth2;
 
 import Challenge.with_back.dto.response.CustomExceptionCode;
-import Challenge.with_back.entity.User;
+import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.enums.account.AccountRole;
 import Challenge.with_back.enums.account.LoginMethod;
 import Challenge.with_back.exception.CustomException;
-import Challenge.with_back.repository.UserRepository;
+import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
