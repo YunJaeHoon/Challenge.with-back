@@ -11,13 +11,11 @@ import org.springframework.stereotype.Component;
 public interface EmailFactory
 {
     // 이메일 제목 및 내용 생성
-    Email createEmail(String to);
+    Email createEmail(String data);
 
     // 이메일 전송
-    default void sendEmail(JavaMailSender javaMailSender, String to)
+    default void sendEmail(JavaMailSender javaMailSender, String to, Email email)
     {
-        Email email = createEmail(to);
-
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 

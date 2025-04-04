@@ -1,6 +1,7 @@
 package Challenge.with_back.domain.email;
 
 import Challenge.with_back.service.UserService;
+import Challenge.with_back.utils.UserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -8,14 +9,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class VerificationCodeEmailFactory implements EmailFactory
 {
-    private final UserService userService;
+    private final UserUtil userUtil;
 
     @Override
-    public Email createEmail(String to)
+    public Email createEmail(String code)
     {
-        // 인증번호 생성
-        String authenticationCode = userService.createVerificationCode(to);
-
         // 이메일 내용 생성
         String content = String.format(
                 """
@@ -34,7 +32,7 @@ public class VerificationCodeEmailFactory implements EmailFactory
                         </div>
                     </div>
                 """,
-                authenticationCode
+                code
         );
 
         return VerificationCodeEmail.builder()

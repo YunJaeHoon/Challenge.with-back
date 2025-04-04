@@ -1,8 +1,14 @@
 package Challenge.with_back.service;
 
+import Challenge.with_back.domain.email.Email;
+import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
+import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.dto.response.CustomExceptionCode;
 import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.dto.user.BasicUserInfoDto;
+import Challenge.with_back.dto.user.CheckVerificationCodeDto;
+import Challenge.with_back.dto.user.JoinDto;
+import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.entity.redis.VerificationCode;
 import Challenge.with_back.enums.account.AccountRole;
@@ -11,17 +17,16 @@ import Challenge.with_back.exception.CustomException;
 import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.repository.redis.VerificationCodeRepository;
 import Challenge.with_back.security.JwtUtil;
+import Challenge.with_back.utils.UserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,63 +36,53 @@ public class UserService
 {
     private final UserRepository userRepository;
     private final VerificationCodeRepository verificationCodeRepository;
+
+    private final UserUtil userUtil;
     private final JwtUtil jwtUtil;
+
+    private final VerificationCodeEmailFactory verificationCodeEmailFactory;
+    private final ResetPasswordEmailFactory resetPasswordEmailFactory;
+
+    private final JavaMailSender javaMailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Value("${PROFILE_IMAGE_BUCKET_URL}")
     String profileImageBucketUrl;
 
-    // 계정 생성
+    // 회원가입
     @Transactional
-    public void createUser(String email,
-                           String password,
-                           String nickname,
-                           boolean allowEmailMarketing,
-                           AccountRole role)
+    public void join(JoinDto dto)
     {
+        // 인증번호 일치 여부 확인
+        userUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+
+        // 계정 중복 확인
+        userUtil.shouldNotExistingUser(dto.getEmail());
+
+        // 데이터 형식 체크
+        userUtil.checkPasswordFormat(dto.getPassword());
+        userUtil.checkNicknameFormat(dto.getNickname());
+
+        // 계정 생성
         User user = User.builder()
                 .loginMethod(LoginMethod.NORMAL)
-                .email(email)
-                .password(bCryptPasswordEncoder.encode(password))
-                .nickname(nickname)
+                .email(dto.getEmail())
+                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
+                .nickname(dto.getNickname())
                 .profileImageUrl(profileImageBucketUrl + "/profile-image_basic.svg")
                 .selfIntroduction("")
-                .allowEmailMarketing(allowEmailMarketing)
+                .allowEmailMarketing(dto.isAllowEmailMarketing())
                 .premiumExpirationDate(LocalDate.now().minusDays(1))
                 .countUnreadNotification(0)
-                .paymentInformationEmail(email)
-                .accountRole(role)
+                .paymentInformationEmail(dto.getEmail())
+                .accountRole(AccountRole.USER)
                 .build();
 
+        // 생성한 계정 저장
         userRepository.save(user);
-    }
 
-    // 비밀번호 형식 체크
-    public void checkPasswordFormat(String password)
-    {
-        // 8 ~ 20자
-        // 영문, 숫자, 특수문자를 모두 포함
-        String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]{8,20}$";
-
-        if(!Pattern.matches(regex, password))
-            throw new CustomException(CustomExceptionCode.INVALID_PASSWORD_FORMAT, password);
-    }
-
-    // 닉네임 형식 체크
-    public void checkNicknameFormat(String nickname)
-    {
-        // 2 ~ 12자
-        // 영문, 한글, 숫자만 허용
-        String regex = "^[A-Za-z0-9가-힣]{2,12}$";
-
-        if(!Pattern.matches(regex, nickname))
-            throw new CustomException(CustomExceptionCode.INVALID_NICKNAME_FORMAT, nickname);
-    }
-
-    // 권한 확인
-    public AccountRole getRole(User user)
-    {
-        return user.getAccountRole();
+        // 인증번호 정보 삭제
+        userUtil.deleteVerificationCode(dto.getEmail());
     }
 
     // 사용자 기본 정보 조회
@@ -129,102 +124,85 @@ public class UserService
                 .build();
     }
 
-    // 인증번호 생성
+    // 이메일 인증번호 전송
     @Transactional
-    public String createVerificationCode(String to)
+    public void sendVerificationCode(SendVerificationCodeDto dto)
     {
         // 무작위 인증번호를 생성하는 랜덤 객체
         SecureRandom secureRandom = new SecureRandom();
 
         // 무작위 인증번호 생성
-        String authenticationNumber = secureRandom.ints(6, 0, 10)
+        String code = secureRandom.ints(6, 0, 10)
                 .mapToObj(String::valueOf)
                 .collect(Collectors.joining());
 
         // 해당 이메일을 통해 이미 인증번호를 발급했다면 삭제
-        deleteVerificationCode(to);
+        userUtil.deleteVerificationCode(dto.getEmail());
 
         // 새로운 인증번호 정보 등록
         VerificationCode verificationCode = VerificationCode.builder()
-                .email(to)
-                .code(authenticationNumber)
+                .email(dto.getEmail())
+                .code(code)
                 .countWrong(1)
                 .build();
 
+        // 생성한 인증번호 저장
         verificationCodeRepository.save(verificationCode);
 
-        return authenticationNumber;
+        // 이메일 생성
+        Email email = verificationCodeEmailFactory.createEmail(code);
+
+        // 이메일 전송
+        verificationCodeEmailFactory.sendEmail(javaMailSender, dto.getEmail(), email);
     }
 
-    // 인증번호 일치 여부 확인
-    @Transactional(noRollbackFor = CustomException.class)
-    public void checkVerificationCodeCorrectness(String email, String code)
+    // 이메일 인증번호 확인: 회원가입
+    public void checkVerificationCodeForJoin(CheckVerificationCodeDto dto)
     {
-        // 인증번호 존재 여부 확인
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.VERIFICATION_CODE_NOT_FOUND, email));
+        // 인증번호 확인
+        userUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
-        // 인증번호 일치 여부 확인
-        if(!verificationCode.getCode().equals(code))
-        {
-            if(verificationCode.getCountWrong() >= 5)
-            {
-                verificationCodeRepository.delete(verificationCode);
-
-                throw new CustomException(CustomExceptionCode.TOO_MANY_WRONG_VERIFICATION_CODE, null);
-            }
-            else
-            {
-                verificationCode.increaseCountWrong();
-                verificationCodeRepository.save(verificationCode);
-
-                throw new CustomException(CustomExceptionCode.WRONG_VERIFICATION_CODE, null);
-            }
-        }
+        // 계정 중복 확인
+        userUtil.shouldNotExistingUser(dto.getEmail());
     }
 
-    // 인증번호 삭제
-    @Transactional
-    public void deleteVerificationCode(String email)
+    // 이메일 인증번호 확인: 비밀번호 초기화
+    public void checkVerificationCodeForResetPassword(CheckVerificationCodeDto dto)
     {
-        Optional<VerificationCode> verificationCode = verificationCodeRepository.findByEmail(email);
-        verificationCode.ifPresent(verificationCodeRepository::delete);
-    }
+        // 인증번호 확인
+        userUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
-    // 일반 로그인 사용자 계정 중복 확인
-    public void shouldNotExistingUser(String email)
-    {
-        if(userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL).isPresent())
-            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, email);
-    }
-
-    // 일반 로그인 사용자 계정 존재 확인
-    public User shouldExistingUser(String email)
-    {
-        return userRepository.findByEmailAndLoginMethod(email, LoginMethod.NORMAL)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, email));
+        // 계정 존재 확인
+        userUtil.shouldExistingUser(dto.getEmail());
     }
 
     // 비밀번호 초기화
     @Transactional
-    public String resetPassword(String email)
+    public void resetPassword(CheckVerificationCodeDto dto)
     {
-        // 사용자 존재 여부 확인
-        User user = shouldExistingUser(email);
+        // 인증번호 확인
+        userUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+
+        // 계정 존재 확인
+        User user = userUtil.shouldExistingUser(dto.getEmail());
 
         // 무작위 비밀번호를 생성하는 랜덤 객체
         SecureRandom secureRandom = new SecureRandom();
 
         // 무작위 비밀번호 생성
-        String randomPassword = IntStream.range(0, 10)
+        String password = IntStream.range(0, 10)
                 .map(i -> secureRandom.nextInt(26) + 'a')
                 .mapToObj(c -> String.valueOf((char) c))
                 .collect(Collectors.joining());
 
         // 변경사항 저장
-        user.resetPassword(bCryptPasswordEncoder.encode(randomPassword));
+        user.resetPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(user);
 
-        return randomPassword;
+        // 이메일 생성
+        Email email = resetPasswordEmailFactory.createEmail(password);
+
+        // 이메일 전송
+        resetPasswordEmailFactory.sendEmail(javaMailSender, dto.getEmail(), email);
     }
 }

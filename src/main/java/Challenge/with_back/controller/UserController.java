@@ -8,15 +8,11 @@ import Challenge.with_back.dto.user.CheckVerificationCodeDto;
 import Challenge.with_back.dto.user.JoinDto;
 import Challenge.with_back.dto.user.SendVerificationCodeDto;
 import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.enums.account.AccountRole;
-import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
-import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,30 +23,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController
 {
     private final UserService userService;
-    private final VerificationCodeEmailFactory verificationCodeEmailFactory;
-    private final ResetPasswordEmailFactory resetPasswordEmailFactory;
-    private final JavaMailSender javaMailSender;
 
     // 회원가입
     @PostMapping("/join")
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> join(@RequestBody JoinDto dto)
     {
-        // 인증번호 일치 여부 확인
-        userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
-
-        // 계정 중복 확인
-        userService.shouldNotExistingUser(dto.getEmail());
-
-        // 데이터 형식 체크
-        userService.checkPasswordFormat(dto.getPassword());
-        userService.checkNicknameFormat(dto.getNickname());
-
-        // 계정 생성
-        userService.createUser(dto.getEmail(), dto.getPassword(), dto.getNickname(), dto.isAllowEmailMarketing(), AccountRole.USER);
-
-        // 인증번호 정보 삭제
-        userService.deleteVerificationCode(dto.getEmail());
+        userService.join(dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -96,7 +75,7 @@ public class UserController
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
     {
-        verificationCodeEmailFactory.sendEmail(javaMailSender, dto.getEmail());
+        userService.sendVerificationCode(dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -106,13 +85,12 @@ public class UserController
                         .build());
     }
 
-    // 이메일 인증번호 확인 - 회원가입
+    // 이메일 인증번호 확인: 회원가입
     @PostMapping("/check-verification-code/join")
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> checkVerificationCodeForJoin(@RequestBody CheckVerificationCodeDto dto)
     {
-        userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
-        userService.shouldNotExistingUser(dto.getEmail());
+        userService.checkVerificationCodeForJoin(dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -122,13 +100,12 @@ public class UserController
                         .build());
     }
 
-    // 이메일 인증번호 확인 - 비밀번호 초기화
+    // 이메일 인증번호 확인: 비밀번호 초기화
     @PostMapping("/check-verification-code/reset-password")
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> checkVerificationCodeForResetPassword(@RequestBody CheckVerificationCodeDto dto)
     {
-        userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
-        userService.shouldExistingUser(dto.getEmail());
+        userService.checkVerificationCodeForResetPassword(dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -143,9 +120,7 @@ public class UserController
     @PreAuthorize("permitAll()")
     public ResponseEntity<SuccessResponseDto> resetPassword(@RequestBody CheckVerificationCodeDto dto)
     {
-        userService.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
-        resetPasswordEmailFactory.sendEmail(javaMailSender, dto.getEmail());
-        userService.deleteVerificationCode(dto.getEmail());
+        userService.resetPassword(dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
