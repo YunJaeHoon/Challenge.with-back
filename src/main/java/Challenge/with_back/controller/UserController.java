@@ -3,10 +3,7 @@ package Challenge.with_back.controller;
 import Challenge.with_back.dto.response.CustomSuccessCode;
 import Challenge.with_back.dto.response.SuccessResponseDto;
 import Challenge.with_back.dto.token.AccessTokenDto;
-import Challenge.with_back.dto.user.BasicUserInfoDto;
-import Challenge.with_back.dto.user.CheckVerificationCodeDto;
-import Challenge.with_back.dto.user.JoinDto;
-import Challenge.with_back.dto.user.SendVerificationCodeDto;
+import Challenge.with_back.dto.user.*;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.service.UserService;
@@ -31,11 +28,27 @@ public class UserController
     {
         userService.join(dto);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("회원가입을 성공적으로 완료하였습니다.")
                         .data(null)
+                        .build());
+    }
+
+    // 게정 권한 확인
+    @GetMapping("/user/role")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> getRole(@AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        UserRoleDto dto = userService.getRole(user);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("계정 권한을 성공적으로 확인하였습니다.")
+                        .data(dto)
                         .build());
     }
 

@@ -5,10 +5,7 @@ import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.dto.response.CustomExceptionCode;
 import Challenge.with_back.dto.token.AccessTokenDto;
-import Challenge.with_back.dto.user.BasicUserInfoDto;
-import Challenge.with_back.dto.user.CheckVerificationCodeDto;
-import Challenge.with_back.dto.user.JoinDto;
-import Challenge.with_back.dto.user.SendVerificationCodeDto;
+import Challenge.with_back.dto.user.*;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.entity.redis.VerificationCode;
 import Challenge.with_back.enums.account.AccountRole;
@@ -83,6 +80,14 @@ public class UserService
 
         // 인증번호 정보 삭제
         userUtil.deleteVerificationCode(dto.getEmail());
+    }
+
+    // 계정 권한 확인
+    public UserRoleDto getRole(User user)
+    {
+        return UserRoleDto.builder()
+                .role(user.getAccountRole().name())
+                .build();
     }
 
     // 사용자 기본 정보 조회
