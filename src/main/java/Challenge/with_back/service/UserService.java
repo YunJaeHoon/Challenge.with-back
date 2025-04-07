@@ -32,7 +32,6 @@ import java.util.stream.IntStream;
 public class UserService
 {
     private final UserRepository userRepository;
-    private final VerificationCodeRepository verificationCodeRepository;
 
     private final UserUtil userUtil;
     private final JwtUtil jwtUtil;
@@ -133,29 +132,8 @@ public class UserService
     @Transactional
     public void sendVerificationCode(SendVerificationCodeDto dto)
     {
-        // 무작위 인증번호를 생성하는 랜덤 객체
-        SecureRandom secureRandom = new SecureRandom();
-
-        // 무작위 인증번호 생성
-        String code = secureRandom.ints(6, 0, 10)
-                .mapToObj(String::valueOf)
-                .collect(Collectors.joining());
-
-        // 해당 이메일을 통해 이미 인증번호를 발급했다면 삭제
-        userUtil.deleteVerificationCode(dto.getEmail());
-
-        // 새로운 인증번호 정보 등록
-        VerificationCode verificationCode = VerificationCode.builder()
-                .email(dto.getEmail())
-                .code(code)
-                .countWrong(1)
-                .build();
-
-        // 생성한 인증번호 저장
-        verificationCodeRepository.save(verificationCode);
-
         // 이메일 생성
-        Email email = verificationCodeEmailFactory.createEmail(code);
+        Email email = verificationCodeEmailFactory.createEmail(dto.getEmail());
 
         // 이메일 전송
         verificationCodeEmailFactory.sendEmail(javaMailSender, dto.getEmail(), email);
@@ -188,24 +166,8 @@ public class UserService
         // 인증번호 확인
         userUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
-        // 계정 존재 확인
-        User user = userUtil.shouldExistingUser(dto.getEmail());
-
-        // 무작위 비밀번호를 생성하는 랜덤 객체
-        SecureRandom secureRandom = new SecureRandom();
-
-        // 무작위 비밀번호 생성
-        String password = IntStream.range(0, 10)
-                .map(i -> secureRandom.nextInt(26) + 'a')
-                .mapToObj(c -> String.valueOf((char) c))
-                .collect(Collectors.joining());
-
-        // 변경사항 저장
-        user.resetPassword(bCryptPasswordEncoder.encode(password));
-        userRepository.save(user);
-
         // 이메일 생성
-        Email email = resetPasswordEmailFactory.createEmail(password);
+        Email email = resetPasswordEmailFactory.createEmail(dto.getEmail());
 
         // 이메일 전송
         resetPasswordEmailFactory.sendEmail(javaMailSender, dto.getEmail(), email);

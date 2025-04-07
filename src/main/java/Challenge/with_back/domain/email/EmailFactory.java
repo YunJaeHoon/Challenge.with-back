@@ -3,6 +3,9 @@ package Challenge.with_back.domain.email;
 import Challenge.with_back.dto.response.CustomExceptionCode;
 import Challenge.with_back.exception.CustomException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -10,8 +13,8 @@ import org.springframework.stereotype.Component;
 @Component
 public interface EmailFactory
 {
-    // 이메일 제목 및 내용 생성
-    Email createEmail(String data);
+    // 이메일  생성
+    Email createEmail(String to);
 
     // 이메일 전송
     default void sendEmail(JavaMailSender javaMailSender, String to, Email email)
