@@ -73,7 +73,12 @@ spring:
     properties:
       mail:
         smtp:
-          auth: true
+          connectiontimeout: 5000
           timeout: 5000
+          writetimeout: 5000
+          pool: true
+          pool.size: 10
+          auth: true
+
           starttls:
             enable: true

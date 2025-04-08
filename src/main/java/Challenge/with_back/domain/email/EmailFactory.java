@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +18,7 @@ public interface EmailFactory
     Email createEmail(String to);
 
     // 이메일 전송
+    @Async
     default void sendEmail(JavaMailSender javaMailSender, String to, Email email)
     {
         try {
