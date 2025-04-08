@@ -68,14 +68,12 @@ public class NotificationService
         // 알림들을 NotificationMessage로 변환하여 반환
         return notifications.map(notification -> NotificationMessage.builder()
                 .id(notification.getId())
+                .type(notification.getType().name())
                 .title(notification.getTitle())
                 .content(notification.getContent())
                 .isRead(notification.isRead())
                 .createdAt(notification.getCreatedAt())
                 .viewDate(notification.getViewDate())
-                .isFriendRequest(notification.getFriendRequest() != null)
-                .friendRequestId(notification.getFriendRequest() != null ? notification.getFriendRequest().getId() : null)
-                .senderNickname(notification.getFriendRequest() != null ? notification.getFriendRequest().getSender().getNickname() : null)
                 .build());
     }
 }

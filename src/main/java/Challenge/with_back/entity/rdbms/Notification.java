@@ -1,5 +1,9 @@
 package Challenge.with_back.entity.rdbms;
 
+import Challenge.with_back.common.enums.AccountRole;
+import Challenge.with_back.common.enums.AccountRoleConverter;
+import Challenge.with_back.common.enums.NotificationType;
+import Challenge.with_back.common.enums.NotificationTypeConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -25,10 +29,10 @@ public class Notification extends BasicEntity
     @JoinColumn(name = "user")
     private User user;
 
-    // 친구 요청 (친구 요청일 때)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friend_request")
-    private FriendRequest friendRequest;
+    // 종류
+    @NotNull
+    @Convert(converter = NotificationTypeConverter.class)
+    private NotificationType type;
 
     // 제목
     @NotNull
@@ -49,9 +53,9 @@ public class Notification extends BasicEntity
     private LocalDateTime viewDate;
 
     @Builder
-    public Notification(User user, FriendRequest friendRequest, String title, String content, boolean isRead, LocalDateTime viewDate) {
+    public Notification(User user, NotificationType type, String title, String content, boolean isRead, LocalDateTime viewDate) {
         this.user = user;
-        this.friendRequest = friendRequest;
+        this.type = type;
         this.title = title;
         this.content = content;
         this.isRead = isRead;

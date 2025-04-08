@@ -10,13 +10,10 @@ import java.time.LocalDateTime;
 public class NotificationMessage
 {
     private Long id;
+    private String type;
     private String title;
     private String content;
     private boolean isRead;
     private LocalDateTime createdAt;
     private LocalDateTime viewDate;
-
-    private boolean isFriendRequest;
-    private Long friendRequestId;
-    private String senderNickname;
 }
