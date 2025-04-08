@@ -2,18 +2,20 @@ package Challenge.with_back.controller;
 
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.domain.notification.NotificationMessage;
 import Challenge.with_back.dto.user.JoinDto;
+import Challenge.with_back.entity.rdbms.Notification;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
@@ -28,14 +30,30 @@ public class NotificationController
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> createNotificationConnection(@AuthenticationPrincipal CustomUserDetails userDetails)
     {
-        User user = userDetails.getUser();
-        SseEmitter sseEmitter = notificationService.createNotificationConnection(user);
+        Long userId = userDetails.getUser().getId();
+        SseEmitter sseEmitter = notificationService.createNotificationConnection(userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("알림 SSE 연결을 성공적으로 생성하였습니다.")
                         .data(sseEmitter)
+                        .build());
+    }
+
+    // 알림 조회
+    @GetMapping("/notification")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> getNotifications(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        Long userId = userDetails.getUser().getId();
+        Page<NotificationMessage> data = notificationService.getNotifications(userId, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("알림 조회를 성공적으로 마쳤습니다.")
+                        .data(data)
                         .build());
     }
 }
