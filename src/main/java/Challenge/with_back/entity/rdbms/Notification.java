@@ -50,15 +50,15 @@ public class Notification extends BasicEntity
 
     // 열람 날짜
     @NotNull
-    private LocalDateTime viewDate;
+    private LocalDateTime viewedAt;
 
     @Builder
-    public Notification(User user, NotificationType type, String title, String content, boolean isRead, LocalDateTime viewDate) {
+    public Notification(User user, NotificationType type, String title, String content, boolean isRead, LocalDateTime viewedAt) {
         this.user = user;
         this.type = type;
         this.title = title;
         this.content = content;
         this.isRead = isRead;
-        this.viewDate = viewDate;
+        this.viewedAt = viewedAt;
     }
 }

@@ -1,12 +1,15 @@
 package Challenge.with_back.service;
 
+import Challenge.with_back.common.enums.NotificationType;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.notification.NotificationMessage;
+import Challenge.with_back.domain.notification.NotificationMessageFactory;
 import Challenge.with_back.entity.rdbms.Notification;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.memory.SseEmitterRepository;
 import Challenge.with_back.repository.rdbms.NotificationRepository;
+import Challenge.with_back.repository.rdbms.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,8 @@ public class NotificationService
 {
     private final NotificationRepository notificationRepository;
     private final SseEmitterRepository sseEmitterRepository;
+
+    private final NotificationMessageFactory notificationMessageFactory;
 
     @Value("${SSE_EXPIRATION_TIME}")
     private static Long CONNECTION_EXPIRATION_TIME;
@@ -66,14 +71,6 @@ public class NotificationService
             throw new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, null);
 
         // 알림들을 NotificationMessage로 변환하여 반환
-        return notifications.map(notification -> NotificationMessage.builder()
-                .id(notification.getId())
-                .type(notification.getType().name())
-                .title(notification.getTitle())
-                .content(notification.getContent())
-                .isRead(notification.isRead())
-                .createdAt(notification.getCreatedAt())
-                .viewDate(notification.getViewDate())
-                .build());
+        return notifications.map(notificationMessageFactory::createNotificationMessage);
     }
 }

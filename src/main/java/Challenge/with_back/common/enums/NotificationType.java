@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum NotificationType
 {
-    WELCOME("회원가입 환영 알림"),
-    FRIEND_REQUEST("친구 요청 알림");
+    WELCOME("회원가입 환영 알림");
 
     private final String description;
 }
