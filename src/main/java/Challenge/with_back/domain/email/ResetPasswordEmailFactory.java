@@ -2,7 +2,7 @@ package Challenge.with_back.domain.email;
 
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.rdbms.UserRepository;
-import Challenge.with_back.utils.UserUtil;
+import Challenge.with_back.util.AccountUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class ResetPasswordEmailFactory implements EmailFactory
 {
-    private final UserUtil userUtil;
+    private final AccountUtil accountUtil;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -34,7 +34,7 @@ public class ResetPasswordEmailFactory implements EmailFactory
                 .collect(Collectors.joining());
 
         // 계정 존재 확인
-        User user = userUtil.shouldExistingUser(to);
+        User user = accountUtil.shouldExistingUser(to);
 
         // 비밀번호 변경
         user.resetPassword(bCryptPasswordEncoder.encode(password));

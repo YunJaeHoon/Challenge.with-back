@@ -1,6 +1,6 @@
 package Challenge.with_back.security.handler;
 
-import Challenge.with_back.dto.response.SuccessResponseDto;
+import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.dto.token.AccessTokenDto;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;

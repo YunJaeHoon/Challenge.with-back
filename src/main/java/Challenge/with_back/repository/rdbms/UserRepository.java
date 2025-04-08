@@ -1,7 +1,7 @@
 package Challenge.with_back.repository.rdbms;
 
 import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.enums.account.LoginMethod;
+import Challenge.with_back.common.enums.LoginMethod;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

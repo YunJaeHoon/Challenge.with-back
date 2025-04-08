@@ -1,8 +1,6 @@
 package Challenge.with_back.security.exception;
 
-import Challenge.with_back.dto.response.ExceptionResponseDto;
-import Challenge.with_back.exception.CustomException;
-import Challenge.with_back.dto.response.CustomExceptionCode;
+import Challenge.with_back.common.response.exception.ExceptionResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

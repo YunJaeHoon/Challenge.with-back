@@ -1,9 +1,9 @@
 package Challenge.with_back.entity.rdbms;
 
-import Challenge.with_back.enums.challenge.ChallengeColorTheme;
-import Challenge.with_back.enums.challenge.ChallengeColorThemeConverter;
-import Challenge.with_back.enums.challenge.ChallengeUnit;
-import Challenge.with_back.enums.challenge.ChallengeUnitConverter;
+import Challenge.with_back.common.enums.ChallengeColorTheme;
+import Challenge.with_back.common.enums.ChallengeColorThemeConverter;
+import Challenge.with_back.common.enums.ChallengeUnit;
+import Challenge.with_back.common.enums.ChallengeUnitConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

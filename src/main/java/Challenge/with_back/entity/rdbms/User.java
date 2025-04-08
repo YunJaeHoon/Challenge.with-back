@@ -1,9 +1,9 @@
 package Challenge.with_back.entity.rdbms;
 
-import Challenge.with_back.enums.account.LoginMethod;
-import Challenge.with_back.enums.account.LoginMethodConverter;
-import Challenge.with_back.enums.account.AccountRole;
-import Challenge.with_back.enums.account.AccountRoleConverter;
+import Challenge.with_back.common.enums.LoginMethod;
+import Challenge.with_back.common.enums.LoginMethodConverter;
+import Challenge.with_back.common.enums.AccountRole;
+import Challenge.with_back.common.enums.AccountRoleConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

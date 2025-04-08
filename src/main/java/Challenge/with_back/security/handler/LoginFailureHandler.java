@@ -1,14 +1,10 @@
 package Challenge.with_back.security.handler;
 
-import Challenge.with_back.dto.response.CustomExceptionCode;
-import Challenge.with_back.dto.response.CustomSuccessCode;
-import Challenge.with_back.dto.response.ExceptionResponseDto;
-import Challenge.with_back.dto.response.SuccessResponseDto;
+import Challenge.with_back.common.response.exception.ExceptionResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
