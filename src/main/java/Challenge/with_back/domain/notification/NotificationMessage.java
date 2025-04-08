@@ -17,6 +17,6 @@ public class NotificationMessage
     private LocalDateTime viewDate;
 
     private boolean isFriendRequest;
-    private String sender;
-    private String receiver;
+    private Long friendRequestId;
+    private String senderNickname;
 }

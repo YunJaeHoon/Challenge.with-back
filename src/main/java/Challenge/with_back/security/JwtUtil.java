@@ -31,7 +31,7 @@ public class JwtUtil
         this.refreshTokenValidTime = Integer.parseInt(refreshTokenValidTime);
     }
 
-    // 토큰 반환
+    // 토큰 생성
     public String getToken(Long id, boolean isAccessToken)
     {
         Claims claims = Jwts.claims();

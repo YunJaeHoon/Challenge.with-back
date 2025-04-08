@@ -127,11 +127,8 @@ public class AccountService
     @Transactional
     public void sendVerificationCode(SendVerificationCodeDto dto)
     {
-        // 이메일 생성
-        Email email = verificationCodeEmailFactory.createEmail(dto.getEmail());
-
         // 이메일 전송
-        verificationCodeEmailFactory.sendEmail(javaMailSender, dto.getEmail(), email);
+        verificationCodeEmailFactory.sendEmail(javaMailSender, dto.getEmail());
     }
 
     // 이메일 인증번호 확인: 회원가입
@@ -161,10 +158,7 @@ public class AccountService
         // 인증번호 확인
         accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
-        // 이메일 생성
-        Email email = resetPasswordEmailFactory.createEmail(dto.getEmail());
-
-        // 이메일 전송
-        resetPasswordEmailFactory.sendEmail(javaMailSender, dto.getEmail(), email);
+         // 이메일 전송
+        resetPasswordEmailFactory.sendEmail(javaMailSender, dto.getEmail());
     }
 }

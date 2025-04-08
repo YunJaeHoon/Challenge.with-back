@@ -16,8 +16,10 @@ public interface EmailFactory
 
     // 이메일 전송
     @Async
-    default void sendEmail(JavaMailSender javaMailSender, String to, Email email)
+    default void sendEmail(JavaMailSender javaMailSender, String to)
     {
+        Email email = createEmail(to);
+
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 

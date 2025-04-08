@@ -28,6 +28,9 @@ public enum CustomExceptionCode
     WRONG_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다."),
     TOO_MANY_WRONG_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증번호를 5회 이상 틀렸습니다."),
 
+    // 알림 예외
+    NOTIFICATION_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알림 연결 중 오류가 발생하였습니다."),
+
     UNEXPECTED_ERROR(HttpStatus.UNAUTHORIZED, "예기치 못한 에러가 발생하였습니다.");
 
     private final HttpStatus httpStatus;
