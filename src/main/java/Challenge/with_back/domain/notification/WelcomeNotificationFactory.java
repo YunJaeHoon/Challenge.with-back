@@ -10,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class WelcomeNotificationMessageFactory implements NotificationMessageFactory
+public class WelcomeNotificationFactory implements NotificationFactory
 {
     private final NotificationRepository notificationRepository;
 
     @Override
     @Transactional
-    public Notification createNotification(User user)
+    public NotificationMessage createNotification(User user)
     {
         Notification notification = Notification.builder()
                 .user(user)
@@ -29,6 +29,14 @@ public class WelcomeNotificationMessageFactory implements NotificationMessageFac
 
         notificationRepository.save(notification);
 
-        return notification;
+        return NotificationMessage.builder()
+                .id(notification.getId())
+                .type(notification.getType().name())
+                .title(notification.getTitle())
+                .content(notification.getContent())
+                .isRead(notification.isRead())
+                .createdAt(notification.getCreatedAt())
+                .viewedAt(notification.getViewedAt())
+                .build();
     }
 }

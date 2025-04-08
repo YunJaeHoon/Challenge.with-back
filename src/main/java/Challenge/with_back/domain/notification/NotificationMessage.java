@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 public class NotificationMessage
 {
     private final Long id;
@@ -16,15 +17,4 @@ public class NotificationMessage
     private final boolean isRead;
     private final LocalDateTime createdAt;
     private final LocalDateTime viewedAt;
-
-    NotificationMessage(Notification notification)
-    {
-        this.id = notification.getId();
-        this.type = notification.getType().name();
-        this.title = notification.getTitle();
-        this.content = notification.getContent();
-        this.isRead = false;
-        this.createdAt = notification.getCreatedAt();
-        this.viewedAt = notification.getViewedAt();
-    }
 }

@@ -1,15 +1,13 @@
 package Challenge.with_back.service;
 
-import Challenge.with_back.common.enums.NotificationType;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.notification.NotificationMessage;
-import Challenge.with_back.domain.notification.NotificationMessageFactory;
+import Challenge.with_back.domain.notification.NotificationFactory;
 import Challenge.with_back.entity.rdbms.Notification;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.memory.SseEmitterRepository;
 import Challenge.with_back.repository.rdbms.NotificationRepository;
-import Challenge.with_back.repository.rdbms.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,7 +23,7 @@ public class NotificationService
     private final NotificationRepository notificationRepository;
     private final SseEmitterRepository sseEmitterRepository;
 
-    private final NotificationMessageFactory notificationMessageFactory;
+    private final NotificationFactory notificationFactory;
 
     @Value("${SSE_EXPIRATION_TIME}")
     private static Long CONNECTION_EXPIRATION_TIME;
@@ -47,17 +45,36 @@ public class NotificationService
         sseEmitter.onCompletion(() -> sseEmitterRepository.deleteByUserId(userId));
         sseEmitter.onTimeout(() -> sseEmitterRepository.deleteByUserId(userId));
 
-        // SSE 연결이 성공적으로 생성되었음을 클라이언트에게 전송
+        // 알림을 위한 SSE 연결이 성공적으로 생성되었음을 클라이언트에게 전송
         try {
             sseEmitter.send(SseEmitter.event()
                     .id("id")
                     .name(SSE_NOTIFICATION_NAME)
-                    .data("SSE 연결이 성공적으로 생성되었습니다."));
+                    .data("알림을 위한 SSE 연결이 성공적으로 생성되었습니다."));
         } catch (Exception e) {
-            throw new CustomException(CustomExceptionCode.NOTIFICATION_CONNECTION_ERROR, null);
+            throw new CustomException(CustomExceptionCode.EMITTER_CONNECTION_ERROR, null);
         }
 
         return sseEmitter;
+    }
+
+    // 알림 SSE 전송
+    @Transactional
+    public void send(User user, NotificationMessage notificationMessage)
+    {
+        // 연결 정보 가져오기
+        SseEmitter sseEmitter = sseEmitterRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.EMITTER_NOT_FOUND, user.getId()));
+
+        // 알림 전송
+        try {
+            sseEmitter.send(SseEmitter.event()
+                    .id(notificationMessage.getId().toString())
+                    .name(SSE_NOTIFICATION_NAME)
+                    .data(notificationMessage));
+        } catch (Exception e) {
+            throw new CustomException(CustomExceptionCode.EMITTER_CONNECTION_ERROR, null);
+        }
     }
 
     // 알림 조회
@@ -71,6 +88,14 @@ public class NotificationService
             throw new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, null);
 
         // 알림들을 NotificationMessage로 변환하여 반환
-        return notifications.map(notificationMessageFactory::createNotificationMessage);
+        return notifications.map((notification -> NotificationMessage.builder()
+                .id(notification.getId())
+                .type(notification.getType().name())
+                .title(notification.getTitle())
+                .content(notification.getContent())
+                .isRead(notification.isRead())
+                .createdAt(notification.getCreatedAt())
+                .viewedAt(notification.getViewedAt())
+                .build()));
     }
 }
