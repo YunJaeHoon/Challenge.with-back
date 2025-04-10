@@ -21,9 +21,10 @@ public enum CustomExceptionCode
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 비밀번호입니다."),
     INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 닉네임입니다."),
 
-    // 이메일 예외
+    // 인증번호 관련 예외
     SEND_EMAIL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생하였습니다."),
     VERIFICATION_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "전송된 인증번호가 존재하지 않습니다."),
+    CHECK_VERIFICATION_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "인증번호를 확인받지 않았습니다."),
     EXPIRED_VERIFICATION_CODE(HttpStatus.GONE, "만료된 인증번호입니다."),
     WRONG_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다."),
     TOO_MANY_WRONG_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증번호를 5회 이상 틀렸습니다."),

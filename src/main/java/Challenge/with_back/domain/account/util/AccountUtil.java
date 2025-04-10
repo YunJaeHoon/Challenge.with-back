@@ -2,10 +2,12 @@ package Challenge.with_back.domain.account.util;
 
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.entity.rdbms.User;
+import Challenge.with_back.entity.redis.CheckVerificationCode;
 import Challenge.with_back.entity.redis.VerificationCode;
 import Challenge.with_back.common.enums.LoginMethod;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.repository.rdbms.UserRepository;
+import Challenge.with_back.repository.redis.CheckVerificationCodeRepository;
 import Challenge.with_back.repository.redis.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class AccountUtil
 {
     private final UserRepository userRepository;
     private final VerificationCodeRepository verificationCodeRepository;
+    private final CheckVerificationCodeRepository checkVerificationCodeRepository;
 
     // 비밀번호 형식 체크
     public void checkPasswordFormat(String password)
@@ -68,6 +71,14 @@ public class AccountUtil
                 throw new CustomException(CustomExceptionCode.WRONG_VERIFICATION_CODE, null);
             }
         }
+
+        // 새로운 인증번호 확인 정보 등록
+        CheckVerificationCode checkVerificationCode = CheckVerificationCode.builder()
+                .email(email)
+                .build();
+
+        // 생성한 인증번호 확인 정보 저장
+        checkVerificationCodeRepository.save(checkVerificationCode);
     }
 
     // 인증번호 삭제

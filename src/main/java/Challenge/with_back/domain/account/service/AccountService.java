@@ -8,6 +8,8 @@ import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.entity.redis.VerificationCode;
+import Challenge.with_back.repository.redis.CheckVerificationCodeRepository;
 import Challenge.with_back.security.dto.AccessTokenDto;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.common.enums.AccountRole;
@@ -34,6 +36,7 @@ public class AccountService
     private final JwtUtil jwtUtil;
 
     private final VerificationCodeEmailFactory verificationCodeEmailFactory;
+    private final CheckVerificationCodeRepository checkVerificationCodeRepository;
     private final ResetPasswordEmailFactory resetPasswordEmailFactory;
     private final WelcomeNotificationFactory welcomeNotificationFactory;
 
@@ -49,8 +52,9 @@ public class AccountService
     @Transactional
     public void join(JoinDto dto)
     {
-        // 인증번호 일치 여부 확인
-        accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        // 인증번호 확인 정보 존재 여부 확인
+        if(checkVerificationCodeRepository.findByEmail(dto.getEmail()).isEmpty())
+            throw new CustomException(CustomExceptionCode.CHECK_VERIFICATION_CODE_NOT_FOUND, dto.getEmail());
 
         // 계정 중복 확인
         accountUtil.shouldNotExistingUser(dto.getEmail());
@@ -77,13 +81,8 @@ public class AccountService
         // 생성한 계정 저장
         userRepository.save(user);
 
-        // 인증번호 정보 삭제
-        accountUtil.deleteVerificationCode(dto.getEmail());
-
-        // 알림 메시지 생성
+        // 회원가입 환영 알림 메시지 전송
         NotificationMessage notificationMessage = welcomeNotificationFactory.createNotification(user);
-
-        // 알림 메시지 전송
         notificationProducer.send(notificationMessage);
     }
 

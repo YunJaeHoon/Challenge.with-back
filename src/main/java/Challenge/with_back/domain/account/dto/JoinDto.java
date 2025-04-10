@@ -9,5 +9,4 @@ public class JoinDto
     private String password;
     private String nickname;
     private boolean allowEmailMarketing;
-    private String code;
 }
