@@ -32,6 +32,7 @@ public enum CustomExceptionCode
     EMITTER_CONNECTION_ERROR(HttpStatus.NOT_FOUND, "SSE Emitter 연결 중 오류가 발생하였습니다."),
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다."),
     EMITTER_NOT_FOUND(HttpStatus.NOT_FOUND, "SSE Emitter를 찾을 수 없습니다."),
+    KAFKA_NOTIFICATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "카프카 알림 수신 중 오류가 발생하였습니다."),
 
     UNEXPECTED_ERROR(HttpStatus.UNAUTHORIZED, "예기치 못한 에러가 발생하였습니다.");
 

@@ -49,7 +49,6 @@ public class Notification extends BasicEntity
     private boolean isRead;
 
     // 열람 날짜
-    @NotNull
     private LocalDateTime viewedAt;
 
     @Builder

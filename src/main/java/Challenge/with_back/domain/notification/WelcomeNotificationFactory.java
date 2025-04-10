@@ -30,7 +30,8 @@ public class WelcomeNotificationFactory implements NotificationFactory
         notificationRepository.save(notification);
 
         return NotificationMessage.builder()
-                .id(notification.getId())
+                .notificationId(notification.getId())
+                .userId(user.getId())
                 .type(notification.getType().name())
                 .title(notification.getTitle())
                 .content(notification.getContent())

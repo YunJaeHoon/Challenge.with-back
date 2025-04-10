@@ -1,5 +1,8 @@
 package Challenge.with_back.service;
 
+import Challenge.with_back.domain.notification.NotificationMessage;
+import Challenge.with_back.domain.notification.NotificationProducer;
+import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
 import Challenge.with_back.util.AccountUtil;
 import Challenge.with_back.domain.email.Email;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
@@ -33,6 +36,9 @@ public class AccountService
 
     private final VerificationCodeEmailFactory verificationCodeEmailFactory;
     private final ResetPasswordEmailFactory resetPasswordEmailFactory;
+    private final WelcomeNotificationFactory welcomeNotificationFactory;
+
+    private final NotificationProducer notificationProducer;
 
     private final JavaMailSender javaMailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -74,6 +80,12 @@ public class AccountService
 
         // 인증번호 정보 삭제
         accountUtil.deleteVerificationCode(dto.getEmail());
+
+        // 알림 메시지 생성
+        NotificationMessage notificationMessage = welcomeNotificationFactory.createNotification(user);
+
+        // 알림 메시지 전송
+        notificationProducer.send(notificationMessage);
     }
 
     // 계정 권한 확인

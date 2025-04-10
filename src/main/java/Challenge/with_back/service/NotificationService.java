@@ -28,9 +28,6 @@ public class NotificationService
     @Value("${SSE_EXPIRATION_TIME}")
     private static Long CONNECTION_EXPIRATION_TIME;
 
-    @Value("${SSE_NOTIFICATION_NAME}")
-    private static String SSE_NOTIFICATION_NAME;
-
     // 알림 SSE 연결 생성
     @Transactional
     public SseEmitter createNotificationConnection(Long userId)
@@ -49,7 +46,7 @@ public class NotificationService
         try {
             sseEmitter.send(SseEmitter.event()
                     .id("id")
-                    .name(SSE_NOTIFICATION_NAME)
+                    .name("NOTIFICATION")
                     .data("알림을 위한 SSE 연결이 성공적으로 생성되었습니다."));
         } catch (Exception e) {
             throw new CustomException(CustomExceptionCode.EMITTER_CONNECTION_ERROR, null);
@@ -60,17 +57,17 @@ public class NotificationService
 
     // 알림 SSE 전송
     @Transactional
-    public void send(User user, NotificationMessage notificationMessage)
+    public void send(Long userId, NotificationMessage notificationMessage)
     {
         // 연결 정보 가져오기
-        SseEmitter sseEmitter = sseEmitterRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.EMITTER_NOT_FOUND, user.getId()));
+        SseEmitter sseEmitter = sseEmitterRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.EMITTER_NOT_FOUND, userId));
 
         // 알림 전송
         try {
             sseEmitter.send(SseEmitter.event()
-                    .id(notificationMessage.getId().toString())
-                    .name(SSE_NOTIFICATION_NAME)
+                    .id(notificationMessage.getNotificationId().toString())
+                    .name("NOTIFICATION")
                     .data(notificationMessage));
         } catch (Exception e) {
             throw new CustomException(CustomExceptionCode.EMITTER_CONNECTION_ERROR, null);
@@ -89,7 +86,8 @@ public class NotificationService
 
         // 알림들을 NotificationMessage로 변환하여 반환
         return notifications.map((notification -> NotificationMessage.builder()
-                .id(notification.getId())
+                .notificationId(notification.getId())
+                .userId(notification.getUser().getId())
                 .type(notification.getType().name())
                 .title(notification.getTitle())
                 .content(notification.getContent())
