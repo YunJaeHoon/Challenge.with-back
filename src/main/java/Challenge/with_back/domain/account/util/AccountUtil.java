@@ -1,4 +1,4 @@
-package Challenge.with_back.util;
+package Challenge.with_back.domain.account.util;
 
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.entity.rdbms.User;

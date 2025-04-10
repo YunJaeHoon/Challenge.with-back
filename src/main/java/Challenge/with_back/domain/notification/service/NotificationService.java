@@ -1,11 +1,10 @@
-package Challenge.with_back.service;
+package Challenge.with_back.domain.notification.service;
 
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.notification.NotificationMessage;
 import Challenge.with_back.domain.notification.NotificationFactory;
 import Challenge.with_back.entity.rdbms.Notification;
-import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.memory.SseEmitterRepository;
 import Challenge.with_back.repository.rdbms.NotificationRepository;
 import lombok.RequiredArgsConstructor;

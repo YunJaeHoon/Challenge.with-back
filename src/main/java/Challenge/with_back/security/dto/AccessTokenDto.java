@@ -1,4 +1,4 @@
-package Challenge.with_back.dto.token;
+package Challenge.with_back.security.dto;
 
 import lombok.Builder;
 import lombok.Getter;

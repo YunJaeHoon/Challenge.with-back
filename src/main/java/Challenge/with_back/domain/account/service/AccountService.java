@@ -1,15 +1,14 @@
-package Challenge.with_back.service;
+package Challenge.with_back.domain.account.service;
 
+import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.notification.NotificationMessage;
-import Challenge.with_back.domain.notification.NotificationProducer;
+import Challenge.with_back.domain.notification.kafka.NotificationProducer;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
-import Challenge.with_back.util.AccountUtil;
-import Challenge.with_back.domain.email.Email;
+import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
-import Challenge.with_back.dto.token.AccessTokenDto;
-import Challenge.with_back.dto.user.*;
+import Challenge.with_back.security.dto.AccessTokenDto;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.LoginMethod;

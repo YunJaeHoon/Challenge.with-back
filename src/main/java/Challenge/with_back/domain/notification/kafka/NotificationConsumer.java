@@ -1,8 +1,9 @@
-package Challenge.with_back.domain.notification;
+package Challenge.with_back.domain.notification.kafka;
 
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
-import Challenge.with_back.service.NotificationService;
+import Challenge.with_back.domain.notification.NotificationMessage;
+import Challenge.with_back.domain.notification.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

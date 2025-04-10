@@ -1,4 +1,4 @@
-package Challenge.with_back.controller;
+package Challenge.with_back.domain.basic.controller;
 
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;

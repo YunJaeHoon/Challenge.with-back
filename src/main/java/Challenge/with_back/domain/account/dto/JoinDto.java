@@ -1,4 +1,4 @@
-package Challenge.with_back.dto.user;
+package Challenge.with_back.domain.account.dto;
 
 import lombok.Getter;
 

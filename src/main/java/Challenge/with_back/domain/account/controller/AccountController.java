@@ -1,10 +1,10 @@
-package Challenge.with_back.controller;
+package Challenge.with_back.domain.account.controller;
 
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
-import Challenge.with_back.service.AccountService;
-import Challenge.with_back.dto.token.AccessTokenDto;
-import Challenge.with_back.dto.user.*;
+import Challenge.with_back.domain.account.dto.*;
+import Challenge.with_back.domain.account.service.AccountService;
+import Challenge.with_back.security.dto.AccessTokenDto;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
