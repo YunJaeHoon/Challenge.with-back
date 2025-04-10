@@ -59,25 +59,6 @@ public class NotificationService
         return sseEmitter;
     }
 
-    // 알림 SSE 전송
-    @Transactional
-    public void send(Long userId, NotificationMessage notificationMessage)
-    {
-        // 연결 정보 가져오기
-        SseEmitter sseEmitter = sseEmitterRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.EMITTER_NOT_FOUND, userId));
-
-        // 알림 전송
-        try {
-            sseEmitter.send(SseEmitter.event()
-                    .id(notificationMessage.getNotificationId().toString())
-                    .name("NOTIFICATION")
-                    .data(notificationMessage));
-        } catch (Exception e) {
-            throw new CustomException(CustomExceptionCode.EMITTER_CONNECTION_ERROR, null);
-        }
-    }
-
     // 알림 조회
     public Page<NotificationMessage> getNotifications(Long userId, Pageable pageable)
     {
