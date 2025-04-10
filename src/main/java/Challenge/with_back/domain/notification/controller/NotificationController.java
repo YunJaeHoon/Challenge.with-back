@@ -3,6 +3,8 @@ package Challenge.with_back.domain.notification.controller;
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.notification.NotificationMessage;
+import Challenge.with_back.domain.notification.kafka.NotificationProducer;
+import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
 import Challenge.with_back.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,22 @@ public class NotificationController
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("알림 조회를 성공적으로 마쳤습니다.")
                         .data(data)
+                        .build());
+    }
+
+    // 테스트 알림 전송
+    @PostMapping("/notification/send/test")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> sendTestNotification(@AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        notificationService.sendTestNotification(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("테스트 알림을 성공적으로 전송하였습니다.")
+                        .data(null)
                         .build());
     }
 }

@@ -4,7 +4,10 @@ import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.notification.NotificationMessage;
 import Challenge.with_back.domain.notification.NotificationFactory;
+import Challenge.with_back.domain.notification.TestNotificationFactory;
+import Challenge.with_back.domain.notification.kafka.NotificationProducer;
 import Challenge.with_back.entity.rdbms.Notification;
+import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.memory.SseEmitterRepository;
 import Challenge.with_back.repository.rdbms.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +25,9 @@ public class NotificationService
     private final NotificationRepository notificationRepository;
     private final SseEmitterRepository sseEmitterRepository;
 
-    private final NotificationFactory notificationFactory;
+    private final TestNotificationFactory testNotificationFactory;
+
+    private final NotificationProducer notificationProducer;
 
     @Value("${SSE_EXPIRATION_TIME}")
     private static Long CONNECTION_EXPIRATION_TIME;
@@ -94,5 +99,16 @@ public class NotificationService
                 .createdAt(notification.getCreatedAt())
                 .viewedAt(notification.getViewedAt())
                 .build()));
+    }
+
+    // 테스트 알림 전송
+    @Transactional
+    public void sendTestNotification(User user)
+    {
+        // 알림 메시지 생성
+        NotificationMessage notificationMessage = testNotificationFactory.createNotification(user);
+
+        // 알림 메시지 전송
+        notificationProducer.send(notificationMessage);
     }
 }
