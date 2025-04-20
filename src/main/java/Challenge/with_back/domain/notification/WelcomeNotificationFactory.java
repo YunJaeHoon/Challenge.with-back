@@ -4,19 +4,26 @@ import Challenge.with_back.common.enums.NotificationType;
 import Challenge.with_back.entity.rdbms.Notification;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.rdbms.NotificationRepository;
+import Challenge.with_back.repository.rdbms.UserRepository;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@RequiredArgsConstructor
-public class WelcomeNotificationFactory implements NotificationFactory
+public class WelcomeNotificationFactory extends NotificationFactory
 {
     private final NotificationRepository notificationRepository;
 
+    public WelcomeNotificationFactory(UserRepository userRepository, NotificationRepository notificationRepository) {
+        super(userRepository);
+        this.notificationRepository = notificationRepository;
+    }
+
     @Override
     @Transactional
-    public NotificationMessage createNotification(User user)
+    public Notification createNotificationEntity(User user)
     {
         Notification notification = Notification.builder()
                 .user(user)
@@ -29,15 +36,6 @@ public class WelcomeNotificationFactory implements NotificationFactory
 
         notificationRepository.save(notification);
 
-        return NotificationMessage.builder()
-                .notificationId(notification.getId())
-                .userId(user.getId())
-                .type(notification.getType().name())
-                .title(notification.getTitle())
-                .content(notification.getContent())
-                .isRead(notification.isRead())
-                .createdAt(notification.getCreatedAt())
-                .viewedAt(notification.getViewedAt())
-                .build();
+        return notification;
     }
 }

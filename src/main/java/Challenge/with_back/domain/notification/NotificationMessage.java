@@ -15,7 +15,7 @@ public class NotificationMessage
     private final String type;
     private final String title;
     private final String content;
-    private final boolean isRead;
+    private final Boolean isRead;
     private final LocalDateTime createdAt;
     private final LocalDateTime viewedAt;
 }

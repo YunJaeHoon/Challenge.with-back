@@ -60,4 +60,9 @@ public class Notification extends BasicEntity
         this.isRead = isRead;
         this.viewedAt = viewedAt;
     }
+
+    // 알림을 읽음으로 표시
+    public void markAsRead() {
+        this.isRead = true;
+    }
 }

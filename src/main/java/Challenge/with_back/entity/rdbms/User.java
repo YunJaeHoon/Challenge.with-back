@@ -95,4 +95,9 @@ public class User extends BasicEntity
     public void resetPassword(String newPassword) {
         this.password = newPassword;
     }
+
+    // 읽지 않은 알림 개수 1 증가
+    public void increaseCountUnreadNotification() {
+        this.countUnreadNotification++;
+    }
 }
