@@ -3,6 +3,7 @@ package Challenge.with_back.domain.notification.controller;
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.notification.NotificationMessage;
+import Challenge.with_back.domain.notification.dto.NotificationListDto;
 import Challenge.with_back.domain.notification.kafka.NotificationProducer;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
@@ -46,7 +47,7 @@ public class NotificationController
     public ResponseEntity<SuccessResponseDto> getNotifications(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails)
     {
         Long userId = userDetails.getUser().getId();
-        Page<NotificationMessage> data = notificationService.getNotifications(userId, pageable);
+        NotificationListDto data = notificationService.getNotifications(userId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
