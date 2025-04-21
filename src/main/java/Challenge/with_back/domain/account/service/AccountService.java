@@ -1,14 +1,12 @@
 package Challenge.with_back.domain.account.service;
 
 import Challenge.with_back.domain.account.dto.*;
-import Challenge.with_back.domain.notification.NotificationMessage;
-import Challenge.with_back.domain.notification.kafka.NotificationProducer;
+import Challenge.with_back.domain.email.kafka.EmailProducer;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
-import Challenge.with_back.entity.redis.VerificationCode;
 import Challenge.with_back.repository.redis.CheckVerificationCodeRepository;
 import Challenge.with_back.security.dto.AccessTokenDto;
 import Challenge.with_back.entity.rdbms.User;
@@ -31,18 +29,15 @@ import java.time.LocalDate;
 public class AccountService
 {
     private final UserRepository userRepository;
+    private final CheckVerificationCodeRepository checkVerificationCodeRepository;
 
     private final AccountUtil accountUtil;
     private final JwtUtil jwtUtil;
 
     private final VerificationCodeEmailFactory verificationCodeEmailFactory;
-    private final CheckVerificationCodeRepository checkVerificationCodeRepository;
     private final ResetPasswordEmailFactory resetPasswordEmailFactory;
     private final WelcomeNotificationFactory welcomeNotificationFactory;
-
-    private final NotificationProducer notificationProducer;
-
-    private final JavaMailSender javaMailSender;
+    
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Value("${PROFILE_IMAGE_BUCKET_URL}")
@@ -81,9 +76,8 @@ public class AccountService
         // 생성한 계정 저장
         userRepository.save(user);
 
-        // 회원가입 환영 알림 메시지 전송
-        NotificationMessage notificationMessage = welcomeNotificationFactory.createNotification(user);
-        notificationProducer.send(notificationMessage);
+        // 회원가입 환영 알림 생성
+        welcomeNotificationFactory.createNotification(user);
     }
 
     // 계정 권한 확인
@@ -138,7 +132,7 @@ public class AccountService
     public void sendVerificationCode(SendVerificationCodeDto dto)
     {
         // 이메일 전송
-        verificationCodeEmailFactory.sendEmail(javaMailSender, dto.getEmail());
+        verificationCodeEmailFactory.sendEmail(dto.getEmail());
     }
 
     // 이메일 인증번호 확인: 회원가입
@@ -169,6 +163,6 @@ public class AccountService
         accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
          // 이메일 전송
-        resetPasswordEmailFactory.sendEmail(javaMailSender, dto.getEmail());
+        resetPasswordEmailFactory.sendEmail(dto.getEmail());
     }
 }

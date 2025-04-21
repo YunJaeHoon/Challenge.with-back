@@ -1,6 +1,5 @@
 package Challenge.with_back.domain.notification.dto;
 
-import Challenge.with_back.domain.notification.NotificationMessage;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +9,6 @@ import java.util.List;
 @Builder
 public class NotificationListDto
 {
-	private List<NotificationMessage> content;		// 알림 리스트
+	private List<NotificationDto> content;		// 알림 리스트
 	private Boolean isLast;									// 마지막 페이지인가?
 }

@@ -2,35 +2,30 @@ package Challenge.with_back.domain.email;
 
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.domain.email.kafka.EmailProducer;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public interface EmailFactory
+@RequiredArgsConstructor
+public abstract class EmailFactory
 {
-    // 이메일  생성
-    Email createEmail(String to);
-
+    private final EmailProducer emailProducer;
+    
     // 이메일 전송
-    @Async
-    default void sendEmail(JavaMailSender javaMailSender, String to)
+    @Transactional
+    public void sendEmail(String to)
     {
         Email email = createEmail(to);
-
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            mimeMessageHelper.setTo(to);
-            mimeMessageHelper.setSubject(email.getSubject());
-            mimeMessageHelper.setText(email.getContent(), true);
-
-            javaMailSender.send(mimeMessage);
-        } catch(Exception e) {
-            throw new CustomException(CustomExceptionCode.SEND_EMAIL_ERROR, e.getMessage());
-        }
+        emailProducer.send(email);
     }
+    
+    // 이메일  생성
+    abstract Email createEmail(String to);
 }

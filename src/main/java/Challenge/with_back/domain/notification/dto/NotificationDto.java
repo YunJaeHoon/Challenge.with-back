@@ -1,4 +1,4 @@
-package Challenge.with_back.domain.notification;
+package Challenge.with_back.domain.notification.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class NotificationMessage
+public class NotificationDto
 {
     private final Long notificationId;
     private final Long userId;
