@@ -100,4 +100,9 @@ public class User extends BasicEntity
     public void increaseCountUnreadNotification() {
         this.countUnreadNotification++;
     }
+    
+    // 읽지 않은 알림 개수 1 감소
+    public void decreaseCountUnreadNotification() {
+        this.countUnreadNotification--;
+    }
 }

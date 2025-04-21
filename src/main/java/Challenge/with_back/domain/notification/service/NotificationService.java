@@ -11,6 +11,7 @@ import Challenge.with_back.entity.rdbms.Notification;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.memory.SseEmitterRepository;
 import Challenge.with_back.repository.rdbms.NotificationRepository;
+import Challenge.with_back.repository.rdbms.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationService
 {
+	private final UserRepository userRepository;
 	private final NotificationRepository notificationRepository;
 	private final SseEmitterRepository sseEmitterRepository;
 	
@@ -66,6 +68,10 @@ public class NotificationService
 	// 알림 조회
 	public NotificationListDto getNotifications(Long userId, Pageable pageable)
 	{
+		// 사용자 조회
+		User user = userRepository.findById(userId)
+							.orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, userId));
+		
 		// 사용자 ID로 알림 조회
 		Page<Notification> notificationPage = notificationRepository.findAllByUserId(userId, pageable);
 		
@@ -80,6 +86,8 @@ public class NotificationService
 				
 				if (!isRead) {
 					notification.markAsRead();
+					user.decreaseCountUnreadNotification();
+					
 					notificationRepository.save(notification);
 				}
 				
@@ -94,6 +102,8 @@ public class NotificationService
 						   .viewedAt(notification.getViewedAt())
 						   .build();
 			}).toList();
+		
+		userRepository.save(user);
 		
 		return NotificationListDto.builder()
 					   .content(notificationList)
