@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class NotificationService
 							.orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, userId));
 		
 		// 사용자 ID로 알림 조회
-		Page<Notification> notificationPage = notificationRepository.findAllByUserId(userId, pageable);
+		Page<Notification> notificationPage = notificationRepository.findPageByUserId(userId, pageable);
 		
 		// 알림이 존재하지 않는 경우, 예외 발생
 		if (notificationPage.isEmpty())
@@ -70,6 +71,22 @@ public class NotificationService
 					   .content(notificationList)
 					   .isLast(notificationPage.isLast())
 					   .build();
+	}
+	
+	// 알림 삭제
+	@Transactional
+	public void deleteNotification(Long notificationId, Long userId)
+	{
+		// 알림 조회
+		Notification notification = notificationRepository.findById(notificationId)
+											.orElseThrow(() -> new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, notificationId));
+		
+		// 해당 사용자의 알림인지 확인
+		if(!Objects.equals(notification.getUser().getId(), userId))
+			throw new CustomException(CustomExceptionCode.NOTIFICATION_OWNERSHIP_INVALID, userId);
+		
+		// 알림 삭제
+		notificationRepository.delete(notification);
 	}
 	
 	// 테스트 알림 생성

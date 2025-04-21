@@ -36,6 +36,22 @@ public class NotificationController
                         .data(data)
                         .build());
     }
+    
+    // 알림 삭제
+    @DeleteMapping("/notification/{id}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> deleteNotification(@PathVariable("id") Long notificationId, @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        Long userId = userDetails.getUser().getId();
+        notificationService.deleteNotification(notificationId, userId);
+        
+        return ResponseEntity.status(HttpStatus.OK)
+                       .body(SuccessResponseDto.builder()
+                                     .code(CustomSuccessCode.SUCCESS.name())
+                                     .message("알림을 성공적으로 삭제하였습니다.")
+                                     .data(null)
+                                     .build());
+    }
 
     // 테스트 알림 전송
     @PostMapping("/notification/send/test")

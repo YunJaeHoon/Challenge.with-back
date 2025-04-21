@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long>
 {
-    Page<Notification> findAllByUserId(Long userId, Pageable pageable);
+    // 알림 페이지 조회
+    Page<Notification> findPageByUserId(Long userId, Pageable pageable);
 }
