@@ -109,12 +109,16 @@ public class AccountUtil
 	{
 		return user.getPremiumExpirationDate().isAfter(LocalDate.now());
 	}
-	
+
+	// 챌린지 개수 상한값 확인
+	public int getMaxChallengeCount(User user)
+	{
+		return isPremium(user) ? 20 : 3;
+	}
+
 	// 사용자가 이미 참여 챌린지 개수가 최대인지 확인
 	public boolean isParticipatingInMaxChallenges(User user)
 	{
-		return isPremium(user) ?
-					   user.getCountParticipateChallenge() >= 20 :
-					   user.getCountParticipateChallenge() >= 3;
+		return user.getCountParticipateChallenge() >= getMaxChallengeCount(user);
 	}
 }

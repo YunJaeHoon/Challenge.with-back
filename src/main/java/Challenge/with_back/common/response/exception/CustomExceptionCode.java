@@ -37,6 +37,8 @@ public enum CustomExceptionCode
     // 챌린지 예외
     CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지가 존재하지 않습니다."),
     PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈가 존재하지 않습니다."),
+    PARTICIPATE_PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈 참여 정보가 존재하지 않습니다."),
+    ALREADY_PARTICIPATING_CHALLENGE(HttpStatus.CONFLICT, "이미 참여 중인 챌린지입니다."),
     INVALID_CHALLENGE_ICON(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 아이콘입니다."),
     INVALID_CHALLENGE_COLOR_THEME(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 테마 색상입니다."),
     INVALID_CHALLENGE_NAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 챌린지 이름입니다."),

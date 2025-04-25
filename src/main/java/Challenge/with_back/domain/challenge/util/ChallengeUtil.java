@@ -101,7 +101,7 @@ public class ChallengeUtil
 		phaseRepository.save(phase);
 	}
 
-	// 챌린지의 가장 최근 페이즈 조회
+	// 현재 페이즈 조회
 	public Phase getLastPhase(Challenge challenge)
 	{
 		return phaseRepository.findByChallengeAndNumber(challenge, challenge.getCountPhase())
@@ -120,6 +120,10 @@ public class ChallengeUtil
 		if(accountUtil.isParticipatingInMaxChallenges(user))
 			throw new CustomException(CustomExceptionCode.PARTICIPATING_IN_MAX_CHALLENGES, null);
 
+		// 이미 사용자가 해당 챌린지에 가입했는지 확인
+		if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent())
+			throw new CustomException(CustomExceptionCode.ALREADY_PARTICIPATING_CHALLENGE, null);
+
 		// 챌린지 참여 정보 생성
 		ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
 				.user(user)
@@ -135,7 +139,7 @@ public class ChallengeUtil
 		// 챌린지 참여 정보 저장
 		participateChallengeRepository.save(participateChallenge);
 
-		// 가장 최근 페이즈 조회
+		// 현재 페이즈 조회
 		Phase phase = getLastPhase(challenge);
 
 		// 페이즈 참여 정보 생성

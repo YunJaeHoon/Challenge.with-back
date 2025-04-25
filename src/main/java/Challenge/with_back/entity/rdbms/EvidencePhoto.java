@@ -8,6 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(
+        indexes = {
+                @Index(name = "idx_participatePhase", columnList = "participate_phase")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class EvidencePhoto extends BasicEntity

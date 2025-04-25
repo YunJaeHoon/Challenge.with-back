@@ -8,6 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(
+        indexes = {
+                @Index(name = "idx_userAndPhase", columnList = "user, phase")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user", "phase"})
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ParticipatePhase extends BasicEntity

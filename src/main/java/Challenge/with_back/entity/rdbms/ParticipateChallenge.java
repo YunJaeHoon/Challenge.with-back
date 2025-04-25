@@ -12,6 +12,15 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
+@Table(
+        indexes = {
+                @Index(name = "idx_userAndChallenge", columnList = "user, challenge"),
+                @Index(name = "idx_user_by_createdAt", columnList = "user, created_at DESC")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user", "challenge"})
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ParticipateChallenge extends BasicEntity

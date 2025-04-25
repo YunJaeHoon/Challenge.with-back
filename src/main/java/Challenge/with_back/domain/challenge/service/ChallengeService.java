@@ -6,6 +6,7 @@ import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
+import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import Challenge.with_back.entity.rdbms.*;
 import Challenge.with_back.repository.rdbms.*;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class ChallengeService
     private final ParticipateChallengeRepository participateChallengeRepository;
     private final PhaseRepository phaseRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
+    private final EvidencePhotoRepository evidencePhotoRepository;
 
     private final AccountUtil accountUtil;
     private final ChallengeUtil challengeUtil;
@@ -105,5 +108,67 @@ public class ChallengeService
         inviteUserList.forEach(inviteUser -> {
             challengeUtil.joinChallenge(challenge, inviteUser, ChallengeRole.USER);
         });
+    }
+
+    // 내 챌린지 조회
+    public GetMyChallengeDto getMyChallenges(User user)
+    {
+        // 참여 중인 챌린지 개수
+        int countChallenge = user.getCountParticipateChallenge();
+
+        // 챌린지 개수 상한값
+        int maxChallengeCount = accountUtil.getMaxChallengeCount(user);
+
+        // 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
+        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByUserOrderByCreatedAtDesc(user);
+
+        // 챌린지 참여 정보 리스트를 dto 리스트로 변경
+        List<GetMyChallengeDto.ChallengeDto> challengeDtoList = participateChallengeList.stream()
+                .map(participateChallenge -> {
+
+                    // 챌린지
+                    Challenge challenge = participateChallenge.getChallenge();
+
+                    // 현재 페이즈
+                    Phase phase = challengeUtil.getLastPhase(challenge);
+
+                    // 현재 페이즈 참여 정보
+                    ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseAndUser(phase, user)
+                            .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
+
+                    // 증거사진 리스트
+                    List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhase(participatePhase);
+
+                    // 증거사진 리스트를 증거사진 URL 리스트로 변경
+                    List<String> evidencePhotoUrlList = evidencePhotoList.stream()
+                            .map(EvidencePhoto::getPhotoUrl)
+                            .toList();
+
+                    return GetMyChallengeDto.ChallengeDto.builder()
+                            .iconUrl(challenge.getIconUrl())
+                            .challengeName(challenge.getName())
+                            .challengeDescription(challenge.getDescription())
+                            .maxParticipantCount(challenge.getMaxParticipantCount())
+                            .goalCount(challenge.getGoalCount())
+                            .unit(challenge.getUnit().name())
+                            .challengeStartDate(challenge.getCreatedAt().toLocalDate())
+                            .countPhase(challenge.getCountPhase())
+                            .currentPhaseStartDate(phase.getStartDate())
+                            .currentPhaseEndDate(phase.getEndDate())
+                            .currentPhaseName(phase.getName())
+                            .completeCount(participatePhase.getCurrentCount())
+                            .isExempt(participatePhase.isExempt())
+                            .comment(participatePhase.getComment())
+                            .countEvidencePhoto(participatePhase.getCountEvidencePhoto())
+                            .evidencePhotoUrls(evidencePhotoUrlList)
+                            .build();
+                })
+                .toList();
+
+        return GetMyChallengeDto.builder()
+                .countChallenge(countChallenge)
+                .maxChallengeCount(maxChallengeCount)
+                .challenges(challengeDtoList)
+                .build();
     }
 }
