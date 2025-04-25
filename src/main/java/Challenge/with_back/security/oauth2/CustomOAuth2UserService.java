@@ -1,5 +1,6 @@
 package Challenge.with_back.security.oauth2;
 
+import Challenge.with_back.common.enums.ProfileImage;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.common.enums.AccountRole;
@@ -66,7 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
                     .email(email)
                     .password("")
                     .nickname(name)
-                    .profileImageUrl(profileImageBucketUrl + "/profile-image_basic.svg")
+                    .profileImageUrl(profileImageBucketUrl + ProfileImage.BASIC.getUrl())
                     .selfIntroduction("")
                     .allowEmailMarketing(true)
                     .premiumExpirationDate(LocalDate.now().minusDays(1))

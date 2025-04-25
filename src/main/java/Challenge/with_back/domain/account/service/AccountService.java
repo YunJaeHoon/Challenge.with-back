@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.account.service;
 
+import Challenge.with_back.common.enums.ProfileImage;
 import Challenge.with_back.domain.account.dto.*;
-import Challenge.with_back.domain.email.kafka.EmailProducer;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
@@ -17,7 +17,6 @@ import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,7 @@ public class AccountService
                 .email(dto.getEmail())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .nickname(dto.getNickname())
-                .profileImageUrl(profileImageBucketUrl + "/profile-image_basic.svg")
+                .profileImageUrl(profileImageBucketUrl + ProfileImage.BASIC.getUrl())
                 .selfIntroduction("")
                 .allowEmailMarketing(dto.isAllowEmailMarketing())
                 .premiumExpirationDate(LocalDate.now().minusDays(1))
@@ -106,7 +105,7 @@ public class AccountService
     {
         // Refresh token 존재 여부 체크
         if(refreshToken == null)
-            throw new CustomException(CustomExceptionCode.REFRESH_TOKEN_NOT_FOUND, refreshToken);
+            throw new CustomException(CustomExceptionCode.REFRESH_TOKEN_NOT_FOUND, null);
 
         // 토큰이 유효한지 체크
         if(!jwtUtil.checkToken(refreshToken))

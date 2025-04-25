@@ -20,6 +20,7 @@ public enum CustomExceptionCode
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 Refresh token입니다."),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 비밀번호입니다."),
     INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 닉네임입니다."),
+    PARTICIPATING_IN_MAX_CHALLENGES(HttpStatus.BAD_REQUEST, "이미 최대 개수의 챌린지에 참여하고 있습니다."),
 
     // 인증번호 관련 예외
     SEND_EMAIL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생하였습니다."),
@@ -32,6 +33,17 @@ public enum CustomExceptionCode
     // 알림 예외
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다."),
     NOTIFICATION_OWNERSHIP_INVALID(HttpStatus.FORBIDDEN, "해당 사용자의 알림이 아닙니다."),
+    
+    // 챌린지 예외
+    CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지가 존재하지 않습니다."),
+    PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈가 존재하지 않습니다."),
+    INVALID_CHALLENGE_ICON(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 아이콘입니다."),
+    INVALID_CHALLENGE_COLOR_THEME(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 테마 색상입니다."),
+    INVALID_CHALLENGE_NAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 챌린지 이름입니다."),
+    INVALID_CHALLENGE_DESCRIPTION_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 챌린지 설명입니다."),
+    INVALID_CHALLENGE_GOAL_COUNT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 목표 개수입니다."),
+    INVALID_CHALLENGE_UNIT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 단위입니다."),
+    FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지가 최대 인원수를 초과하였습니다."),
 
     UNEXPECTED_ERROR(HttpStatus.UNAUTHORIZED, "예기치 못한 에러가 발생하였습니다.");
 

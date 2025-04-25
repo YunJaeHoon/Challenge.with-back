@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"challenge", "number"})
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Phase extends BasicEntity
@@ -22,7 +27,7 @@ public class Phase extends BasicEntity
     // 챌린지
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge")
+    @JoinColumn(name = "challenge", nullable = false)
     private Challenge challenge;
 
     // 이름
@@ -42,12 +47,17 @@ public class Phase extends BasicEntity
     @NotNull
     private LocalDate startDate;
 
+    // 종료 날짜
+    @NotNull
+    private LocalDate endDate;
+
     @Builder
-    public Phase(Challenge challenge, String name, String description, int number, LocalDate startDate) {
+    public Phase(Challenge challenge, String name, String description, int number, LocalDate startDate, LocalDate endDate) {
         this.challenge = challenge;
         this.name = name;
         this.description = description;
         this.number = number;
         this.startDate = startDate;
+        this.endDate = endDate;
     }
 }

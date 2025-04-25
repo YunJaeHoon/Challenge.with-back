@@ -75,9 +75,13 @@ public class User extends BasicEntity
     @NotNull
     @Convert(converter = AccountRoleConverter.class)
     private AccountRole accountRole;
+    
+    // 참여 중인 챌린지 개수
+    @NotNull
+    private int countParticipateChallenge;
 
     @Builder
-    public User(LoginMethod loginMethod, String email, String password, String nickname, String profileImageUrl, String selfIntroduction, boolean allowEmailMarketing, LocalDate premiumExpirationDate, int countUnreadNotification, String paymentInformationEmail, AccountRole accountRole) {
+    public User(LoginMethod loginMethod, String email, String password, String nickname, String profileImageUrl, String selfIntroduction, boolean allowEmailMarketing, LocalDate premiumExpirationDate, int countUnreadNotification, String paymentInformationEmail, AccountRole accountRole, int countParticipateChallenge) {
         this.loginMethod = loginMethod;
         this.email = email;
         this.password = password;
@@ -89,6 +93,7 @@ public class User extends BasicEntity
         this.countUnreadNotification = countUnreadNotification;
         this.paymentInformationEmail = paymentInformationEmail;
         this.accountRole = accountRole;
+        this.countParticipateChallenge = countParticipateChallenge;
     }
 
     // 비밀번호 초기화
@@ -96,13 +101,23 @@ public class User extends BasicEntity
         this.password = newPassword;
     }
 
-    // 읽지 않은 알림 개수 1 증가
+    // 읽지 않은 알림 개수 1개 증가
     public void increaseCountUnreadNotification() {
         this.countUnreadNotification++;
     }
     
-    // 읽지 않은 알림 개수 1 감소
+    // 읽지 않은 알림 개수 1개 감소
     public void decreaseCountUnreadNotification() {
         this.countUnreadNotification--;
+    }
+
+    // 참여 중인 챌린지 개수 1개 증가
+    public void increaseCountParticipateChallenge() {
+        this.countParticipateChallenge++;
+    }
+
+    // 참여 중인 챌린지 개수 1개 감소
+    public void decreaseCountParticipateChallenge() {
+        this.countParticipateChallenge--;
     }
 }

@@ -37,7 +37,7 @@ public class ParticipatePhase extends BasicEntity
     @NotNull
     private boolean isExempt;
 
-    // 현재 개수
+    // 한마디
     @Column(columnDefinition = "TEXT")
     private String comment;
 
