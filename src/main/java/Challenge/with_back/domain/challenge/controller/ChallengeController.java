@@ -42,7 +42,7 @@ public class ChallengeController
 	}
 
 	// 내 챌린지 조회
-	@GetMapping("/challenge")
+	@GetMapping("/challenge/me")
 	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
 	public ResponseEntity<SuccessResponseDto> getMyChallenges(@AuthenticationPrincipal CustomUserDetails userDetails)
 	{
