@@ -6,10 +6,7 @@ import Challenge.with_back.common.enums.NotificationType;
 import Challenge.with_back.common.enums.NotificationTypeConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -64,5 +61,6 @@ public class Notification extends BasicEntity
     // 알림을 읽음으로 표시
     public void markAsRead() {
         this.isRead = true;
+        this.viewedAt = LocalDateTime.now();
     }
 }

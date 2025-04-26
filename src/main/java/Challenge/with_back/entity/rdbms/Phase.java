@@ -27,7 +27,7 @@ public class Phase extends BasicEntity
     // 챌린지
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge", nullable = false)
+    @JoinColumn(name = "challenge")
     private Challenge challenge;
 
     // 이름
