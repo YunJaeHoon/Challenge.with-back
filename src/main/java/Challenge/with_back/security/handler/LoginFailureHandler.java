@@ -1,6 +1,7 @@
 package Challenge.with_back.security.handler;
 
-import Challenge.with_back.common.response.exception.ExceptionResponseDto;
+import Challenge.with_back.response.exception.CustomExceptionCode;
+import Challenge.with_back.response.exception.ExceptionResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,14 +27,14 @@ public class LoginFailureHandler implements AuthenticationFailureHandler
         ExceptionResponseDto responseDto = ExceptionResponseDto.builder().build();
 
         if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {
-            responseDto.setCode("WRONG_PASSWORD");
-            responseDto.setMessage("이메일 또는 비밀번호가 틀렸습니다.");
+            responseDto.setCode(CustomExceptionCode.WRONG_PASSWORD.name());
+            responseDto.setMessage(CustomExceptionCode.WRONG_PASSWORD.getMessage());
         } else if (exception instanceof DisabledException) {
-            responseDto.setCode("DISABLED_ACCOUNT");
-            responseDto.setMessage("비활성화 된 계정입니다.");
+            responseDto.setCode(CustomExceptionCode.DISABLED_ACCOUNT.name());
+            responseDto.setMessage(CustomExceptionCode.DISABLED_ACCOUNT.getMessage());
         } else {
-            responseDto.setCode("UNEXPECTED_ERROR");
-            responseDto.setMessage("예기치 못한 에러가 발생하였습니다.");
+            responseDto.setCode(CustomExceptionCode.UNEXPECTED_ERROR.name());
+            responseDto.setMessage(CustomExceptionCode.UNEXPECTED_ERROR.getMessage());
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

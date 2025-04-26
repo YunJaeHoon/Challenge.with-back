@@ -1,4 +1,4 @@
-package Challenge.with_back.common.response.success;
+package Challenge.with_back.response.success;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

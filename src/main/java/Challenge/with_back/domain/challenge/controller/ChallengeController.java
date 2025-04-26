@@ -1,11 +1,11 @@
 package Challenge.with_back.domain.challenge.controller;
 
-import Challenge.with_back.common.response.success.CustomSuccessCode;
-import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.aop.annotation.PremiumOnly;
+import Challenge.with_back.response.success.CustomSuccessCode;
+import Challenge.with_back.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.service.ChallengeService;
-import Challenge.with_back.entity.rdbms.Challenge;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.management.Notification;
 
 @RestController
 @RequestMapping("/api")

@@ -1,6 +1,7 @@
 package Challenge.with_back.security.exception;
 
-import Challenge.with_back.common.response.exception.ExceptionResponseDto;
+import Challenge.with_back.response.exception.CustomExceptionCode;
+import Challenge.with_back.response.exception.ExceptionResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,12 +23,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler
         ObjectMapper objectMapper = new ObjectMapper();
 
         ExceptionResponseDto responseDto = ExceptionResponseDto.builder()
-                .code("LOW_AUTHORITY")
-                .message("권한이 부족합니다.")
+                .code(CustomExceptionCode.LOW_AUTHORITY.name())
+                .message(CustomExceptionCode.LOW_AUTHORITY.getMessage())
                 .data(null)
                 .build();
 
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(CustomExceptionCode.LOW_AUTHORITY.getHttpStatus().value());
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));
         response.getWriter().flush();

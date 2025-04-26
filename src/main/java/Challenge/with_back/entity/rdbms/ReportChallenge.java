@@ -1,7 +1,7 @@
 package Challenge.with_back.entity.rdbms;
 
-import Challenge.with_back.common.enums.ChallengeReportCategory;
-import Challenge.with_back.common.enums.ChallengeReportCategoryConverter;
+import Challenge.with_back.enums.ChallengeReportCategory;
+import Challenge.with_back.enums.ChallengeReportCategoryConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

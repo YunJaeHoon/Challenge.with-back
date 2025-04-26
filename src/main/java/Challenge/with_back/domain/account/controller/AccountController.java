@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.account.controller;
 
-import Challenge.with_back.common.response.success.CustomSuccessCode;
-import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.response.success.CustomSuccessCode;
+import Challenge.with_back.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.account.service.AccountService;
 import Challenge.with_back.security.dto.AccessTokenDto;

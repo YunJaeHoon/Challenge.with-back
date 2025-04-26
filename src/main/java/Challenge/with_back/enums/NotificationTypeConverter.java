@@ -1,4 +1,4 @@
-package Challenge.with_back.common.enums;
+package Challenge.with_back.enums;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

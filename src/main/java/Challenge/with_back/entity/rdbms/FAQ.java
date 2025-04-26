@@ -1,7 +1,7 @@
 package Challenge.with_back.entity.rdbms;
 
-import Challenge.with_back.common.enums.InquiryCategory;
-import Challenge.with_back.common.enums.InquiryCategoryConverter;
+import Challenge.with_back.enums.InquiryCategory;
+import Challenge.with_back.enums.InquiryCategoryConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

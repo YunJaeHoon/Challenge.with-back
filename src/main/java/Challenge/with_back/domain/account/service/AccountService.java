@@ -1,18 +1,18 @@
 package Challenge.with_back.domain.account.service;
 
-import Challenge.with_back.common.enums.ProfileImage;
+import Challenge.with_back.enums.ProfileImage;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.response.exception.CustomExceptionCode;
 import Challenge.with_back.repository.redis.CheckVerificationCodeRepository;
 import Challenge.with_back.security.dto.AccessTokenDto;
 import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.common.enums.AccountRole;
-import Challenge.with_back.common.enums.LoginMethod;
-import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.enums.AccountRole;
+import Challenge.with_back.enums.LoginMethod;
+import Challenge.with_back.response.exception.CustomException;
 import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.security.JwtUtil;
 import lombok.RequiredArgsConstructor;

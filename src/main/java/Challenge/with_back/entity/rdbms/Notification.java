@@ -1,9 +1,7 @@
 package Challenge.with_back.entity.rdbms;
 
-import Challenge.with_back.common.enums.AccountRole;
-import Challenge.with_back.common.enums.AccountRoleConverter;
-import Challenge.with_back.common.enums.NotificationType;
-import Challenge.with_back.common.enums.NotificationTypeConverter;
+import Challenge.with_back.enums.NotificationType;
+import Challenge.with_back.enums.NotificationTypeConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

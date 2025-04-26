@@ -1,4 +1,4 @@
-package Challenge.with_back.common.response.exception;
+package Challenge.with_back.response.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

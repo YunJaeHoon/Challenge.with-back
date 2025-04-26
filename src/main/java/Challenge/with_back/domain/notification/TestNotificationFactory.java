@@ -1,11 +1,10 @@
 package Challenge.with_back.domain.notification;
 
-import Challenge.with_back.common.enums.NotificationType;
+import Challenge.with_back.enums.NotificationType;
 import Challenge.with_back.entity.rdbms.Notification;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.rdbms.NotificationRepository;
 import Challenge.with_back.repository.rdbms.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 @Component

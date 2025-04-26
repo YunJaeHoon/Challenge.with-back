@@ -1,9 +1,9 @@
 package Challenge.with_back.domain.challenge.service;
 
-import Challenge.with_back.common.enums.ChallengeRole;
-import Challenge.with_back.common.enums.ChallengeUnit;
-import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.enums.ChallengeRole;
+import Challenge.with_back.enums.ChallengeUnit;
+import Challenge.with_back.response.exception.CustomException;
+import Challenge.with_back.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

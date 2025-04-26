@@ -1,6 +1,7 @@
 package Challenge.with_back.security.exception;
 
-import Challenge.with_back.common.response.exception.ExceptionResponseDto;
+import Challenge.with_back.response.exception.CustomExceptionCode;
+import Challenge.with_back.response.exception.ExceptionResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,12 +23,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint
         ObjectMapper objectMapper = new ObjectMapper();
 
         ExceptionResponseDto responseDto = ExceptionResponseDto.builder()
-                .code("NOT_LOGIN")
-                .message("로그인이 필요합니다.")
+                .code(CustomExceptionCode.NOT_LOGIN.name())
+                .message(CustomExceptionCode.NOT_LOGIN.getMessage())
                 .data(null)
                 .build();
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(CustomExceptionCode.NOT_LOGIN.getHttpStatus().value());
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));
         response.getWriter().flush();

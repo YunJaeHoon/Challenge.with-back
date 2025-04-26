@@ -1,4 +1,4 @@
-package Challenge.with_back.common.response.exception;
+package Challenge.with_back.response.exception;
 
 import lombok.Builder;
 import lombok.Getter;

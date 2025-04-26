@@ -1,4 +1,4 @@
-package Challenge.with_back.common.enums;
+package Challenge.with_back.enums;
 
 
 import lombok.AllArgsConstructor;

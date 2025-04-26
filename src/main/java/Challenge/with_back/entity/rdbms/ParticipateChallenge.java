@@ -1,7 +1,7 @@
 package Challenge.with_back.entity.rdbms;
 
-import Challenge.with_back.common.enums.ChallengeRole;
-import Challenge.with_back.common.enums.ChallengeRoleConverter;
+import Challenge.with_back.enums.ChallengeRole;
+import Challenge.with_back.enums.ChallengeRoleConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

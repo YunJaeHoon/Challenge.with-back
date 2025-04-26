@@ -1,7 +1,5 @@
-package Challenge.with_back.common.enums;
+package Challenge.with_back.enums;
 
-import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;

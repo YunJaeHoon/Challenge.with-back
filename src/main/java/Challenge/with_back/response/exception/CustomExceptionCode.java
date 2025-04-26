@@ -1,4 +1,4 @@
-package Challenge.with_back.common.response.exception;
+package Challenge.with_back.response.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +8,13 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum CustomExceptionCode
 {
+    // 로그인 관련 예외
+    NOT_LOGIN(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
+    LOW_AUTHORITY(HttpStatus.UNAUTHORIZED, "권한이 부족합니다."),
+    WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 틀렸습니다."),
+    DISABLED_ACCOUNT(HttpStatus.UNAUTHORIZED, "비활성화 된 계정입니다."),
+    INVALID_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "인증 정보가 올바르지 않습니다."),
+
     // OAuth 2.0 예외
     PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "제공자를 찾을 수 없습니다."),
     INVALID_PROVIDER(HttpStatus.UNAUTHORIZED, "유효하지 않은 제공자입니다."),
@@ -21,6 +28,7 @@ public enum CustomExceptionCode
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 비밀번호입니다."),
     INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 닉네임입니다."),
     PARTICIPATING_IN_MAX_CHALLENGES(HttpStatus.BAD_REQUEST, "이미 최대 개수의 챌린지에 참여하고 있습니다."),
+    IS_NOT_PREMIUM(HttpStatus.UNAUTHORIZED, "프리미엄 요금제를 구매해야 합니다."),
 
     // 인증번호 관련 예외
     SEND_EMAIL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생하였습니다."),
@@ -47,7 +55,7 @@ public enum CustomExceptionCode
     INVALID_CHALLENGE_UNIT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 단위입니다."),
     FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지가 최대 인원수를 초과하였습니다."),
 
-    UNEXPECTED_ERROR(HttpStatus.UNAUTHORIZED, "예기치 못한 에러가 발생하였습니다.");
+    UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 못한 에러가 발생하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

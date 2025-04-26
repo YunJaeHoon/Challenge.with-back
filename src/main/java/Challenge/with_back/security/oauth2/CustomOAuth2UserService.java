@@ -1,11 +1,11 @@
 package Challenge.with_back.security.oauth2;
 
-import Challenge.with_back.common.enums.ProfileImage;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.enums.ProfileImage;
+import Challenge.with_back.response.exception.CustomExceptionCode;
 import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.common.enums.AccountRole;
-import Challenge.with_back.common.enums.LoginMethod;
-import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.enums.AccountRole;
+import Challenge.with_back.enums.LoginMethod;
+import Challenge.with_back.response.exception.CustomException;
 import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
