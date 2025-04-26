@@ -22,38 +22,38 @@ import javax.management.Notification;
 @RequiredArgsConstructor
 public class ChallengeController
 {
-	private final ChallengeService challengeService;
-	
-	// 챌린지 생성
-	@PostMapping("/challenge")
-	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-	public ResponseEntity<SuccessResponseDto> createChallenge(@RequestBody CreateChallengeDto dto,
-															  @AuthenticationPrincipal CustomUserDetails userDetails)
-	{
-		User user = userDetails.getUser();
-		challengeService.createChallenge(dto, user);
-		
-		return ResponseEntity.status(HttpStatus.CREATED)
-					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
-									 .message("챌린지 생성을 성공적으로 완료하였습니다.")
-									 .data(null)
-									 .build());
-	}
+    private final ChallengeService challengeService;
 
-	// 내 챌린지 조회
-	@GetMapping("/challenge/me")
-	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-	public ResponseEntity<SuccessResponseDto> getMyChallenges(@AuthenticationPrincipal CustomUserDetails userDetails)
-	{
-		User user = userDetails.getUser();
-		GetMyChallengeDto data = challengeService.getMyChallenges(user);
+    // 챌린지 생성
+    @PostMapping("/challenge")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> createChallenge(@RequestBody CreateChallengeDto dto,
+                                                              @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        challengeService.createChallenge(dto, user);
 
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(SuccessResponseDto.builder()
-						.code(CustomSuccessCode.SUCCESS.name())
-						.message("내 챌린지 조회를 성공적으로 완료하였습니다.")
-						.data(data)
-						.build());
-	}
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("챌린지 생성을 성공적으로 완료하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 내 챌린지 조회
+    @GetMapping("/challenge/me")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> getMyChallenges(@AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        GetMyChallengeDto data = challengeService.getMyChallenges(user);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("내 챌린지 조회를 성공적으로 완료하였습니다.")
+                        .data(data)
+                        .build());
+    }
 }

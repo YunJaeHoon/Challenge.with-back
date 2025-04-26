@@ -18,6 +18,7 @@ public class GetMyChallengeDto
     @Builder
     public static class ChallengeDto
     {
+        private Long challengeId;                   // 챌린지 ID
         private String iconUrl;                     // 아이콘 URL
         private String challengeName;               // 챌린지 이름
         private String challengeDescription;        // 챌린지 설명
@@ -26,6 +27,7 @@ public class GetMyChallengeDto
         private String unit;                        // 챌린지 단위
         private LocalDate challengeStartDate;       // 챌린지 시작 날짜
         private int countPhase;                     // 페이즈 개수
+        private Long participateCurrentPhaseId;     // 현재 페이즈 참여 정보 ID
         private LocalDate currentPhaseStartDate;    // 현재 페이즈 시작 날짜
         private LocalDate currentPhaseEndDate;      // 현재 페이즈 종료 날짜
         private String currentPhaseName;            // 현재 페이즈 이름

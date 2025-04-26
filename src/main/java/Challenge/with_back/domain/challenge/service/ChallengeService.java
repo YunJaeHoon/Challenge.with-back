@@ -145,6 +145,7 @@ public class ChallengeService
                             .toList();
 
                     return GetMyChallengeDto.ChallengeDto.builder()
+                            .challengeId(challenge.getId())
                             .iconUrl(challenge.getIconUrl())
                             .challengeName(challenge.getName())
                             .challengeDescription(challenge.getDescription())
@@ -153,6 +154,7 @@ public class ChallengeService
                             .unit(challenge.getUnit().name())
                             .challengeStartDate(challenge.getCreatedAt().toLocalDate())
                             .countPhase(challenge.getCountPhase())
+                            .participateCurrentPhaseId(participatePhase.getId())
                             .currentPhaseStartDate(phase.getStartDate())
                             .currentPhaseEndDate(phase.getEndDate())
                             .currentPhaseName(phase.getName())
