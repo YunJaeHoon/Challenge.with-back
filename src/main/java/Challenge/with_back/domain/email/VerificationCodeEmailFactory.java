@@ -1,12 +1,8 @@
 package Challenge.with_back.domain.email;
 
-import Challenge.with_back.domain.email.kafka.EmailProducer;
 import Challenge.with_back.entity.redis.VerificationCode;
-import Challenge.with_back.repository.rdbms.NotificationRepository;
-import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.repository.redis.VerificationCodeRepository;
 import Challenge.with_back.domain.account.util.AccountUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +17,8 @@ public class VerificationCodeEmailFactory extends EmailFactory
     private final VerificationCodeRepository verificationCodeRepository;
     
     // 생성자
-    public VerificationCodeEmailFactory(EmailProducer emailProducer, AccountUtil accountUtil, VerificationCodeRepository verificationCodeRepository) {
-        super(emailProducer);
+    public VerificationCodeEmailFactory(JavaMailSender javaMailSender, AccountUtil accountUtil, VerificationCodeRepository verificationCodeRepository) {
+        super(javaMailSender);
         this.accountUtil = accountUtil;
         this.verificationCodeRepository = verificationCodeRepository;
     }

@@ -1,11 +1,9 @@
 package Challenge.with_back.domain.email;
 
-import Challenge.with_back.domain.email.kafka.EmailProducer;
 import Challenge.with_back.entity.rdbms.User;
 import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.domain.account.util.AccountUtil;
-import Challenge.with_back.repository.redis.VerificationCodeRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +20,8 @@ public class ResetPasswordEmailFactory extends EmailFactory
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     
     // 생성자
-    public ResetPasswordEmailFactory(EmailProducer emailProducer, AccountUtil accountUtil, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(emailProducer);
+    public ResetPasswordEmailFactory(JavaMailSender javaMailSender, AccountUtil accountUtil, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        super(javaMailSender);
         this.accountUtil = accountUtil;
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
