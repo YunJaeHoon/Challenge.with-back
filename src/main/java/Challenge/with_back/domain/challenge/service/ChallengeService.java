@@ -291,7 +291,7 @@ public class ChallengeService
         // 챌린지
         Challenge challenge = participatePhase.getPhase().getChallenge();
 
-        // 이미 목표 개수를 달성하였는지 확인
+        // 이미 목표 개수를 달성한 상태라면 예외 처리
         if(challengeUtil.currentCountIsMax(participatePhase, challenge))
             throw new CustomException(CustomExceptionCode.ALREADY_MAX_CURRENT_COUNT, challenge.getGoalCount());
 
@@ -309,5 +309,40 @@ public class ChallengeService
             participateChallenge.increaseCountSuccess();
             participateChallengeRepository.save(participateChallenge);
         }
+    }
+
+    // 페이즈 참여 정보 현재 개수 1개 감소
+    @Async("participatePhaseThreadPool")
+    @Transactional
+    public void decreaseParticipatePhaseCurrentCount(User user, Long participatePhaseId)
+    {
+        // 페이즈 참여 정보
+        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
+
+        // 페이즈 참여 정보가 해당 사용자 것인지 확인
+        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+
+        // 이미 현재 개수가 0이라면 예외 처리
+        if(challengeUtil.currentCountIsZero(participatePhase))
+            throw new CustomException(CustomExceptionCode.ALREADY_ZERO_CURRENT_COUNT, participatePhase.getId());
+
+        // 챌린지
+        Challenge challenge = participatePhase.getPhase().getChallenge();
+
+        // 이미 목표 개수를 달성한 상태라면 챌린지 참여 정보에서 성공 개수 1개 감소
+        if(challengeUtil.currentCountIsMax(participatePhase, challenge))
+        {
+            // 챌린지 참여 정보
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
+
+            participateChallenge.decreaseCountSuccess();
+            participateChallengeRepository.save(participateChallenge);
+        }
+
+        // 현재 개수 1 감소
+        participatePhase.decreaseCurrentCount();
+        participatePhaseRepository.save(participatePhase);
     }
 }
