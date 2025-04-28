@@ -1,5 +1,6 @@
 package Challenge.with_back.domain.challenge.service;
 
+import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.enums.ChallengeRole;
 import Challenge.with_back.enums.ChallengeUnit;
 import Challenge.with_back.response.exception.CustomException;
@@ -10,14 +11,17 @@ import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import Challenge.with_back.entity.rdbms.*;
 import Challenge.with_back.repository.rdbms.*;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,8 @@ public class ChallengeService
 
     private final AccountUtil accountUtil;
     private final ChallengeUtil challengeUtil;
+
+    private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
     // 챌린지 생성
     @Transactional
@@ -171,5 +177,44 @@ public class ChallengeService
                 .maxChallengeCount(maxChallengeCount)
                 .challenges(challengeDtoList)
                 .build();
+    }
+
+    // 증거사진 등록
+    @Transactional
+    public void uploadEvidencePhotos(User user, Long participatePhaseId, List<MultipartFile> images)
+    {
+        // 페이즈 참여 정보
+        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
+
+        // 페이즈 참여 정보가 해당 사용자 것인지 확인
+        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+
+        // 증거사진 최대 개수를 초과한다면 예외처리
+        if(participatePhase.getCountEvidencePhoto() + images.size() > 5)
+            throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, participatePhase.getCountEvidencePhoto() + images.size());
+
+        images.forEach(image -> {
+            // 증거사진 엔티티 생성
+            EvidencePhoto evidencePhoto = EvidencePhoto.builder()
+                    .participatePhase(participatePhase)
+                    .build();
+
+            // UUID 생성
+            String uuid = UUID.randomUUID().toString();
+
+            // S3 업로드
+            String photoUrl = s3EvidencePhotoManager.upload(image, uuid);
+
+            // 증거사진 URL 등록
+            evidencePhoto.setPhotoUrl(photoUrl);
+
+            // 증거사진 엔티티 저장
+            evidencePhotoRepository.save(evidencePhoto);
+        });
+
+        // 증거사진 개수 갱신
+        participatePhase.increaseCountEvidencePhoto(images.size());
+        participatePhaseRepository.save(participatePhase);
     }
 }

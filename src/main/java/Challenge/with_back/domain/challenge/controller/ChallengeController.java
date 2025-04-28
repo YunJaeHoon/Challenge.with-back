@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -52,6 +55,25 @@ public class ChallengeController
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("내 챌린지 조회를 성공적으로 완료하였습니다.")
                         .data(data)
+                        .build());
+    }
+
+    // 증거사진 등록
+    @PostMapping("/participate-phase/{participatePhaseId}/evidence-photo")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @PremiumOnly
+    public ResponseEntity<SuccessResponseDto> uploadEvidencePhotos(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                   @PathVariable Long participatePhaseId,
+                                                                   @RequestPart(value = "images") List<MultipartFile> images)
+    {
+        User user = userDetails.getUser();
+        challengeService.uploadEvidencePhotos(user, participatePhaseId, images);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("증거사진을 성공적으로 등록하였습니다.")
+                        .data(null)
                         .build());
     }
 }

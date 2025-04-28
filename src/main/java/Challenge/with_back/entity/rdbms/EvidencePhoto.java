@@ -2,10 +2,7 @@ package Challenge.with_back.entity.rdbms;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(
@@ -28,9 +25,10 @@ public class EvidencePhoto extends BasicEntity
     @JoinColumn(name = "participate_phase")
     private ParticipatePhase participatePhase;
 
-    // 증거 사진 URL
+    // 증거사진 URL
     @NotNull
     @Column(length = 255)
+    @Setter
     private String photoUrl;
 
     @Builder
@@ -38,4 +36,5 @@ public class EvidencePhoto extends BasicEntity
         this.participatePhase = participatePhase;
         this.photoUrl = photoUrl;
     }
+
 }

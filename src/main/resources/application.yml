@@ -84,7 +84,18 @@ spring:
                     starttls:
                         enable: true
 
-    ## Kafka
-    kafka:
-        consumer:
-            group-id: my-consumer-group
+    ## AWS S3
+    cloud:
+        aws:
+            credentials:
+                access-key: ${AWS_ACCESS_KEY}
+                secret-key: ${AWS_SECRET_KEY}
+            region:
+                static: ${EVIDENCE_PHOTO_BUCKET_REGION}
+    servlet:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 10MB
+
+
+

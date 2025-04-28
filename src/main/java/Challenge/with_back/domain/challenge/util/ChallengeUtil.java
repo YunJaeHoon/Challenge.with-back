@@ -117,7 +117,7 @@ public class ChallengeUtil
 
 		// 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
 		if(accountUtil.isParticipatingInMaxChallenges(user))
-			throw new CustomException(CustomExceptionCode.PARTICIPATING_IN_MAX_CHALLENGES, null);
+			throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
 
 		// 이미 사용자가 해당 챌린지에 가입했는지 확인
 		if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent())
@@ -161,5 +161,37 @@ public class ChallengeUtil
 		// 사용자 참여 챌린지 개수 1개 증가
 		user.increaseCountParticipateChallenge();
 		userRepository.save(user);
+	}
+
+	// 챌린지 참여 정보가 해당 사용자 것인지 확인
+	public void checkParticipateChallengeOwnership(User user, Long participateChallengeId)
+	{
+		ParticipateChallenge participateChallenge = participateChallengeRepository.findById(participateChallengeId)
+				.orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
+
+		if(!participateChallenge.getUser().equals(user))
+			throw new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_OWNED, null);
+	}
+
+	public void checkParticipateChallengeOwnership(User user, ParticipateChallenge participateChallenge)
+	{
+		if(!participateChallenge.getUser().getId().equals(user.getId()))
+			throw new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_OWNED, null);
+	}
+
+	// 페이즈 참여 정보가 해당 사용자 것인지 확인
+	public void checkParticipatePhaseOwnership(User user, Long participatePhaseId)
+	{
+		ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
+				.orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
+
+		if(!participatePhase.getUser().equals(user))
+			throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
+	}
+
+	public void checkParticipatePhaseOwnership(User user, ParticipatePhase participatePhase)
+	{
+		if(!participatePhase.getUser().getId().equals(user.getId()))
+			throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
 	}
 }

@@ -27,7 +27,7 @@ public enum CustomExceptionCode
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 Refresh token입니다."),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 비밀번호입니다."),
     INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 닉네임입니다."),
-    PARTICIPATING_IN_MAX_CHALLENGES(HttpStatus.BAD_REQUEST, "이미 최대 개수의 챌린지에 참여하고 있습니다."),
+    TOO_MANY_PARTICIPATE_CHALLENGE(HttpStatus.BAD_REQUEST, "이미 최대 개수의 챌린지에 참여하고 있습니다."),
     IS_NOT_PREMIUM(HttpStatus.UNAUTHORIZED, "프리미엄 요금제를 구매해야 합니다."),
 
     // 인증번호 관련 예외
@@ -43,8 +43,11 @@ public enum CustomExceptionCode
     NOTIFICATION_OWNERSHIP_INVALID(HttpStatus.FORBIDDEN, "해당 사용자의 알림이 아닙니다."),
     
     // 챌린지 예외
+    PARTICIPATE_CHALLENGE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 챌린지 참여 정보가 아닙니다."),
+    PARTICIPATE_PHASE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 페이즈 참여 정보가 아닙니다."),
     CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지가 존재하지 않습니다."),
     PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈가 존재하지 않습니다."),
+    PARTICIPATE_CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 정보가 존재하지 않습니다."),
     PARTICIPATE_PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈 참여 정보가 존재하지 않습니다."),
     ALREADY_PARTICIPATING_CHALLENGE(HttpStatus.CONFLICT, "이미 참여 중인 챌린지입니다."),
     INVALID_CHALLENGE_ICON(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 아이콘입니다."),
@@ -54,6 +57,16 @@ public enum CustomExceptionCode
     INVALID_CHALLENGE_GOAL_COUNT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 목표 개수입니다."),
     INVALID_CHALLENGE_UNIT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 단위입니다."),
     FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지가 최대 인원수를 초과하였습니다."),
+
+    // S3 예외
+    TOO_MANY_EVIDENCE_PHOTO(HttpStatus.BAD_REQUEST, "증거사진 최대 개수를 초과합니다."),
+    FILE_IS_EMPTY(HttpStatus.NOT_FOUND, "파일이 비어있습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "이미지 파일이 아닙니다."),
+    FILE_NAME_NOT_FOUND(HttpStatus.NOT_FOUND, "파일 이름이 존재하지 않습니다."),
+    FILE_EXTENSION_NOT_FOUND(HttpStatus.NOT_FOUND, "파일 확장자가 존재하지 않습니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."),
+    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 업로드 중 오류가 발생하였습니다."),
 
     UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 못한 에러가 발생하였습니다.");
 
