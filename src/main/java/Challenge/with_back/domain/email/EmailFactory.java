@@ -17,8 +17,7 @@ public abstract class EmailFactory
     private final JavaMailSender javaMailSender;
     
     // 이메일 전송
-    @Transactional
-    @Async
+    @Async("emailThreadPool")
     public void sendEmail(String to)
     {
         // 이메일 생성
@@ -39,6 +38,6 @@ public abstract class EmailFactory
         }
     }
     
-    // 이메일  생성
+    // 이메일 생성
     abstract Email createEmail(String to);
 }
