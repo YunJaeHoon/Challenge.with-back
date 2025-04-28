@@ -182,32 +182,6 @@ public class ChallengeUtil
 		userRepository.save(user);
 	}
 
-	// 챌린지 참여 정보가 해당 사용자 것인지 확인
-	public void checkParticipateChallengeOwnership(User user, Long participateChallengeId)
-	{
-		ParticipateChallenge participateChallenge = participateChallengeRepository.findById(participateChallengeId)
-				.orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
-
-		if(!participateChallenge.getUser().equals(user))
-			throw new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_OWNED, null);
-	}
-
-	public void checkParticipateChallengeOwnership(User user, ParticipateChallenge participateChallenge)
-	{
-		if(!participateChallenge.getUser().getId().equals(user.getId()))
-			throw new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_OWNED, null);
-	}
-
-	// 페이즈 참여 정보가 해당 사용자 것인지 확인
-	public void checkParticipatePhaseOwnership(User user, Long participatePhaseId)
-	{
-		ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
-				.orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
-
-		if(!participatePhase.getUser().equals(user))
-			throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
-	}
-
 	public void checkParticipatePhaseOwnership(User user, ParticipatePhase participatePhase)
 	{
 		if(!participatePhase.getUser().getId().equals(user.getId()))

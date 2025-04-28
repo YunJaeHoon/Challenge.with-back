@@ -9,7 +9,9 @@ import Challenge.with_back.response.exception.CustomException;
 import Challenge.with_back.repository.rdbms.UserRepository;
 import Challenge.with_back.repository.redis.CheckVerificationCodeRepository;
 import Challenge.with_back.repository.redis.VerificationCodeRepository;
+import Challenge.with_back.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +26,22 @@ public class AccountUtil
 	private final UserRepository userRepository;
 	private final VerificationCodeRepository verificationCodeRepository;
 	private final CheckVerificationCodeRepository checkVerificationCodeRepository;
-	
+
+	// Authentication 데이터에서 User 엔티티 추출
+	public User getUserFromAuthentication(Authentication authentication)
+	{
+		if (authentication == null || !authentication.isAuthenticated())
+			throw new CustomException(CustomExceptionCode.NOT_LOGIN, null);
+
+		Object principal = authentication.getPrincipal();
+
+		if (!(principal instanceof CustomUserDetails userDetails))
+			throw new CustomException(CustomExceptionCode.INVALID_AUTHENTICATION, null);
+
+		// 사용자 객체 반환
+		return userDetails.getUser();
+	}
+
 	// 비밀번호 형식 체크
 	public void checkPasswordFormat(String password)
 	{
