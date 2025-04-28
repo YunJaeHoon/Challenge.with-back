@@ -68,4 +68,9 @@ public class ParticipatePhase extends BasicEntity
     public void increaseCountEvidencePhoto(int value) {
         this.countEvidencePhoto += value;
     }
+
+    // 증거 사진 개수 1개 감소
+    public void decreaseCountEvidencePhoto() {
+        this.countEvidencePhoto--;
+    }
 }

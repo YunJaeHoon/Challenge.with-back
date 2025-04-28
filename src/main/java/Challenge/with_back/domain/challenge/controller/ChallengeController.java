@@ -76,4 +76,22 @@ public class ChallengeController
                         .data(null)
                         .build());
     }
+
+    // 증거사진 삭제
+    @DeleteMapping("/evidence-photo/{evidencePhotoId}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @PremiumOnly
+    public ResponseEntity<SuccessResponseDto> deleteEvidencePhoto(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                   @PathVariable Long evidencePhotoId)
+    {
+        User user = userDetails.getUser();
+        challengeService.deleteEvidencePhoto(user, evidencePhotoId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("증거사진을 성공적으로 삭제하였습니다.")
+                        .data(null)
+                        .build());
+    }
 }

@@ -1,5 +1,6 @@
 package Challenge.with_back.domain.evidence_photo;
 
+import Challenge.with_back.entity.rdbms.EvidencePhoto;
 import Challenge.with_back.response.exception.CustomException;
 import Challenge.with_back.response.exception.CustomExceptionCode;
 import io.awspring.cloud.s3.S3Resource;
@@ -25,7 +26,7 @@ public class S3EvidencePhotoManager
     private String bucketName;
 
     // S3 이미지 업로드
-    public String upload(MultipartFile file, String fileName)
+    public S3EvidencePhoto upload(MultipartFile file, String filename)
     {
         // 파일이 비어있는지 확인
         if(file.isEmpty())
@@ -44,11 +45,24 @@ public class S3EvidencePhotoManager
 
         // 업로드
         try(InputStream inputStream = file.getInputStream()) {
-            S3Resource s3Resource = s3Template.upload(bucketName, fileName + "." + extension, inputStream);
+            S3Resource s3Resource = s3Template.upload(bucketName, filename + "." + extension, inputStream);
 
-            return s3Resource.getURL().toString();
+            return S3EvidencePhoto.builder()
+                    .photoUrl(s3Resource.getURL().toString())
+                    .filename(s3Resource.getFilename())
+                    .build();
         } catch (Exception e) {
             throw new CustomException(CustomExceptionCode.S3_UPLOAD_ERROR, e.getMessage());
+        }
+    }
+
+    // S3 이미지 삭제
+    public void delete(String filename)
+    {
+        try {
+            s3Template.deleteObject(bucketName, filename);
+        } catch (Exception e) {
+            throw new CustomException(CustomExceptionCode.S3_DELETE_ERROR, e.getMessage());
         }
     }
 
@@ -56,18 +70,18 @@ public class S3EvidencePhotoManager
     private static String getExtension(MultipartFile file)
     {
         // 파일 이름
-        String originalFileName = file.getOriginalFilename();
+        String originalFilename = file.getOriginalFilename();
 
         // 파일 이름 존재 확인
-        if(originalFileName == null || originalFileName.isEmpty()) {
+        if(originalFilename == null || originalFilename.isEmpty()) {
             throw new CustomException(CustomExceptionCode.FILE_NAME_NOT_FOUND, null);
         }
 
         // 파일 확장자 존재 확인
-        int extensionIndex = originalFileName.lastIndexOf('.');
+        int extensionIndex = originalFilename.lastIndexOf('.');
         if (extensionIndex == -1)
             throw new CustomException(CustomExceptionCode.FILE_EXTENSION_NOT_FOUND, null);
 
-        return originalFileName.substring(extensionIndex + 1).toLowerCase();
+        return originalFilename.substring(extensionIndex + 1).toLowerCase();
     }
 }

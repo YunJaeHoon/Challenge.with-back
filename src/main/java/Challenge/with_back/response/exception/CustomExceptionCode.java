@@ -65,8 +65,9 @@ public enum CustomExceptionCode
     FILE_NAME_NOT_FOUND(HttpStatus.NOT_FOUND, "파일 이름이 존재하지 않습니다."),
     FILE_EXTENSION_NOT_FOUND(HttpStatus.NOT_FOUND, "파일 확장자가 존재하지 않습니다."),
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "유효하지 않은 파일 확장자입니다."),
-    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."),
-    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 업로드 중 오류가 발생하였습니다."),
+    EVIDENCE_PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "증거사진이 존재하지 않습니다."),
+    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 업로드 중 오류가 발생하였습니다."),
+    S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 삭제 중 오류가 발생하였습니다."),
 
     UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 못한 에러가 발생하였습니다.");
 

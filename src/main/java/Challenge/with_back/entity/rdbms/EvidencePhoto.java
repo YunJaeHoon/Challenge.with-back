@@ -31,10 +31,16 @@ public class EvidencePhoto extends BasicEntity
     @Setter
     private String photoUrl;
 
+    // S3 이미지 파일 이름
+    @NotNull
+    @Column(length = 255)
+    @Setter
+    private String filename;
+
     @Builder
-    public EvidencePhoto(ParticipatePhase participatePhase, String photoUrl) {
+    public EvidencePhoto(ParticipatePhase participatePhase, String photoUrl, String filename) {
         this.participatePhase = participatePhase;
         this.photoUrl = photoUrl;
+        this.filename = filename;
     }
-
 }

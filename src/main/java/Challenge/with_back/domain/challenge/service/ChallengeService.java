@@ -1,5 +1,6 @@
 package Challenge.with_back.domain.challenge.service;
 
+import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.enums.ChallengeRole;
 import Challenge.with_back.enums.ChallengeUnit;
@@ -185,7 +186,7 @@ public class ChallengeService
     {
         // 페이즈 참여 정보
         ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
 
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
         challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
@@ -195,19 +196,21 @@ public class ChallengeService
             throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, participatePhase.getCountEvidencePhoto() + images.size());
 
         images.forEach(image -> {
-            // 증거사진 엔티티 생성
-            EvidencePhoto evidencePhoto = EvidencePhoto.builder()
-                    .participatePhase(participatePhase)
-                    .build();
-
             // UUID 생성
             String uuid = UUID.randomUUID().toString();
 
+            // 증거사진 엔티티 생성
+            EvidencePhoto evidencePhoto = EvidencePhoto.builder()
+                    .participatePhase(participatePhase)
+                    .filename(uuid)
+                    .build();
+
             // S3 업로드
-            String photoUrl = s3EvidencePhotoManager.upload(image, uuid);
+            S3EvidencePhoto s3EvidencePhoto = s3EvidencePhotoManager.upload(image, uuid);
 
             // 증거사진 URL 등록
-            evidencePhoto.setPhotoUrl(photoUrl);
+            evidencePhoto.setPhotoUrl(s3EvidencePhoto.getPhotoUrl());
+            evidencePhoto.setFilename(s3EvidencePhoto.getFilename());
 
             // 증거사진 엔티티 저장
             evidencePhotoRepository.save(evidencePhoto);
@@ -216,5 +219,29 @@ public class ChallengeService
         // 증거사진 개수 갱신
         participatePhase.increaseCountEvidencePhoto(images.size());
         participatePhaseRepository.save(participatePhase);
+    }
+
+    // 증거사진 삭제
+    public void deleteEvidencePhoto(User user, Long evidencePhotoId)
+    {
+        // 증거사진
+        EvidencePhoto evidencePhoto = evidencePhotoRepository.findById(evidencePhotoId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.EVIDENCE_PHOTO_NOT_FOUND, evidencePhotoId));
+
+        // 페이즈 참여 정보
+        ParticipatePhase participatePhase = evidencePhoto.getParticipatePhase();
+
+        // 페이즈 참여 정보가 해당 사용자 것인지 확인
+        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+
+        // S3에서 삭제
+        s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
+
+        // 증거사진 개수 갱신
+        participatePhase.decreaseCountEvidencePhoto();
+        participatePhaseRepository.save(participatePhase);
+
+        // 증거사진 삭제
+        evidencePhotoRepository.delete(evidencePhoto);
     }
 }
