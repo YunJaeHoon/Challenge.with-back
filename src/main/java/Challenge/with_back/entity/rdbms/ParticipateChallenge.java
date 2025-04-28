@@ -78,4 +78,9 @@ public class ParticipateChallenge extends BasicEntity
         this.isPublic = isPublic;
         this.lastActiveDate = lastActiveDate;
     }
+
+    // 성공 개수 1개 증가
+    public void increaseCountSuccess() {
+        this.countSuccess++;
+    }
 }

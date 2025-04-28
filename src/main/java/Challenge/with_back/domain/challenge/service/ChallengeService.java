@@ -275,4 +275,39 @@ public class ChallengeService
         participatePhase.updateComment(comment);
         participatePhaseRepository.save(participatePhase);
     }
+
+    // 페이즈 참여 정보 현재 개수 1개 증가
+    @Async("participatePhaseThreadPool")
+    @Transactional
+    public void increaseParticipatePhaseCurrentCount(User user, Long participatePhaseId)
+    {
+        // 페이즈 참여 정보
+        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
+
+        // 페이즈 참여 정보가 해당 사용자 것인지 확인
+        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+
+        // 챌린지
+        Challenge challenge = participatePhase.getPhase().getChallenge();
+
+        // 이미 목표 개수를 달성하였는지 확인
+        if(challengeUtil.currentCountIsMax(participatePhase, challenge))
+            throw new CustomException(CustomExceptionCode.ALREADY_MAX_CURRENT_COUNT, challenge.getGoalCount());
+
+        // 현재 개수 1 증가
+        participatePhase.increaseCurrentCount();
+        participatePhaseRepository.save(participatePhase);
+
+        // 목표 개수를 달성하였다면 챌린지 참여 정보에서 성공 개수 1개 증가
+        if(challengeUtil.currentCountIsMax(participatePhase, challenge))
+        {
+            // 챌린지 참여 정보
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
+
+            participateChallenge.increaseCountSuccess();
+            participateChallengeRepository.save(participateChallenge);
+        }
+    }
 }

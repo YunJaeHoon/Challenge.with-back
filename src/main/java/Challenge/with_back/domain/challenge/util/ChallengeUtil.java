@@ -77,6 +77,12 @@ public class ChallengeUtil
 		if(comment.trim().length() > 1000)
 			throw new CustomException(CustomExceptionCode.INVALID_PARTICIPATE_PHASE_COMMENT, comment);
 	}
+
+	// 페이즈 참여 정보 현재 개수 최대치 체크
+	public boolean currentCountIsMax(ParticipatePhase participatePhase, Challenge challenge)
+	{
+		return participatePhase.getCurrentCount() >= challenge.getGoalCount();
+	}
 	
 	// 챌린지 목표 개수 크기 체크
 	public void checkGoalCount(int goalCount)

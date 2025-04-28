@@ -78,4 +78,9 @@ public class ParticipatePhase extends BasicEntity
     public void updateComment(String comment) {
         this.comment = comment;
     }
+
+    // 현재 개수 1 증가
+    public void increaseCurrentCount() {
+        this.currentCount++;
+    }
 }

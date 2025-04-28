@@ -113,4 +113,21 @@ public class ChallengeController
                         .data(null)
                         .build());
     }
+
+    // 페이즈 참여 정보 현재 개수 1개 증가
+    @PatchMapping("/participate-phase/{participatePhaseId}/increase-current-count")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> increaseParticipatePhaseCurrentCount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                                   @PathVariable Long participatePhaseId)
+    {
+        User user = userDetails.getUser();
+        challengeService.increaseParticipatePhaseCurrentCount(user, participatePhaseId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("현재 개수를 성공적으로 증가시켰습니다.")
+                        .data(null)
+                        .build());
+    }
 }
