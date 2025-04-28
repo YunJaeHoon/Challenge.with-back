@@ -14,6 +14,7 @@ import Challenge.with_back.entity.rdbms.*;
 import Challenge.with_back.repository.rdbms.*;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -253,5 +254,25 @@ public class ChallengeService
 
         // 증거사진 삭제
         evidencePhotoRepository.delete(evidencePhoto);
+    }
+
+    // 페이즈 참여 정보 한마디 수정
+    @Async("participatePhaseThreadPool")
+    @Transactional
+    public void updateParticipatePhaseComment(User user, Long participatePhaseId, String comment)
+    {
+        // 페이즈 참여 정보
+        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
+
+        // 페이즈 참여 정보가 해당 사용자 것인지 확인
+        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+
+        // 한마디 길이 체크
+        challengeUtil.checkParticipatePhaseCommentLength(comment);
+
+        // 한마디 수정
+        participatePhase.updateComment(comment);
+        participatePhaseRepository.save(participatePhase);
     }
 }

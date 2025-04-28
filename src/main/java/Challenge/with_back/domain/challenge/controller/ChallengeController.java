@@ -1,6 +1,7 @@
 package Challenge.with_back.domain.challenge.controller;
 
 import Challenge.with_back.aop.annotation.PremiumOnly;
+import Challenge.with_back.domain.challenge.dto.UpdateCommentDto;
 import Challenge.with_back.response.success.CustomSuccessCode;
 import Challenge.with_back.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
@@ -91,6 +92,24 @@ public class ChallengeController
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("증거사진을 성공적으로 삭제하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 페이즈 참여 정보 한마디 수정
+    @PatchMapping("/participate-phase/{participatePhaseId}/comment")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> updateParticipatePhaseComment(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                            @PathVariable Long participatePhaseId,
+                                                                            @RequestBody UpdateCommentDto dto)
+    {
+        User user = userDetails.getUser();
+        challengeService.updateParticipatePhaseComment(user, participatePhaseId, dto.getComment());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("한마디를 성공적으로 수정하였습니다.")
                         .data(null)
                         .build());
     }

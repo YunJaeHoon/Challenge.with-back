@@ -70,6 +70,13 @@ public class ChallengeUtil
 		if(description.trim().isEmpty() || description.trim().length() > 255)
 			throw new CustomException(CustomExceptionCode.INVALID_CHALLENGE_DESCRIPTION_FORMAT, description);
 	}
+
+	// 페이즈 참여 정보 한마디 길이 체크
+	public void checkParticipatePhaseCommentLength(String comment)
+	{
+		if(comment.trim().length() > 1000)
+			throw new CustomException(CustomExceptionCode.INVALID_PARTICIPATE_PHASE_COMMENT, comment);
+	}
 	
 	// 챌린지 목표 개수 크기 체크
 	public void checkGoalCount(int goalCount)

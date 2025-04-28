@@ -73,4 +73,9 @@ public class ParticipatePhase extends BasicEntity
     public void decreaseCountEvidencePhoto() {
         this.countEvidencePhoto--;
     }
+
+    // 한마디 수정
+    public void updateComment(String comment) {
+        this.comment = comment;
+    }
 }
