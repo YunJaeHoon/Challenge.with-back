@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 @RequiredArgsConstructor
@@ -195,26 +197,34 @@ public class ChallengeService
         if(participatePhase.getCountEvidencePhoto() + images.size() > 5)
             throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, participatePhase.getCountEvidencePhoto() + images.size());
 
+        // 스레드 풀 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(images.size());
+
         images.forEach(image -> {
-            // UUID 생성
-            String uuid = UUID.randomUUID().toString();
+            executorService.submit(() -> {
+                // UUID 생성
+                String uuid = UUID.randomUUID().toString();
 
-            // 증거사진 엔티티 생성
-            EvidencePhoto evidencePhoto = EvidencePhoto.builder()
-                    .participatePhase(participatePhase)
-                    .filename(uuid)
-                    .build();
+                // 증거사진 엔티티 생성
+                EvidencePhoto evidencePhoto = EvidencePhoto.builder()
+                        .participatePhase(participatePhase)
+                        .filename(uuid)
+                        .build();
 
-            // S3 업로드
-            S3EvidencePhoto s3EvidencePhoto = s3EvidencePhotoManager.upload(image, uuid);
+                // S3 업로드
+                S3EvidencePhoto s3EvidencePhoto = s3EvidencePhotoManager.upload(image, uuid);
 
-            // 증거사진 URL 등록
-            evidencePhoto.setPhotoUrl(s3EvidencePhoto.getPhotoUrl());
-            evidencePhoto.setFilename(s3EvidencePhoto.getFilename());
+                // 증거사진 URL 등록
+                evidencePhoto.setPhotoUrl(s3EvidencePhoto.getPhotoUrl());
+                evidencePhoto.setFilename(s3EvidencePhoto.getFilename());
 
-            // 증거사진 엔티티 저장
-            evidencePhotoRepository.save(evidencePhoto);
+                // 증거사진 엔티티 저장
+                evidencePhotoRepository.save(evidencePhoto);
+            });
         });
+
+        // 스레드 풀 종료
+        executorService.shutdown();
 
         // 증거사진 개수 갱신
         participatePhase.increaseCountEvidencePhoto(images.size());

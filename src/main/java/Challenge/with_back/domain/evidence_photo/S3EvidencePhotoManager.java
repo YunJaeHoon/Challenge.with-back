@@ -7,6 +7,7 @@ import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,6 +58,7 @@ public class S3EvidencePhotoManager
     }
 
     // S3 이미지 삭제
+    @Async
     public void delete(String filename)
     {
         try {
