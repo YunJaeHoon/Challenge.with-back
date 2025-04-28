@@ -79,6 +79,11 @@ public class ParticipateChallenge extends BasicEntity
         this.lastActiveDate = lastActiveDate;
     }
 
+    // 마지막 활동 날짜 갱신
+    public void renewLastActiveDate() {
+        this.lastActiveDate = LocalDate.now();
+    }
+
     // 성공 개수 1개 증가
     public void increaseCountSuccess() {
         this.countSuccess++;

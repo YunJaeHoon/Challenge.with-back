@@ -182,9 +182,36 @@ public class ChallengeUtil
 		userRepository.save(user);
 	}
 
+	// 페이즈 참여 정보 소유자 확인
 	public void checkParticipatePhaseOwnership(User user, ParticipatePhase participatePhase)
 	{
 		if(!participatePhase.getUser().getId().equals(user.getId()))
 			throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
+	}
+
+	// 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
+	@Transactional
+	public void renewLastActiveDate(ParticipatePhase participatePhase)
+	{
+		// 사용자
+		User user = participatePhase.getUser();
+
+		// 페이즈
+		Phase phase = participatePhase.getPhase();
+
+		// 챌린지
+		Challenge challenge = phase.getChallenge();
+
+		// 챌린지 마지막 활동 날짜 갱신
+		challenge.renewLastActiveDate();
+		challengeRepository.save(challenge);
+
+		// 챌린지 참여 정보
+		ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+				.orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
+
+		// 챌린지 참여 정보 마지막 활동 날짜 갱신
+		participateChallenge.renewLastActiveDate();
+		participateChallengeRepository.save(participateChallenge);
 	}
 }

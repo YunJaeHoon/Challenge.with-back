@@ -230,6 +230,9 @@ public class ChallengeService
         // 증거사진 개수 갱신
         participatePhase.increaseCountEvidencePhoto(images.size());
         participatePhaseRepository.save(participatePhase);
+
+        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
+        challengeUtil.renewLastActiveDate(participatePhase);
     }
 
     // 증거사진 삭제
@@ -254,6 +257,9 @@ public class ChallengeService
 
         // 증거사진 삭제
         evidencePhotoRepository.delete(evidencePhoto);
+
+        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
+        challengeUtil.renewLastActiveDate(participatePhase);
     }
 
     // 페이즈 참여 정보 한마디 수정
@@ -274,6 +280,9 @@ public class ChallengeService
         // 한마디 수정
         participatePhase.updateComment(comment);
         participatePhaseRepository.save(participatePhase);
+
+        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
+        challengeUtil.renewLastActiveDate(participatePhase);
     }
 
     // 페이즈 참여 정보 현재 개수 1개 증가
@@ -309,6 +318,9 @@ public class ChallengeService
             participateChallenge.increaseCountSuccess();
             participateChallengeRepository.save(participateChallenge);
         }
+
+        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
+        challengeUtil.renewLastActiveDate(participatePhase);
     }
 
     // 페이즈 참여 정보 현재 개수 1개 감소
@@ -344,6 +356,9 @@ public class ChallengeService
         // 현재 개수 1 감소
         participatePhase.decreaseCurrentCount();
         participatePhaseRepository.save(participatePhase);
+
+        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
+        challengeUtil.renewLastActiveDate(participatePhase);
     }
 
     // 페이즈 참여 정보 면제 여부 토글
@@ -373,5 +388,8 @@ public class ChallengeService
 
         // 면제 여부 토글
         participatePhase.toggleIsExempt();
+
+        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
+        challengeUtil.renewLastActiveDate(participatePhase);
     }
 }
