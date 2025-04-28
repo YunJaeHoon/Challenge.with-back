@@ -43,7 +43,7 @@ public class ParticipatePhase extends BasicEntity
 
     // 면제 여부
     @NotNull
-    private boolean isExempt;
+    private Boolean isExempt;
 
     // 한마디
     @Column(columnDefinition = "TEXT")
@@ -87,5 +87,10 @@ public class ParticipatePhase extends BasicEntity
     // 현재 개수 1 감소
     public void decreaseCurrentCount() {
         this.currentCount--;
+    }
+
+    // 면제 여부 토글
+    public void toggleIsExempt() {
+        this.isExempt = !this.isExempt;
     }
 }

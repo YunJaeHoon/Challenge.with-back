@@ -168,7 +168,7 @@ public class ChallengeService
                             .currentPhaseEndDate(phase.getEndDate())
                             .currentPhaseName(phase.getName())
                             .completeCount(participatePhase.getCurrentCount())
-                            .isExempt(participatePhase.isExempt())
+                            .isExempt(participatePhase.getIsExempt())
                             .comment(participatePhase.getComment())
                             .countEvidencePhoto(participatePhase.getCountEvidencePhoto())
                             .evidencePhotoUrls(evidencePhotoUrlList)
@@ -344,5 +344,34 @@ public class ChallengeService
         // 현재 개수 1 감소
         participatePhase.decreaseCurrentCount();
         participatePhaseRepository.save(participatePhase);
+    }
+
+    // 페이즈 참여 정보 면제 여부 토글
+    @Async("participatePhaseThreadPool")
+    @Transactional
+    public void toggleIsExempt(User user, Long participatePhaseId)
+    {
+        // 페이즈 참여 정보
+        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
+
+        // 페이즈 참여 정보가 해당 사용자 것인지 확인
+        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+
+        // 챌린지
+        Challenge challenge = participatePhase.getPhase().getChallenge();
+
+        // 챌린지 참여 정보
+        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
+
+        // 기존 면제 여부 값에 따라 챌린지 참여 정보의 면제 개수 갱신
+        if(participatePhase.getIsExempt())
+            participateChallenge.decreaseCountExemption();
+        else
+            participateChallenge.increaseCountExemption();
+
+        // 면제 여부 토글
+        participatePhase.toggleIsExempt();
     }
 }

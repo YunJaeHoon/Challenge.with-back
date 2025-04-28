@@ -147,4 +147,21 @@ public class ChallengeController
                         .data(null)
                         .build());
     }
+
+    // 페이즈 참여 정보 면제 여부 토글
+    @PatchMapping("/participate-phase/{participatePhaseId}/is-exempt")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> toggleIsExempt(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                             @PathVariable Long participatePhaseId)
+    {
+        User user = userDetails.getUser();
+        challengeService.toggleIsExempt(user, participatePhaseId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("면제 여부를 성공적으로 변경하였습니다.")
+                        .data(null)
+                        .build());
+    }
 }

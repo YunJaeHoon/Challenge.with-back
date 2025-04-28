@@ -88,4 +88,14 @@ public class ParticipateChallenge extends BasicEntity
     public void decreaseCountSuccess() {
         this.countSuccess--;
     }
+
+    // 성공 개수 1개 증가
+    public void increaseCountExemption() {
+        this.countExemption++;
+    }
+
+    // 성공 개수 1개 감소
+    public void decreaseCountExemption() {
+        this.countExemption--;
+    }
 }
