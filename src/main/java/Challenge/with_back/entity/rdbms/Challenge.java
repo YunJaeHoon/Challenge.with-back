@@ -66,7 +66,7 @@ public class Challenge extends BasicEntity
 	// 현재 참여자 인원수
 	@NotNull
 	private int countCurrentParticipant;
-	
+
 	// 페이즈 총 개수
 	@NotNull
 	private int countPhase;
@@ -74,9 +74,13 @@ public class Challenge extends BasicEntity
 	// 마지막 활동 날짜
 	@NotNull
 	private LocalDate lastActiveDate;
+
+	// 종료했는가?
+	@NotNull
+	private boolean isFinished;
 	
 	@Builder
-	public Challenge(User superAdmin, String iconUrl, String colorTheme, String name, String description, int goalCount, ChallengeUnit unit, boolean isPublic, int maxParticipantCount, int countCurrentParticipant, int countPhase, LocalDate lastActiveDate) {
+	public Challenge(User superAdmin, String iconUrl, String colorTheme, String name, String description, int goalCount, ChallengeUnit unit, boolean isPublic, int maxParticipantCount, int countCurrentParticipant, int countPhase, LocalDate lastActiveDate, boolean isFinished) {
 		this.superAdmin = superAdmin;
 		this.iconUrl = iconUrl;
 		this.colorTheme = colorTheme;
@@ -89,6 +93,12 @@ public class Challenge extends BasicEntity
 		this.countCurrentParticipant = countCurrentParticipant;
 		this.countPhase = countPhase;
 		this.lastActiveDate = lastActiveDate;
+		this.isFinished = isFinished;
+	}
+
+	// 현재 페이즈 번호 계산
+	public int calcCurrentPhaseNumber() {
+		return this.unit.calcCurrentPhaseNumber(this.getCreatedAt().toLocalDate());
 	}
 
 	// 마지막 활동 날짜 갱신

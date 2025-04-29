@@ -26,6 +26,7 @@ public class GetMyChallengeDto
         private int goalCount;                      // 챌린지 목표 개수
         private String unit;                        // 챌린지 단위
         private LocalDate challengeStartDate;       // 챌린지 시작 날짜
+        private Boolean isFinished;                 // 종료 여부
         private int countPhase;                     // 페이즈 개수
         private Long participateCurrentPhaseId;     // 현재 페이즈 참여 정보 ID
         private LocalDate currentPhaseStartDate;    // 현재 페이즈 시작 날짜

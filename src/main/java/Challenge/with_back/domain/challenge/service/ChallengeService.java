@@ -15,6 +15,7 @@ import Challenge.with_back.repository.rdbms.*;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,6 +82,7 @@ public class ChallengeService
                 .countCurrentParticipant(0)
                 .countPhase(0)
                 .lastActiveDate(LocalDate.now())
+                .isFinished(false)
                 .build();
 
         // 챌린지 저장
@@ -162,13 +164,14 @@ public class ChallengeService
                             .goalCount(challenge.getGoalCount())
                             .unit(challenge.getUnit().name())
                             .challengeStartDate(challenge.getCreatedAt().toLocalDate())
-                            .countPhase(challenge.getCountPhase())
+                            .isFinished(challenge.isFinished())
+                            .countPhase(challenge.calcCurrentPhaseNumber())
                             .participateCurrentPhaseId(participatePhase.getId())
                             .currentPhaseStartDate(phase.getStartDate())
                             .currentPhaseEndDate(phase.getEndDate())
                             .currentPhaseName(phase.getName())
                             .completeCount(participatePhase.getCurrentCount())
-                            .isExempt(participatePhase.getIsExempt())
+                            .isExempt(participatePhase.isExempt())
                             .comment(participatePhase.getComment())
                             .countEvidencePhoto(participatePhase.getCountEvidencePhoto())
                             .evidencePhotoUrls(evidencePhotoUrlList)
@@ -381,7 +384,7 @@ public class ChallengeService
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
 
         // 기존 면제 여부 값에 따라 챌린지 참여 정보의 면제 개수 갱신
-        if(participatePhase.getIsExempt())
+        if(participatePhase.isExempt())
             participateChallenge.decreaseCountExemption();
         else
             participateChallenge.increaseCountExemption();

@@ -122,7 +122,7 @@ public class ChallengeUtil
 	// 현재 페이즈 조회
 	public Phase getLastPhase(Challenge challenge)
 	{
-		return phaseRepository.findByChallengeAndNumber(challenge, challenge.getCountPhase())
+		return phaseRepository.findByChallengeAndNumber(challenge, challenge.calcCurrentPhaseNumber())
 				.orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, null));
 	}
 

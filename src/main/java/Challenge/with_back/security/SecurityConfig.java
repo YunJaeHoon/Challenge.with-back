@@ -1,6 +1,5 @@
-package Challenge.with_back.configuration;
+package Challenge.with_back.security;
 
-import Challenge.with_back.security.CustomUserDetailsService;
 import Challenge.with_back.security.filter.JwtFilter;
 import Challenge.with_back.security.exception.CustomAccessDeniedHandler;
 import Challenge.with_back.security.exception.CustomAuthenticationEntryPoint;

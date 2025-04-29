@@ -43,7 +43,7 @@ public class ParticipatePhase extends BasicEntity
 
     // 면제 여부
     @NotNull
-    private Boolean isExempt;
+    private boolean isExempt;
 
     // 한마디
     @Column(columnDefinition = "TEXT")
