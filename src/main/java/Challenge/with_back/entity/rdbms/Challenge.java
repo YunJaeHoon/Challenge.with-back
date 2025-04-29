@@ -96,6 +96,11 @@ public class Challenge extends BasicEntity
 		this.isFinished = isFinished;
 	}
 
+	// 페이즈 시작 날짜 계산
+	public LocalDate calcPhaseStartDate(int number) {
+		return this.unit.calcPhaseStartDate(this.getCreatedAt().toLocalDate(), number);
+	}
+
 	// 현재 페이즈 번호 계산
 	public int calcCurrentPhaseNumber() {
 		return this.unit.calcCurrentPhaseNumber(this.getCreatedAt().toLocalDate());

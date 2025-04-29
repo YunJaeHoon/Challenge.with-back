@@ -97,5 +97,10 @@ spring:
             max-file-size: 10MB
             max-request-size: 10MB
 
+    ## Spring Batch
+    batch:
+        job:
+            enabled: false  # 프로젝트 실행 시 자동으로 배치 작업이 가동되는 것을 방지
+
 
 

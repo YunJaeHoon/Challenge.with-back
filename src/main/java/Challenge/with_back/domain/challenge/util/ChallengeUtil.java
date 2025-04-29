@@ -97,28 +97,6 @@ public class ChallengeUtil
 			throw new CustomException(CustomExceptionCode.INVALID_CHALLENGE_GOAL_COUNT, goalCount);
 	}
 
-	// 새로운 페이즈 생성
-	@Transactional
-	public void createPhase(Challenge challenge)
-	{
-		// 챌린지의 페이즈 개수 1개 증가
-		challenge.increaseCountPhase();
-		challengeRepository.save(challenge);
-
-		// 페이즈 생성
-		Phase phase = Phase.builder()
-				.challenge(challenge)
-				.name(challenge.getCountPhase() + "번째 페이즈")
-				.description("")
-				.number(challenge.getCountPhase())
-				.startDate(LocalDate.now())
-				.endDate(challenge.getUnit().calcPhaseEndDate(LocalDate.now()))
-				.build();
-
-		// 페이즈 저장
-		phaseRepository.save(phase);
-	}
-
 	// 현재 페이즈 조회
 	public Phase getLastPhase(Challenge challenge)
 	{

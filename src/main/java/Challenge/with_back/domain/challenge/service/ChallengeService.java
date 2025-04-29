@@ -80,7 +80,7 @@ public class ChallengeService
                 .isPublic(createChallengeDto.getIsPublic())
                 .maxParticipantCount(maxParticipantCount)
                 .countCurrentParticipant(0)
-                .countPhase(0)
+                .countPhase(1)
                 .lastActiveDate(LocalDate.now())
                 .isFinished(false)
                 .build();
@@ -88,8 +88,18 @@ public class ChallengeService
         // 챌린지 저장
         challengeRepository.save(challenge);
 
-        // 페이즈 생성 및 저장
-        challengeUtil.createPhase(challenge);
+        // 페이즈 생성
+        Phase phase = Phase.builder()
+                .challenge(challenge)
+                .name(challenge.getCountPhase() + "번째 페이즈")
+                .description("")
+                .number(challenge.getCountPhase())
+                .startDate(LocalDate.now())
+                .endDate(challenge.getUnit().calcPhaseEndDate(LocalDate.now()))
+                .build();
+
+        // 페이즈 저장
+        phaseRepository.save(phase);
 
         // 본인을 챌린지에 가입시키기
         challengeUtil.joinChallenge(challenge, user, ChallengeRole.SUPER_ADMIN);

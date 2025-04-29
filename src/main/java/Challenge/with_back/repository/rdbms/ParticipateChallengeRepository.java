@@ -15,4 +15,7 @@ public interface ParticipateChallengeRepository extends JpaRepository<Participat
 
     // 특정 사용자로 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
     List<ParticipateChallenge> findAllByUserOrderByCreatedAtDesc(User user);
+
+    // 특정 챌린지로 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
+    List<ParticipateChallenge> findAllByChallengeOrderByCreatedAtDesc(Challenge challenge);
 }
