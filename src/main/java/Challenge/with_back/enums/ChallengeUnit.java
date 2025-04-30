@@ -17,11 +17,11 @@ public enum ChallengeUnit
             createAt -> Math.toIntExact(Math.abs(ChronoUnit.DAYS.between(LocalDate.now(), createAt) + 1))),
     WEEKLY("매주",
             (createAt, number) -> createAt.plusWeeks(number - 1),
-            startDate -> startDate.plusWeeks(1),
+            startDate -> startDate.plusWeeks(1).minusDays(1),
             createAt -> Math.toIntExact(Math.abs(ChronoUnit.WEEKS.between(LocalDate.now(), createAt) + 1))),
     MONTHLY("매월",
             (createAt, number) -> createAt.plusMonths(number - 1),
-            startDate -> startDate.plusMonths(1),
+            startDate -> startDate.plusMonths(1).minusDays(1),
             createAt -> Math.toIntExact(Math.abs(ChronoUnit.MONTHS.between(LocalDate.now(), createAt) + 1)));
 
     private final String description;
