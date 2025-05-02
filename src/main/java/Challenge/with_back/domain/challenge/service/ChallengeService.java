@@ -249,6 +249,7 @@ public class ChallengeService
     }
 
     // 증거사진 삭제
+    @Transactional
     public void deleteEvidencePhoto(User user, Long evidencePhotoId)
     {
         // 증거사진
