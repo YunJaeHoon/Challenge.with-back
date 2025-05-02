@@ -12,19 +12,14 @@ import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import Challenge.with_back.entity.rdbms.*;
 import Challenge.with_back.repository.rdbms.*;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -64,48 +59,13 @@ public class ChallengeService
         int maxParticipantCount = createChallengeDto.getIsAlone() ? 1 :
                 accountUtil.isPremium(user) ? 100 : 5;
 
-        // 본인과 초대한 사람들의 인원수가 챌린지 최대 참여자 인원수보다 많으면 예외 처리
-        if(createChallengeDto.getInviteUserIdList().size() + 1 > maxParticipantCount)
-            throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, createChallengeDto.getInviteUserIdList().size() + 1);
+        // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+        if(accountUtil.isParticipatingInMaxChallenges(user))
+            throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
 
-        // 챌린지 생성
-        Challenge challenge = Challenge.builder()
-                .superAdmin(user)
-                .iconUrl(iconUrl)
-                .colorTheme(colorTheme)
-                .name(createChallengeDto.getName())
-                .description(createChallengeDto.getDescription())
-                .goalCount(createChallengeDto.getGoalCount())
-                .unit(unit)
-                .isPublic(createChallengeDto.getIsPublic())
-                .maxParticipantCount(maxParticipantCount)
-                .countCurrentParticipant(0)
-                .countPhase(1)
-                .lastActiveDate(LocalDate.now())
-                .isFinished(false)
-                .build();
-
-        // 챌린지 저장
-        challengeRepository.save(challenge);
-
-        // 페이즈 생성
-        Phase phase = Phase.builder()
-                .challenge(challenge)
-                .name(challenge.getCountPhase() + "번째 페이즈")
-                .description("")
-                .number(challenge.getCountPhase())
-                .startDate(LocalDate.now())
-                .endDate(challenge.getUnit().calcPhaseEndDate(LocalDate.now()))
-                .build();
-
-        // 페이즈 저장
-        phaseRepository.save(phase);
-
-        // 본인을 챌린지에 가입시키기
-        challengeUtil.joinChallenge(challenge, user, ChallengeRole.SUPER_ADMIN);
-
-        // 초대한 사용자 리스트
-        List<User> inviteUserList = new ArrayList<>();
+        // 참가자 리스트
+        List<User> participantList = new ArrayList<>();
+        participantList.add(user);
 
         createChallengeDto.getInviteUserIdList().forEach(inviteUserId -> {
 
@@ -122,13 +82,61 @@ public class ChallengeService
             if(accountUtil.isParticipatingInMaxChallenges(inviteUser))
                 return;
 
-            inviteUserList.add(inviteUser);
+            participantList.add(inviteUser);
         });
 
-        // 초대한 사용자들을 챌린지에 가입시키기
-        inviteUserList.forEach(inviteUser -> {
-            challengeUtil.joinChallenge(challenge, inviteUser, ChallengeRole.USER);
+        // 참가자들의 인원수가 챌린지 최대 참여자 인원수보다 많으면 예외 처리
+        if(participantList.size() > maxParticipantCount)
+            throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, createChallengeDto.getInviteUserIdList().size() + 1);
+
+        // 챌린지 생성
+        Challenge challenge = Challenge.builder()
+                .superAdmin(user)
+                .iconUrl(iconUrl)
+                .colorTheme(colorTheme)
+                .name(createChallengeDto.getName())
+                .description(createChallengeDto.getDescription())
+                .goalCount(createChallengeDto.getGoalCount())
+                .unit(unit)
+                .isPublic(createChallengeDto.getIsPublic())
+                .maxParticipantCount(maxParticipantCount)
+                .countCurrentParticipant(0)
+                .countPhase(0)
+                .lastActiveDate(LocalDate.now())
+                .isFinished(false)
+                .build();
+
+        // 챌린지 참여 정보 리스트
+        List<ParticipateChallenge> participateChallengeList = new ArrayList<>();
+
+        // 챌린지 참여 정보 생성
+        participantList.forEach(participant -> {
+            ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
+                    .user(participant)
+                    .challenge(challenge)
+                    .determination("")
+                    .challengeRole(Objects.equals(participant, user) ? ChallengeRole.SUPER_ADMIN : ChallengeRole.USER)
+                    .countSuccess(0)
+                    .countExemption(0)
+                    .isPublic(true)
+                    .lastActiveDate(LocalDate.now())
+                    .build();
+
+            participateChallengeList.add(participateChallenge);
+
+            // 챌린지 참여자 인원수 1명 증가
+            challenge.increaseCountCurrentParticipant();
+
+            // 사용자 참여 챌린지 개수 1개 증가
+            participant.increaseCountParticipateChallenge();
         });
+
+        userRepository.saveAll(participantList);
+        challengeRepository.save(challenge);
+        participateChallengeRepository.saveAll(participateChallengeList);
+
+        // 페이즈 10개 생성
+        challengeUtil.createPhases(challenge, 10);
     }
 
     // 내 챌린지 조회
@@ -151,7 +159,7 @@ public class ChallengeService
                     Challenge challenge = participateChallenge.getChallenge();
 
                     // 현재 페이즈
-                    Phase phase = challengeUtil.getLastPhase(challenge);
+                    Phase phase = challengeUtil.getCurrentPhase(challenge);
 
                     // 현재 페이즈 참여 정보
                     ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseAndUser(phase, user)

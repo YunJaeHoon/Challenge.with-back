@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -93,7 +95,7 @@ public class ChallengeUtil
 	}
 
 	// 현재 페이즈 조회
-	public Phase getLastPhase(Challenge challenge)
+	public Phase getCurrentPhase(Challenge challenge)
 	{
 		return phaseRepository.findByChallengeAndNumber(challenge, challenge.calcCurrentPhaseNumber())
 				.orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, null));
@@ -131,7 +133,7 @@ public class ChallengeUtil
 		participateChallengeRepository.save(participateChallenge);
 
 		// 현재 페이즈 조회
-		Phase phase = getLastPhase(challenge);
+		Phase phase = getCurrentPhase(challenge);
 
 		// 페이즈 참여 정보 생성
 		ParticipatePhase participatePhase = ParticipatePhase.builder()
@@ -153,6 +155,61 @@ public class ChallengeUtil
 		// 사용자 참여 챌린지 개수 1개 증가
 		user.increaseCountParticipateChallenge();
 		userRepository.save(user);
+	}
+
+	// 다음 페이즈 생성
+	@Transactional
+	public void createPhases(Challenge challenge, int count)
+	{
+		// 챌린지 참여 정보 리스트
+		List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByChallengeOrderByCreatedAtDesc(challenge);
+
+		// 페이즈 리스트
+		List<Phase> phaseList = new ArrayList<>();
+
+		// 페이즈 참여 정보 리스트
+		List<ParticipatePhase> participatePhaseList = new ArrayList<>();
+
+		for(int i = 0; i < count; i++)
+		{
+			// 챌린지의 페이즈 개수 증가
+			challenge.increaseCountPhase();
+
+			// 페이즈 시작 날짜 및 종료 날짜 계산
+			LocalDate startDate = challenge.calcPhaseStartDate(challenge.getCountPhase());
+			LocalDate endDate = challenge.getUnit().calcPhaseEndDate(startDate);
+
+			// 페이즈 생성
+			Phase phase = Phase.builder()
+					.challenge(challenge)
+					.name(challenge.getCountPhase() + "번째 페이즈")
+					.description("")
+					.number(challenge.getCountPhase())
+					.startDate(startDate)
+					.endDate(endDate)
+					.build();
+
+			phaseList.add(phase);
+
+			// 페이즈 참여 정보 생성
+			participateChallengeList.forEach(participateChallenge -> {
+				ParticipatePhase participatePhase = ParticipatePhase.builder()
+						.user(participateChallenge.getUser())
+						.phase(phase)
+						.currentCount(0)
+						.isExempt(false)
+						.comment("")
+						.countEvidencePhoto(0)
+						.build();
+
+				participatePhaseList.add(participatePhase);
+			});
+
+			challengeRepository.save(challenge);
+		}
+
+		phaseRepository.saveAll(phaseList);
+		participatePhaseRepository.saveAll(participatePhaseList);
 	}
 
 	// 페이즈 참여 정보 소유자 확인
