@@ -24,7 +24,7 @@ public class CreatePhaseScheduler
     private final Job createPhaseJob;
 
     // 매일 오전 4시에 실행
-    @Scheduled(cron = "30 * * * * *")
+    @Scheduled(cron = "* * 4 * * *")
     public void run()
     {
         try {
