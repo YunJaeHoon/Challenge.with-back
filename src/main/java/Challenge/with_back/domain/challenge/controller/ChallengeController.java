@@ -160,7 +160,7 @@ public class ChallengeController
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
-                        .message("면제 여부를 성공적으로 변경하였습니다.")
+                        .message("면제 여부 변경을 성공적으로 요청하였습니다.")
                         .data(null)
                         .build());
     }
