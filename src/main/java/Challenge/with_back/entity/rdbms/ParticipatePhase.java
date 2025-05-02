@@ -80,13 +80,8 @@ public class ParticipatePhase extends BasicEntity
     }
 
     // 현재 개수 1 증가
-    public void increaseCurrentCount() {
-        this.currentCount++;
-    }
-
-    // 현재 개수 1 감소
-    public void decreaseCurrentCount() {
-        this.currentCount--;
+    public void updateCurrentCount(int value) {
+        this.currentCount = value;
     }
 
     // 면제 여부 토글

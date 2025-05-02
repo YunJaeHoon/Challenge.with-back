@@ -299,10 +299,10 @@ public class ChallengeService
         challengeUtil.renewLastActiveDate(participatePhase);
     }
 
-    // 페이즈 참여 정보 현재 개수 1개 증가
+    // 페이즈 참여 정보 현재 달성 개수 변경
     @Async("participatePhaseThreadPool")
     @Transactional
-    public void increaseParticipatePhaseCurrentCount(User user, Long participatePhaseId)
+    public void updateParticipatePhaseCurrentCount(User user, Long participatePhaseId, int value)
     {
         // 페이즈 참여 정보
         ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
@@ -314,16 +314,19 @@ public class ChallengeService
         // 챌린지
         Challenge challenge = participatePhase.getPhase().getChallenge();
 
-        // 이미 목표 개수를 달성한 상태라면 예외 처리
-        if(challengeUtil.currentCountIsMax(participatePhase, challenge))
-            throw new CustomException(CustomExceptionCode.ALREADY_MAX_CURRENT_COUNT, challenge.getGoalCount());
+        // 현재 달성 개수가 범위를 벗어나면 예외 처리
+        challengeUtil.checkCurrentCount(value, challenge);
 
-        // 현재 개수 1 증가
-        participatePhase.increaseCurrentCount();
+        // 기존 달성 개수
+        int originalValue = participatePhase.getCurrentCount();
+
+        // 현재 달성 개수 변경
+        participatePhase.updateCurrentCount(value);
         participatePhaseRepository.save(participatePhase);
 
-        // 목표 개수를 달성하였다면 챌린지 참여 정보에서 성공 개수 1개 증가
-        if(challengeUtil.currentCountIsMax(participatePhase, challenge))
+        // 기존에 목표 개수를 달성하지 못했지만 새롭게 목표 개수에 달성했다면, 챌린지 참여 정보에서 성공 개수 1 증가
+        // 기존에 목표 개수를 달성했지만 새롭게 목표 개수에 달성하지 못했다면, 챌린지 참여 정보에서 성공 개수 1 감소
+        if(originalValue < challenge.getGoalCount() && value == challenge.getGoalCount())
         {
             // 챌린지 참여 정보
             ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
@@ -332,32 +335,7 @@ public class ChallengeService
             participateChallenge.increaseCountSuccess();
             participateChallengeRepository.save(participateChallenge);
         }
-
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
-    }
-
-    // 페이즈 참여 정보 현재 개수 1개 감소
-    @Async("participatePhaseThreadPool")
-    @Transactional
-    public void decreaseParticipatePhaseCurrentCount(User user, Long participatePhaseId)
-    {
-        // 페이즈 참여 정보
-        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
-
-        // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
-
-        // 이미 현재 개수가 0이라면 예외 처리
-        if(challengeUtil.currentCountIsZero(participatePhase))
-            throw new CustomException(CustomExceptionCode.ALREADY_ZERO_CURRENT_COUNT, participatePhase.getId());
-
-        // 챌린지
-        Challenge challenge = participatePhase.getPhase().getChallenge();
-
-        // 이미 목표 개수를 달성한 상태라면 챌린지 참여 정보에서 성공 개수 1개 감소
-        if(challengeUtil.currentCountIsMax(participatePhase, challenge))
+        else if(originalValue == challenge.getGoalCount() && value < challenge.getGoalCount())
         {
             // 챌린지 참여 정보
             ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
@@ -366,10 +344,6 @@ public class ChallengeService
             participateChallenge.decreaseCountSuccess();
             participateChallengeRepository.save(participateChallenge);
         }
-
-        // 현재 개수 1 감소
-        participatePhase.decreaseCurrentCount();
-        participatePhaseRepository.save(participatePhase);
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
         challengeUtil.renewLastActiveDate(participatePhase);

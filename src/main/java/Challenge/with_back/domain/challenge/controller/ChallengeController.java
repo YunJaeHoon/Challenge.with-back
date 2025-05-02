@@ -2,6 +2,7 @@ package Challenge.with_back.domain.challenge.controller;
 
 import Challenge.with_back.aop.annotation.PremiumOnly;
 import Challenge.with_back.domain.challenge.dto.UpdateCommentDto;
+import Challenge.with_back.domain.challenge.dto.UpdateCurrentCountDto;
 import Challenge.with_back.response.success.CustomSuccessCode;
 import Challenge.with_back.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
@@ -114,36 +115,20 @@ public class ChallengeController
                         .build());
     }
 
-    // 페이즈 참여 정보 현재 개수 1개 증가
-    @PatchMapping("/participate-phase/{participatePhaseId}/increase-current-count")
+    // 페이즈 참여 정보 현재 달성 개수 변경
+    @PatchMapping("/participate-phase/{participatePhaseId}/current-count")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<SuccessResponseDto> increaseParticipatePhaseCurrentCount(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                                   @PathVariable Long participatePhaseId)
+    public ResponseEntity<SuccessResponseDto> updateParticipatePhaseCurrentCount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                                   @PathVariable Long participatePhaseId,
+                                                                                   @RequestBody UpdateCurrentCountDto dto)
     {
         User user = userDetails.getUser();
-        challengeService.increaseParticipatePhaseCurrentCount(user, participatePhaseId);
+        challengeService.updateParticipatePhaseCurrentCount(user, participatePhaseId, dto.getValue());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
-                        .message("현재 개수를 성공적으로 증가시켰습니다.")
-                        .data(null)
-                        .build());
-    }
-
-    // 페이즈 참여 정보 현재 개수 1개 감소
-    @PatchMapping("/participate-phase/{participatePhaseId}/decrease-current-count")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<SuccessResponseDto> decreaseParticipatePhaseCurrentCount(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                                   @PathVariable Long participatePhaseId)
-    {
-        User user = userDetails.getUser();
-        challengeService.decreaseParticipatePhaseCurrentCount(user, participatePhaseId);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
-                        .message("현재 개수를 성공적으로 감소시켰습니다.")
+                        .message("현재 달성 개수 변경을 성공적으로 요청하였습니다.")
                         .data(null)
                         .build());
     }

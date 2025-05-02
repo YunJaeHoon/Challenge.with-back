@@ -78,16 +78,11 @@ public class ChallengeUtil
 			throw new CustomException(CustomExceptionCode.INVALID_PARTICIPATE_PHASE_COMMENT, comment);
 	}
 
-	// 페이즈 참여 정보 현재 개수가 최대치인지 확인
-	public boolean currentCountIsMax(ParticipatePhase participatePhase, Challenge challenge)
+	// 해당 값이 달성 개수 범위에 속하는지 체크
+	public void checkCurrentCount(int value, Challenge challenge)
 	{
-		return participatePhase.getCurrentCount() >= challenge.getGoalCount();
-	}
-
-	// 페이즈 참여 정보 현재 개수가 0인지 확인
-	public boolean currentCountIsZero(ParticipatePhase participatePhase)
-	{
-		return participatePhase.getCurrentCount() <= 0;
+		if(value < 0 || value > challenge.getGoalCount())
+			throw new CustomException(CustomExceptionCode.INVALID_PARTICIPATE_PHASE_CURRENT_COUNT, value);
 	}
 	
 	// 챌린지 목표 개수 크기 체크
