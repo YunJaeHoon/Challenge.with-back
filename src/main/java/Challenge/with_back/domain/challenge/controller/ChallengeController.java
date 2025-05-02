@@ -96,7 +96,7 @@ public class ChallengeController
                         .build());
     }
 
-    // 페이즈 참여 정보 한마디 수정
+    // 페이즈 참여 정보 한마디 변경
     @PatchMapping("/participate-phase/{participatePhaseId}/comment")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> updateParticipatePhaseComment(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -109,7 +109,7 @@ public class ChallengeController
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
-                        .message("한마디를 성공적으로 수정하였습니다.")
+                        .message("한마디 변경을 성공적으로 요청하였습니다.")
                         .data(null)
                         .build());
     }
