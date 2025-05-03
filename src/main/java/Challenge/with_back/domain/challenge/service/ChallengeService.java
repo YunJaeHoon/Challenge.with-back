@@ -139,7 +139,7 @@ public class ChallengeService
         challengeUtil.createPhases(challenge, 10);
     }
 
-    // 내 챌린지 조회
+    // 현재 진행 중인 내 챌린지 조회
     public GetMyChallengeDto getMyChallenges(User user)
     {
         // 참여 중인 챌린지 개수
@@ -152,7 +152,9 @@ public class ChallengeService
         List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByUserOrderByCreatedAtDesc(user);
 
         // 챌린지 참여 정보 리스트를 dto 리스트로 변경
+        // 현재 진행 중인 챌린지만 필터링
         List<GetMyChallengeDto.ChallengeDto> challengeDtoList = participateChallengeList.stream()
+                .filter(participateChallenge -> !participateChallenge.getChallenge().isFinished())
                 .map(participateChallenge -> {
 
                     // 챌린지

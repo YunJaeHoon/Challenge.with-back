@@ -44,8 +44,8 @@ public class ChallengeController
                         .build());
     }
 
-    // 내 챌린지 조회
-    @GetMapping("/challenge/me")
+    // 현재 진행 중인 내 챌린지 조회
+    @GetMapping("/challenge/me/ongoing")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> getMyChallenges(@AuthenticationPrincipal CustomUserDetails userDetails)
     {
@@ -55,7 +55,7 @@ public class ChallengeController
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
-                        .message("내 챌린지 조회를 성공적으로 완료하였습니다.")
+                        .message("현재 진행 중인 내 챌린지 조회를 성공적으로 완료하였습니다.")
                         .data(data)
                         .build());
     }
