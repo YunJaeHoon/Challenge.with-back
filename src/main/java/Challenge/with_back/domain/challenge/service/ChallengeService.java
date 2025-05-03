@@ -177,6 +177,7 @@ public class ChallengeService
                     return GetMyChallengeDto.ChallengeDto.builder()
                             .challengeId(challenge.getId())
                             .iconUrl(challenge.getIconUrl())
+                            .colorTheme(challenge.getColorTheme())
                             .challengeName(challenge.getName())
                             .challengeDescription(challenge.getDescription())
                             .maxParticipantCount(challenge.getMaxParticipantCount())

@@ -3,6 +3,7 @@ package Challenge.with_back.domain.challenge.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class GetMyChallengeDto
     {
         private Long challengeId;                   // 챌린지 ID
         private String iconUrl;                     // 아이콘 URL
+        private String colorTheme;                   // 색 테마
         private String challengeName;               // 챌린지 이름
         private String challengeDescription;        // 챌린지 설명
         private int maxParticipantCount;            // 챌린지 최대 참여자 인원수
