@@ -13,6 +13,7 @@ import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import Challenge.with_back.entity.rdbms.*;
 import Challenge.with_back.repository.rdbms.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,9 @@ public class ChallengeService
     private final ChallengeUtil challengeUtil;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
+
+    @Value("${CHELLENGE_ICON_BUCKET_URL}")
+    String challengeIconBucketUrl;
 
     // 챌린지 생성
     @Transactional
@@ -176,7 +180,7 @@ public class ChallengeService
 
                     return GetMyChallengeDto.ChallengeDto.builder()
                             .challengeId(challenge.getId())
-                            .iconUrl(challenge.getIconUrl())
+                            .iconUrl(challengeIconBucketUrl + challenge.getIconUrl())
                             .colorTheme(challenge.getColorTheme())
                             .challengeName(challenge.getName())
                             .challengeDescription(challenge.getDescription())
