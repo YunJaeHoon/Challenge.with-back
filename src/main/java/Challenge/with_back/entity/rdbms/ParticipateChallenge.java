@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @Entity
 @Table(
         indexes = {
-                @Index(name = "idx_userAndChallenge", columnList = "user, challenge"),
-                @Index(name = "idx_user_by_createdAt", columnList = "user, created_at DESC")
+                @Index(name = "idx_user_createdAt", columnList = "user, created_at"),
+                @Index(name = "idx_challenge_createdAt", columnList = "challenge, created_at")
         },
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"user", "challenge"})

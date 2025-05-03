@@ -149,12 +149,11 @@ public class ChallengeService
         int maxChallengeCount = accountUtil.getMaxChallengeCount(user);
 
         // 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
-        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByUserOrderByCreatedAtDesc(user);
+        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllOngoing(user);
 
         // 챌린지 참여 정보 리스트를 dto 리스트로 변경
         // 현재 진행 중인 챌린지만 필터링
         List<GetMyChallengeDto.ChallengeDto> challengeDtoList = participateChallengeList.stream()
-                .filter(participateChallenge -> !participateChallenge.getChallenge().isFinished())
                 .map(participateChallenge -> {
 
                     // 챌린지
