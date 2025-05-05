@@ -1,15 +1,15 @@
 package Challenge.with_back.domain.account.util;
 
-import Challenge.with_back.response.exception.CustomExceptionCode;
-import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.entity.redis.CheckVerificationCode;
-import Challenge.with_back.entity.redis.VerificationCode;
-import Challenge.with_back.enums.LoginMethod;
-import Challenge.with_back.response.exception.CustomException;
-import Challenge.with_back.repository.rdbms.UserRepository;
-import Challenge.with_back.repository.redis.CheckVerificationCodeRepository;
-import Challenge.with_back.repository.redis.VerificationCodeRepository;
-import Challenge.with_back.security.CustomUserDetails;
+import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.redis.CheckVerificationCode;
+import Challenge.with_back.common.entity.redis.VerificationCode;
+import Challenge.with_back.common.enums.LoginMethod;
+import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.repository.rdbms.UserRepository;
+import Challenge.with_back.common.repository.redis.CheckVerificationCodeRepository;
+import Challenge.with_back.common.repository.redis.VerificationCodeRepository;
+import Challenge.with_back.common.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

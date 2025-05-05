@@ -1,8 +1,7 @@
 package Challenge.with_back.domain.evidence_photo;
 
-import Challenge.with_back.entity.rdbms.EvidencePhoto;
-import Challenge.with_back.response.exception.CustomException;
-import Challenge.with_back.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;

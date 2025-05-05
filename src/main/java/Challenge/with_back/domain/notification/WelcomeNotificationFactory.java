@@ -1,10 +1,10 @@
 package Challenge.with_back.domain.notification;
 
-import Challenge.with_back.enums.NotificationType;
-import Challenge.with_back.entity.rdbms.Notification;
-import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.repository.rdbms.NotificationRepository;
-import Challenge.with_back.repository.rdbms.UserRepository;
+import Challenge.with_back.common.enums.NotificationType;
+import Challenge.with_back.common.entity.rdbms.Notification;
+import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.repository.rdbms.NotificationRepository;
+import Challenge.with_back.common.repository.rdbms.UserRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

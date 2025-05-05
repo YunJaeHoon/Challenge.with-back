@@ -1,9 +1,9 @@
 package Challenge.with_back.domain.basic.controller;
 
-import Challenge.with_back.response.success.CustomSuccessCode;
-import Challenge.with_back.response.success.SuccessResponseDto;
-import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.security.CustomUserDetails;
+import Challenge.with_back.common.response.success.CustomSuccessCode;
+import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

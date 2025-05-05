@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.email;
 
-import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.repository.rdbms.UserRepository;
+import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.repository.rdbms.UserRepository;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

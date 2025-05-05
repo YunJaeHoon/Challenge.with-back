@@ -1,14 +1,14 @@
 package Challenge.with_back.domain.notification.service;
 
-import Challenge.with_back.response.exception.CustomException;
-import Challenge.with_back.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.notification.dto.NotificationDto;
 import Challenge.with_back.domain.notification.TestNotificationFactory;
 import Challenge.with_back.domain.notification.dto.NotificationListDto;
-import Challenge.with_back.entity.rdbms.Notification;
-import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.repository.rdbms.NotificationRepository;
-import Challenge.with_back.repository.rdbms.UserRepository;
+import Challenge.with_back.common.entity.rdbms.Notification;
+import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.repository.rdbms.NotificationRepository;
+import Challenge.with_back.common.repository.rdbms.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,10 +1,10 @@
 package Challenge.with_back.domain.notification.controller;
 
-import Challenge.with_back.response.success.CustomSuccessCode;
-import Challenge.with_back.response.success.SuccessResponseDto;
+import Challenge.with_back.common.response.success.CustomSuccessCode;
+import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.notification.dto.NotificationListDto;
-import Challenge.with_back.entity.rdbms.User;
-import Challenge.with_back.security.CustomUserDetails;
+import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

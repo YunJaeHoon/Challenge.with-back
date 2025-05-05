@@ -1,17 +1,17 @@
 package Challenge.with_back.domain.challenge.service;
 
+import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
-import Challenge.with_back.enums.ChallengeRole;
-import Challenge.with_back.enums.ChallengeUnit;
-import Challenge.with_back.response.exception.CustomException;
-import Challenge.with_back.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.enums.ChallengeRole;
+import Challenge.with_back.common.enums.ChallengeUnit;
+import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
-import Challenge.with_back.entity.rdbms.*;
-import Challenge.with_back.repository.rdbms.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;

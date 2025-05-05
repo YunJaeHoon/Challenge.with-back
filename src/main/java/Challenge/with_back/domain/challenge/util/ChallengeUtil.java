@@ -1,17 +1,16 @@
 package Challenge.with_back.domain.challenge.util;
 
-import Challenge.with_back.enums.ChallengeColorTheme;
-import Challenge.with_back.enums.ChallengeIcon;
-import Challenge.with_back.enums.ChallengeRole;
-import Challenge.with_back.enums.ChallengeUnit;
-import Challenge.with_back.response.exception.CustomException;
-import Challenge.with_back.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.enums.ChallengeColorTheme;
+import Challenge.with_back.common.enums.ChallengeIcon;
+import Challenge.with_back.common.enums.ChallengeRole;
+import Challenge.with_back.common.enums.ChallengeUnit;
+import Challenge.with_back.common.repository.rdbms.*;
+import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.account.util.AccountUtil;
-import Challenge.with_back.entity.rdbms.*;
-import Challenge.with_back.repository.rdbms.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

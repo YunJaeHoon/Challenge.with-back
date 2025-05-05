@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.email;
 
-import Challenge.with_back.entity.redis.VerificationCode;
-import Challenge.with_back.repository.redis.VerificationCodeRepository;
+import Challenge.with_back.common.entity.redis.VerificationCode;
+import Challenge.with_back.common.repository.redis.VerificationCodeRepository;
 import Challenge.with_back.domain.account.util.AccountUtil;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
