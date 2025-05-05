@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -221,9 +222,15 @@ public class ChallengeService
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
         challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
 
+        // 페이즈
+        Phase phase = participatePhase.getPhase();
+
+        // 증거사진 최대 개수
+        long maxEvidencePhotoCount = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
+
         // 증거사진 최대 개수를 초과한다면 예외처리
-        if(participatePhase.getCountEvidencePhoto() + images.size() > 5)
-            throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, participatePhase.getCountEvidencePhoto() + images.size());
+        if(participatePhase.getCountEvidencePhoto() + images.size() > maxEvidencePhotoCount)
+            throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, maxEvidencePhotoCount);
 
         // 스레드 풀 생성
         ExecutorService executorService = Executors.newFixedThreadPool(images.size());
