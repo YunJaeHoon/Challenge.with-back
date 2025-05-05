@@ -35,6 +35,7 @@ public class GetMyChallengeDto
         private LocalDate currentPhaseStartDate;    // 현재 페이즈 시작 날짜
         private LocalDate currentPhaseEndDate;      // 현재 페이즈 종료 날짜
         private String currentPhaseName;            // 현재 페이즈 이름
+        private String currentPhaseDescription;     // 현재 페이즈 설명
         private int completeCount;                  // 현재 페이즈 완료 개수
         private Boolean isExempt;                   // 현재 페이즈 면제 여부
         private String comment;                     // 현재 페이즈 한마디

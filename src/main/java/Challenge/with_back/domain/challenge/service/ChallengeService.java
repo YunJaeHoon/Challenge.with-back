@@ -199,6 +199,7 @@ public class ChallengeService
                             .currentPhaseStartDate(phase.getStartDate())
                             .currentPhaseEndDate(phase.getEndDate())
                             .currentPhaseName(phase.getName())
+                            .currentPhaseDescription(phase.getDescription())
                             .completeCount(participatePhase.getCurrentCount())
                             .isExempt(participatePhase.isExempt())
                             .comment(participatePhase.getComment())
