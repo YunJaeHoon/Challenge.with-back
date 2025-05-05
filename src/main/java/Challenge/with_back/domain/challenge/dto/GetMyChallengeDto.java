@@ -31,6 +31,7 @@ public class GetMyChallengeDto
         private LocalDate challengeStartDate;       // 챌린지 시작 날짜
         private int countPhase;                     // 페이즈 개수
         private Long participateCurrentPhaseId;     // 현재 페이즈 참여 정보 ID
+        private int currentPhaseNumber;             // 현재 페이즈 번호
         private LocalDate currentPhaseStartDate;    // 현재 페이즈 시작 날짜
         private LocalDate currentPhaseEndDate;      // 현재 페이즈 종료 날짜
         private String currentPhaseName;            // 현재 페이즈 이름

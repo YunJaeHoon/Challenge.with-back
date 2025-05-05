@@ -195,6 +195,7 @@ public class ChallengeService
                             .challengeStartDate(challenge.getCreatedAt().toLocalDate())
                             .countPhase(challenge.calcCurrentPhaseNumber())
                             .participateCurrentPhaseId(participatePhase.getId())
+                            .currentPhaseNumber(phase.getNumber())
                             .currentPhaseStartDate(phase.getStartDate())
                             .currentPhaseEndDate(phase.getEndDate())
                             .currentPhaseName(phase.getName())
