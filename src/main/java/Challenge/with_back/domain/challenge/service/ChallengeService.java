@@ -184,6 +184,7 @@ public class ChallengeService
 
                     return GetMyChallengeDto.ChallengeDto.builder()
                             .challengeId(challenge.getId())
+                            .superAdminId(challenge.getSuperAdmin().getId())
                             .iconUrl(challengeIconBucketUrl + challenge.getIconUrl())
                             .colorTheme(challenge.getColorTheme())
                             .challengeName(challenge.getName())
@@ -192,7 +193,6 @@ public class ChallengeService
                             .goalCount(challenge.getGoalCount())
                             .unit(challenge.getUnit().name())
                             .challengeStartDate(challenge.getCreatedAt().toLocalDate())
-                            .isFinished(challenge.isFinished())
                             .countPhase(challenge.calcCurrentPhaseNumber())
                             .participateCurrentPhaseId(participatePhase.getId())
                             .currentPhaseStartDate(phase.getStartDate())

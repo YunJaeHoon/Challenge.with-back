@@ -20,15 +20,15 @@ public class GetMyChallengeDto
     public static class ChallengeDto
     {
         private Long challengeId;                   // 챌린지 ID
+        private Long superAdminId;                  // 최고 관리자 ID
         private String iconUrl;                     // 아이콘 URL
-        private String colorTheme;                   // 색 테마
+        private String colorTheme;                  // 색 테마
         private String challengeName;               // 챌린지 이름
         private String challengeDescription;        // 챌린지 설명
         private int maxParticipantCount;            // 챌린지 최대 참여자 인원수
         private int goalCount;                      // 챌린지 목표 개수
         private String unit;                        // 챌린지 단위
         private LocalDate challengeStartDate;       // 챌린지 시작 날짜
-        private Boolean isFinished;                 // 종료 여부
         private int countPhase;                     // 페이즈 개수
         private Long participateCurrentPhaseId;     // 현재 페이즈 참여 정보 ID
         private LocalDate currentPhaseStartDate;    // 현재 페이즈 시작 날짜
@@ -37,7 +37,7 @@ public class GetMyChallengeDto
         private int completeCount;                  // 현재 페이즈 완료 개수
         private Boolean isExempt;                   // 현재 페이즈 면제 여부
         private String comment;                     // 현재 페이즈 한마디
-        private long maxEvidencePhotoCount;          // 증거사진 최대 개수
+        private long maxEvidencePhotoCount;         // 증거사진 최대 개수
         private int countEvidencePhoto;             // 현재 페이즈 증거사진 개수
         private List<String> evidencePhotoUrls;     // 각 증거사진 정보
     }
