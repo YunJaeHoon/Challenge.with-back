@@ -37,6 +37,7 @@ public class GetMyChallengeDto
         private int completeCount;                  // 현재 페이즈 완료 개수
         private Boolean isExempt;                   // 현재 페이즈 면제 여부
         private String comment;                     // 현재 페이즈 한마디
+        private long maxEvidencePhotoCount;          // 증거사진 최대 개수
         private int countEvidencePhoto;             // 현재 페이즈 증거사진 개수
         private List<String> evidencePhotoUrls;     // 각 증거사진 정보
     }

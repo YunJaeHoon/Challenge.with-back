@@ -179,6 +179,9 @@ public class ChallengeService
                             .map(EvidencePhoto::getPhotoUrl)
                             .toList();
 
+                    // 증거사진 최대 개수
+                    long maxEvidencePhotoCount = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
+
                     return GetMyChallengeDto.ChallengeDto.builder()
                             .challengeId(challenge.getId())
                             .iconUrl(challengeIconBucketUrl + challenge.getIconUrl())
@@ -198,6 +201,7 @@ public class ChallengeService
                             .completeCount(participatePhase.getCurrentCount())
                             .isExempt(participatePhase.isExempt())
                             .comment(participatePhase.getComment())
+                            .maxEvidencePhotoCount(maxEvidencePhotoCount)
                             .countEvidencePhoto(participatePhase.getCountEvidencePhoto())
                             .evidencePhotoUrls(evidencePhotoUrlList)
                             .build();
