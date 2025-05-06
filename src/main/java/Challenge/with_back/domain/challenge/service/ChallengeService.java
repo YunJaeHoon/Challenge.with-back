@@ -265,7 +265,7 @@ public class ChallengeService
 
             // 증거사진 dto 리스트에 추가
             evidencePhotoDtoList.add(EvidencePhotoDto.builder()
-                    .id(evidencePhoto.getId())
+                    .evidencePhotoId(evidencePhoto.getId())
                     .url(evidencePhoto.getPhotoUrl())
                     .build());
         });

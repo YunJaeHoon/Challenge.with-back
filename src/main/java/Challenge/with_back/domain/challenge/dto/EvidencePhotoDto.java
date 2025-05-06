@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 public class EvidencePhotoDto
 {
-    private Long id;
+    private Long evidencePhotoId;
     private String url;
 }
