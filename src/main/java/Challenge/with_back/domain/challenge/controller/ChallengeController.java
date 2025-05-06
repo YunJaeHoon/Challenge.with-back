@@ -1,12 +1,9 @@
 package Challenge.with_back.domain.challenge.controller;
 
 import Challenge.with_back.common.aop.annotation.PremiumOnly;
-import Challenge.with_back.domain.challenge.dto.UpdateCommentDto;
-import Challenge.with_back.domain.challenge.dto.UpdateCurrentCountDto;
+import Challenge.with_back.domain.challenge.dto.*;
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
-import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
-import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.service.ChallengeService;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
@@ -69,13 +66,13 @@ public class ChallengeController
                                                                    @RequestPart(value = "images") List<MultipartFile> images)
     {
         User user = userDetails.getUser();
-        challengeService.uploadEvidencePhotos(user, participatePhaseId, images);
+        List<EvidencePhotoDto> data = challengeService.uploadEvidencePhotos(user, participatePhaseId, images);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("증거사진을 성공적으로 등록하였습니다.")
-                        .data(null)
+                        .data(data)
                         .build());
     }
 

@@ -2,6 +2,7 @@ package Challenge.with_back.domain.challenge.service;
 
 import Challenge.with_back.common.entity.rdbms.*;
 import Challenge.with_back.common.repository.rdbms.*;
+import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.common.enums.ChallengeRole;
@@ -22,8 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 @RequiredArgsConstructor
@@ -222,7 +221,7 @@ public class ChallengeService
 
     // 증거사진 등록
     @Transactional
-    public void uploadEvidencePhotos(User user, Long participatePhaseId, List<MultipartFile> images)
+    public List<EvidencePhotoDto> uploadEvidencePhotos(User user, Long participatePhaseId, List<MultipartFile> images)
     {
         // 페이즈 참여 정보
         ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
@@ -241,34 +240,35 @@ public class ChallengeService
         if(participatePhase.getCountEvidencePhoto() + images.size() > maxEvidencePhotoCount)
             throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, maxEvidencePhotoCount);
 
-        // 스레드 풀 생성
-        ExecutorService executorService = Executors.newFixedThreadPool(images.size());
+        // 증거사진 dto 리스트
+        List<EvidencePhotoDto> evidencePhotoDtoList = new ArrayList<>();
 
         images.forEach(image -> {
-            executorService.submit(() -> {
-                // UUID 생성
-                String uuid = UUID.randomUUID().toString();
+            // UUID 생성
+            String uuid = UUID.randomUUID().toString();
 
-                // 증거사진 엔티티 생성
-                EvidencePhoto evidencePhoto = EvidencePhoto.builder()
-                        .participatePhase(participatePhase)
-                        .filename(uuid)
-                        .build();
+            // 증거사진 엔티티 생성
+            EvidencePhoto evidencePhoto = EvidencePhoto.builder()
+                    .participatePhase(participatePhase)
+                    .filename(uuid)
+                    .build();
 
-                // S3 업로드
-                S3EvidencePhoto s3EvidencePhoto = s3EvidencePhotoManager.upload(image, uuid);
+            // S3 업로드
+            S3EvidencePhoto s3EvidencePhoto = s3EvidencePhotoManager.upload(image, uuid);
 
-                // 증거사진 URL 등록
-                evidencePhoto.setPhotoUrl(s3EvidencePhoto.getPhotoUrl());
-                evidencePhoto.setFilename(s3EvidencePhoto.getFilename());
+            // 증거사진 URL 등록
+            evidencePhoto.setPhotoUrl(s3EvidencePhoto.getPhotoUrl());
+            evidencePhoto.setFilename(s3EvidencePhoto.getFilename());
 
-                // 증거사진 엔티티 저장
-                evidencePhotoRepository.save(evidencePhoto);
-            });
+            // 증거사진 엔티티 저장
+            evidencePhotoRepository.save(evidencePhoto);
+
+            // 증거사진 dto 리스트에 추가
+            evidencePhotoDtoList.add(EvidencePhotoDto.builder()
+                    .id(evidencePhoto.getId())
+                    .url(evidencePhoto.getPhotoUrl())
+                    .build());
         });
-
-        // 스레드 풀 종료
-        executorService.shutdown();
 
         // 증거사진 개수 갱신
         participatePhase.increaseCountEvidencePhoto(images.size());
@@ -276,6 +276,8 @@ public class ChallengeService
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
         challengeUtil.renewLastActiveDate(participatePhase);
+
+        return evidencePhotoDtoList;
     }
 
     // 증거사진 삭제
