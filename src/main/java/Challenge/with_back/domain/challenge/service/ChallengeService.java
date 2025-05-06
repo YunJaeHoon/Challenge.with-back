@@ -289,9 +289,6 @@ public class ChallengeService
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
         challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
 
-        // S3에서 삭제
-        s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
-
         // 증거사진 개수 갱신
         participatePhase.decreaseCountEvidencePhoto();
         participatePhaseRepository.save(participatePhase);
@@ -301,6 +298,9 @@ public class ChallengeService
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
         challengeUtil.renewLastActiveDate(participatePhase);
+
+        // S3에서 삭제
+        s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
     }
 
     // 페이즈 참여 정보 한마디 수정
