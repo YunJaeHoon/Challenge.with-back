@@ -20,7 +20,7 @@ public class S3EvidencePhotoManager
     private final S3Template s3Template;
 
     // 가능한 확장자
-    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif");
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "svg");
 
     @Value("${EVIDENCE_PHOTO_BUCKET_NAME}")
     private String bucketName;

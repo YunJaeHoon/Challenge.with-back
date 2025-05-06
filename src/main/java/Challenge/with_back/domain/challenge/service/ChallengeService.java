@@ -174,9 +174,14 @@ public class ChallengeService
                     // 증거사진 리스트
                     List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhase(participatePhase);
 
-                    // 증거사진 리스트를 증거사진 URL 리스트로 변경
-                    List<String> evidencePhotoUrlList = evidencePhotoList.stream()
-                            .map(EvidencePhoto::getPhotoUrl)
+                    // 증거사진 리스트를 증거사진 dto 리스트로 변경
+                    List<GetMyChallengeDto.EvidencePhotoDto> evidencePhotos = evidencePhotoList.stream()
+                            .map(evidencePhoto -> {
+                                return GetMyChallengeDto.EvidencePhotoDto.builder()
+                                        .evidencePhotoId(evidencePhoto.getId())
+                                        .url(evidencePhoto.getPhotoUrl())
+                                        .build();
+                            })
                             .toList();
 
                     // 증거사진 최대 개수
@@ -204,7 +209,7 @@ public class ChallengeService
                             .comment(participatePhase.getComment())
                             .maxEvidencePhotoCount(maxEvidencePhotoCount)
                             .countEvidencePhoto(participatePhase.getCountEvidencePhoto())
-                            .evidencePhotoUrls(evidencePhotoUrlList)
+                            .evidencePhotos(evidencePhotos)
                             .build();
                 })
                 .toList();
