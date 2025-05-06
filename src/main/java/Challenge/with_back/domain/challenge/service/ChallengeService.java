@@ -208,7 +208,6 @@ public class ChallengeService
                             .isExempt(participatePhase.isExempt())
                             .comment(participatePhase.getComment())
                             .maxEvidencePhotoCount(maxEvidencePhotoCount)
-                            .countEvidencePhoto(participatePhase.getCountEvidencePhoto())
                             .evidencePhotos(evidencePhotos)
                             .build();
                 })
