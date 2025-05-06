@@ -29,7 +29,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig
 {
     private final CustomUserDetailsService customUserDetailsService;
