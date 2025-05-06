@@ -2,6 +2,8 @@ package Challenge.with_back.common.response.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,18 +19,6 @@ public class GlobalExceptionHandler
                         .code(e.getErrorCode().name())
                         .message(e.getErrorCode().getMessage())
                         .data(e.getData())
-                        .build());
-    }
-
-    // 이외의 예외 처리 핸들러
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponseDto> unexpectedExceptionHandler(Exception e)
-    {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ExceptionResponseDto.builder()
-                        .code("UNEXPECTED_ERROR")
-                        .message(e.getMessage())
-                        .data(null)
                         .build());
     }
 }
