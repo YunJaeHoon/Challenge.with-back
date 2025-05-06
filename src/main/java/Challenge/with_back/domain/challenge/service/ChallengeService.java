@@ -193,7 +193,6 @@ public class ChallengeService
                             .goalCount(challenge.getGoalCount())
                             .unit(challenge.getUnit().name())
                             .challengeStartDate(challenge.getCreatedAt().toLocalDate())
-                            .countPhase(challenge.calcCurrentPhaseNumber())
                             .participateCurrentPhaseId(participatePhase.getId())
                             .currentPhaseNumber(phase.getNumber())
                             .currentPhaseStartDate(phase.getStartDate())
