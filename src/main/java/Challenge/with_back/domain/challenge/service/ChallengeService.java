@@ -40,9 +40,6 @@ public class ChallengeService
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
-    @Value("${CHELLENGE_ICON_BUCKET_URL}")
-    String challengeIconBucketUrl;
-
     // 챌린지 생성
     @Transactional
     public void createChallenge(CreateChallengeDto createChallengeDto, User user)
@@ -95,7 +92,7 @@ public class ChallengeService
         // 챌린지 생성
         Challenge challenge = Challenge.builder()
                 .superAdmin(user)
-                .iconUrl(createChallengeDto.getIcon())
+                .icon(createChallengeDto.getIcon())
                 .colorTheme(colorTheme)
                 .name(createChallengeDto.getName())
                 .description(createChallengeDto.getDescription())
@@ -188,7 +185,7 @@ public class ChallengeService
                     return GetMyChallengeDto.ChallengeDto.builder()
                             .challengeId(challenge.getId())
                             .superAdminId(challenge.getSuperAdmin().getId())
-                            .iconUrl(challengeIconBucketUrl + challenge.getIconUrl())
+                            .icon(challenge.getIcon())
                             .colorTheme(challenge.getColorTheme())
                             .challengeName(challenge.getName())
                             .challengeDescription(challenge.getDescription())

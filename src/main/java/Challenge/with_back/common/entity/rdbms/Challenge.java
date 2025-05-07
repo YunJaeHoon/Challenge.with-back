@@ -27,10 +27,10 @@ public class Challenge extends BasicEntity
 	@JoinColumn(name = "super_admin")
 	private User superAdmin;
 	
-	// 아이콘 URL
+	// 아이콘
 	@NotNull
 	@Column(length = 255)
-	private String iconUrl;
+	private String icon;
 	
 	// 색 테마
 	@NotNull
@@ -80,9 +80,9 @@ public class Challenge extends BasicEntity
 	private boolean isFinished;
 	
 	@Builder
-	public Challenge(User superAdmin, String iconUrl, String colorTheme, String name, String description, int goalCount, ChallengeUnit unit, boolean isPublic, int maxParticipantCount, int countCurrentParticipant, int countPhase, LocalDate lastActiveDate, boolean isFinished) {
+	public Challenge(User superAdmin, String icon, String colorTheme, String name, String description, int goalCount, ChallengeUnit unit, boolean isPublic, int maxParticipantCount, int countCurrentParticipant, int countPhase, LocalDate lastActiveDate, boolean isFinished) {
 		this.superAdmin = superAdmin;
-		this.iconUrl = iconUrl;
+		this.icon = icon;
 		this.colorTheme = colorTheme;
 		this.name = name;
 		this.description = description;

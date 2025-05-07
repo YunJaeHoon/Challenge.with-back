@@ -21,7 +21,7 @@ public class GetMyChallengeDto
     {
         private Long challengeId;                       // 챌린지 ID
         private Long superAdminId;                      // 최고 관리자 ID
-        private String iconUrl;                         // 아이콘 URL
+        private String icon;                            // 아이콘
         private String colorTheme;                      // 색 테마
         private String challengeName;                   // 챌린지 이름
         private String challengeDescription;            // 챌린지 설명
