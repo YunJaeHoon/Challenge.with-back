@@ -2,7 +2,6 @@ package Challenge.with_back.domain.challenge.util;
 
 import Challenge.with_back.common.entity.rdbms.*;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
-import Challenge.with_back.common.enums.ChallengeIcon;
 import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.repository.rdbms.*;
@@ -28,16 +27,6 @@ public class ChallengeUtil
 	private final ParticipatePhaseRepository participatePhaseRepository;
 
 	private final AccountUtil accountUtil;
-
-	// 아이콘 이름으로 아이콘 URL 찾기
-	public String getIconUrl(String iconName)
-	{
-		try {
-			return ChallengeIcon.valueOf(iconName).getUrl();
-		} catch (IllegalArgumentException e) {
-			throw new CustomException(CustomExceptionCode.INVALID_CHALLENGE_ICON, iconName);
-		}
-	}
 	
 	// 챌린지 색상 테마 이름으로 색상 코드 찾기
 	public String getColor(String colorThemeName)

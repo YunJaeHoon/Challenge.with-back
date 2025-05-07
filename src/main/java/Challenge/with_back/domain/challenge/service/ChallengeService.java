@@ -47,8 +47,7 @@ public class ChallengeService
     @Transactional
     public void createChallenge(CreateChallengeDto createChallengeDto, User user)
     {
-        // 챌린지 아이콘 URL, 색상 코드, 단위 추출
-        String iconUrl = challengeUtil.getIconUrl(createChallengeDto.getIcon());
+        // 챌린지 색상 코드, 단위 추출
         String colorTheme = challengeUtil.getColor(createChallengeDto.getColorTheme());
         ChallengeUnit unit = challengeUtil.getUnit(createChallengeDto.getUnit());
 
@@ -96,7 +95,7 @@ public class ChallengeService
         // 챌린지 생성
         Challenge challenge = Challenge.builder()
                 .superAdmin(user)
-                .iconUrl(iconUrl)
+                .iconUrl(createChallengeDto.getIcon())
                 .colorTheme(colorTheme)
                 .name(createChallengeDto.getName())
                 .description(createChallengeDto.getDescription())
