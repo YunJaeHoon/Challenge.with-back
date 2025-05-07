@@ -59,6 +59,7 @@ public enum CustomExceptionCode
     INVALID_PARTICIPATE_PHASE_COMMENT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 한마디입니다."),
     INVALID_PARTICIPATE_PHASE_CURRENT_COUNT(HttpStatus.BAD_REQUEST, "크기에 맞지 않는 달성 개수입니다."),
     FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지가 최대 인원수를 초과하였습니다."),
+    PRIVATE_CHALLENGE(HttpStatus.FORBIDDEN, "비공개 챌린지입니다."),
 
     // S3 예외
     TOO_MANY_EVIDENCE_PHOTO(HttpStatus.BAD_REQUEST, "증거사진 최대 개수를 초과합니다."),

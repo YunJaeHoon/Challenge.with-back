@@ -105,6 +105,10 @@ public class ChallengeUtil
 	@Transactional
 	public void joinChallenge(Challenge challenge, User user, ChallengeRole role)
 	{
+		// 공개 챌린지인지 확인
+		if(!challenge.isPublic())
+			throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
+
 		// 이미 챌린지에 참여자가 가득 찼는지 확인
 		if(challenge.getMaxParticipantCount() == challenge.getCountCurrentParticipant())
 			throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
