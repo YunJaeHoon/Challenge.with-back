@@ -24,21 +24,6 @@ public class AsyncConfig
         return executor;
     }
 
-    // 증거사진 스레드 풀
-    @Bean(name = "evidencePhotoThreadPool")
-    public Executor getEvidencePhotoAsyncExecutor()
-    {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(100);
-        executor.setQueueCapacity(1000);
-        executor.setThreadNamePrefix("evidence-photo-thread-");
-        executor.initialize();
-
-        return executor;
-    }
-
     // 페이즈 참여 데이터 갱신 스레드 풀
     @Bean(name = "participatePhaseThreadPool")
     public Executor getParticipatePhaseAsyncExecutor()
