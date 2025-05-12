@@ -1,8 +1,10 @@
 package Challenge.with_back.domain.challenge.service;
 
 import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.enums.UpdateParticipatePhaseInfoType;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
+import Challenge.with_back.domain.challenge.dto.UpdateParticipatePhaseMessage;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.common.enums.ChallengeRole;
@@ -14,6 +16,8 @@ import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -31,7 +35,6 @@ public class ChallengeService
     private final UserRepository userRepository;
     private final ChallengeRepository challengeRepository;
     private final ParticipateChallengeRepository participateChallengeRepository;
-    private final PhaseRepository phaseRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
     private final EvidencePhotoRepository evidencePhotoRepository;
 
@@ -39,6 +42,14 @@ public class ChallengeService
     private final ChallengeUtil challengeUtil;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
+
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${RABBITMQ_EXCHANGE_NAME}")
+    private String exchangeName;
+
+    @Value("${RABBITMQ_ROUTING_KEY}")
+    private String routingKey;
 
     // 챌린지 생성
     @Transactional
@@ -302,6 +313,58 @@ public class ChallengeService
 
         // S3에서 삭제
         s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
+    }
+
+    // 페이즈 참여 정보 한마디 수정 요청 메시지를 RabbitMQ의 큐로 발행
+    public void sendUpdateParticipatePhaseComment(User user, Long participatePhaseId, String comment)
+    {
+        System.out.println("한마디 수정 메시지 전송");
+
+        UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
+                .type(UpdateParticipatePhaseInfoType.UPDATE_COMMENT)
+                .userId(user.getId())
+                .participatePhaseId(participatePhaseId)
+                .data(comment)
+                .build();
+
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+    }
+
+    // 페이즈 참여 정보 현재 달성 개수 변경 요청 메시지를 RabbitMQ의 큐로 발행
+    public void sendUpdateParticipatePhaseCurrentCount(User user, Long participatePhaseId, int value)
+    {
+        System.out.println("현재 달성 개수 변경 메시지 전송");
+
+        UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
+                .type(UpdateParticipatePhaseInfoType.UPDATE_CURRENT_COUNT)
+                .userId(user.getId())
+                .participatePhaseId(participatePhaseId)
+                .data(value)
+                .build();
+
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+    }
+
+    // 페이즈 참여 정보 면제 여부 토글 요청 메시지를 RabbitMQ의 큐로 발행
+    public void sendToggleIsExempt(User user, Long participatePhaseId)
+    {
+        System.out.println("면제 여부 토글 메시지 전송");
+
+        UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
+                .type(UpdateParticipatePhaseInfoType.TOGGLE_IS_EXEMPT)
+                .userId(user.getId())
+                .participatePhaseId(participatePhaseId)
+                .data(null)
+                .build();
+
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+    }
+
+    // RabbitMQ의 페이즈 참여 정보 변경 메시지 수신(구독) 서비스
+    @RabbitListener(queues = "${RABBITMQ_QUEUE_NAME}")
+    public void updateParticipatePhaseInfo(UpdateParticipatePhaseMessage messageDto)
+    {
+        System.out.println("수신" + messageDto.getType());
     }
 
     // 페이즈 참여 정보 한마디 수정

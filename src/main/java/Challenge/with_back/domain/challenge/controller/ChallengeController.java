@@ -102,7 +102,7 @@ public class ChallengeController
                                                                             @RequestBody UpdateCommentDto dto)
     {
         User user = userDetails.getUser();
-        challengeService.updateParticipatePhaseComment(user, participatePhaseId, dto.getComment());
+        challengeService.sendUpdateParticipatePhaseComment(user, participatePhaseId, dto.getComment());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -120,7 +120,7 @@ public class ChallengeController
                                                                                    @RequestBody UpdateCurrentCountDto dto)
     {
         User user = userDetails.getUser();
-        challengeService.updateParticipatePhaseCurrentCount(user, participatePhaseId, dto.getValue());
+        challengeService.sendUpdateParticipatePhaseCurrentCount(user, participatePhaseId, dto.getValue());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -137,7 +137,7 @@ public class ChallengeController
                                                              @PathVariable Long participatePhaseId)
     {
         User user = userDetails.getUser();
-        challengeService.toggleIsExempt(user, participatePhaseId);
+        challengeService.sendToggleIsExempt(user, participatePhaseId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
