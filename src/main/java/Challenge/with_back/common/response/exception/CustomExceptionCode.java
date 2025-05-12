@@ -58,6 +58,7 @@ public enum CustomExceptionCode
     INVALID_CHALLENGE_UNIT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 단위입니다."),
     INVALID_PARTICIPATE_PHASE_COMMENT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 한마디입니다."),
     INVALID_PARTICIPATE_PHASE_CURRENT_COUNT(HttpStatus.BAD_REQUEST, "크기에 맞지 않는 달성 개수입니다."),
+    INVALID_UPDATE_PARTICIPATE_PHASE_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이즈 참여 정보 변경 타입입니다."),
     FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지가 최대 인원수를 초과하였습니다."),
     PRIVATE_CHALLENGE(HttpStatus.FORBIDDEN, "비공개 챌린지입니다."),
 

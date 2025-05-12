@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.challenge.service;
 
 import Challenge.with_back.common.entity.rdbms.*;
-import Challenge.with_back.common.enums.UpdateParticipatePhaseInfoType;
+import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
 import Challenge.with_back.domain.challenge.dto.UpdateParticipatePhaseMessage;
@@ -16,6 +16,7 @@ import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChallengeService
 {
     private final UserRepository userRepository;
@@ -321,7 +323,7 @@ public class ChallengeService
         System.out.println("한마디 수정 메시지 전송");
 
         UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
-                .type(UpdateParticipatePhaseInfoType.UPDATE_COMMENT)
+                .type(UpdateParticipatePhaseType.UPDATE_COMMENT)
                 .userId(user.getId())
                 .participatePhaseId(participatePhaseId)
                 .data(comment)
@@ -336,7 +338,7 @@ public class ChallengeService
         System.out.println("현재 달성 개수 변경 메시지 전송");
 
         UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
-                .type(UpdateParticipatePhaseInfoType.UPDATE_CURRENT_COUNT)
+                .type(UpdateParticipatePhaseType.UPDATE_CURRENT_COUNT)
                 .userId(user.getId())
                 .participatePhaseId(participatePhaseId)
                 .data(value)
@@ -348,10 +350,8 @@ public class ChallengeService
     // 페이즈 참여 정보 면제 여부 토글 요청 메시지를 RabbitMQ의 큐로 발행
     public void sendToggleIsExempt(User user, Long participatePhaseId)
     {
-        System.out.println("면제 여부 토글 메시지 전송");
-
         UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
-                .type(UpdateParticipatePhaseInfoType.TOGGLE_IS_EXEMPT)
+                .type(UpdateParticipatePhaseType.TOGGLE_IS_EXEMPT)
                 .userId(user.getId())
                 .participatePhaseId(participatePhaseId)
                 .data(null)
@@ -362,15 +362,30 @@ public class ChallengeService
 
     // RabbitMQ의 페이즈 참여 정보 변경 메시지 수신(구독) 서비스
     @RabbitListener(queues = "${RABBITMQ_QUEUE_NAME}")
-    public void updateParticipatePhaseInfo(UpdateParticipatePhaseMessage messageDto)
+    @Transactional
+    public void updateParticipatePhaseInfo(UpdateParticipatePhaseMessage message)
     {
-        System.out.println("수신" + messageDto.getType());
+        // 사용자 정보
+        User user = userRepository.findById(message.getUserId())
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, message.getUserId()));
+
+        try {
+            if (message.getType().equals(UpdateParticipatePhaseType.UPDATE_COMMENT)) {
+                updateParticipatePhaseComment(user, message.getParticipatePhaseId(), (String) message.getData());
+            } else if (message.getType().equals(UpdateParticipatePhaseType.UPDATE_CURRENT_COUNT)) {
+                updateParticipatePhaseCurrentCount(user, message.getParticipatePhaseId(), (int) message.getData());
+            } else if (message.getType().equals(UpdateParticipatePhaseType.TOGGLE_IS_EXEMPT)) {
+                toggleIsExempt(user, message.getParticipatePhaseId());
+            } else {
+                throw new CustomException(CustomExceptionCode.INVALID_UPDATE_PARTICIPATE_PHASE_TYPE, message.getType().name());
+            }
+        } catch (CustomException e) {
+            log.error(e.getErrorCode().getMessage());
+        }
     }
 
     // 페이즈 참여 정보 한마디 수정
-    @Async("participatePhaseThreadPool")
-    @Transactional
-    public void updateParticipatePhaseComment(User user, Long participatePhaseId, String comment)
+    public void updateParticipatePhaseComment(User user, Long participatePhaseId, String comment) throws CustomException
     {
         // 페이즈 참여 정보
         ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
@@ -393,7 +408,7 @@ public class ChallengeService
     // 페이즈 참여 정보 현재 달성 개수 변경
     @Async("participatePhaseThreadPool")
     @Transactional
-    public void updateParticipatePhaseCurrentCount(User user, Long participatePhaseId, int value)
+    public void updateParticipatePhaseCurrentCount(User user, Long participatePhaseId, int value) throws CustomException
     {
         // 페이즈 참여 정보
         ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
@@ -443,7 +458,7 @@ public class ChallengeService
     // 페이즈 참여 정보 면제 여부 토글
     @Async("participatePhaseThreadPool")
     @Transactional
-    public void toggleIsExempt(User user, Long participatePhaseId)
+    public void toggleIsExempt(User user, Long participatePhaseId) throws CustomException
     {
         // 페이즈 참여 정보
         ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)

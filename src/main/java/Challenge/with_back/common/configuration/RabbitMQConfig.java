@@ -4,6 +4,7 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -86,5 +87,21 @@ public class RabbitMQConfig
     @Bean
     public MessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
+    }
+
+    // 재시도 정책 비활성화
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory)
+    {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+
+        // 예외 발생 시 메시지를 큐에 다시 넣지 않음
+        factory.setDefaultRequeueRejected(false);
+
+        // JSON 형식의 메시지와 객체 간의 직렬화 및 역직렬화가 가능하도록 설정
+        factory.setMessageConverter(jackson2JsonMessageConverter());
+
+        return factory;
     }
 }
