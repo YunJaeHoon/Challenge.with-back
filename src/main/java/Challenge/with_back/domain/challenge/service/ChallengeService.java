@@ -5,6 +5,7 @@ import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
 import Challenge.with_back.domain.challenge.dto.UpdateParticipatePhaseMessage;
+import Challenge.with_back.domain.challenge.update_participate_phase.UpdateParticipatePhaseStrategy;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.common.enums.ChallengeRole;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +46,7 @@ public class ChallengeService
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
     private final RabbitTemplate rabbitTemplate;
+    private final Map<String, UpdateParticipatePhaseStrategy> updateParticipatePhaseStrategyMap;
 
     @Value("${RABBITMQ_EXCHANGE_NAME}")
     private String exchangeName;
@@ -320,10 +321,8 @@ public class ChallengeService
     // 페이즈 참여 정보 한마디 수정 요청 메시지를 RabbitMQ의 큐로 발행
     public void sendUpdateParticipatePhaseComment(User user, Long participatePhaseId, String comment)
     {
-        System.out.println("한마디 수정 메시지 전송");
-
         UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
-                .type(UpdateParticipatePhaseType.UPDATE_COMMENT)
+                .type(UpdateParticipatePhaseType.UPDATE_COMMENT.name())
                 .userId(user.getId())
                 .participatePhaseId(participatePhaseId)
                 .data(comment)
@@ -335,10 +334,8 @@ public class ChallengeService
     // 페이즈 참여 정보 현재 달성 개수 변경 요청 메시지를 RabbitMQ의 큐로 발행
     public void sendUpdateParticipatePhaseCurrentCount(User user, Long participatePhaseId, int value)
     {
-        System.out.println("현재 달성 개수 변경 메시지 전송");
-
         UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
-                .type(UpdateParticipatePhaseType.UPDATE_CURRENT_COUNT)
+                .type(UpdateParticipatePhaseType.UPDATE_CURRENT_COUNT.name())
                 .userId(user.getId())
                 .participatePhaseId(participatePhaseId)
                 .data(value)
@@ -351,7 +348,7 @@ public class ChallengeService
     public void sendToggleIsExempt(User user, Long participatePhaseId)
     {
         UpdateParticipatePhaseMessage message = UpdateParticipatePhaseMessage.builder()
-                .type(UpdateParticipatePhaseType.TOGGLE_IS_EXEMPT)
+                .type(UpdateParticipatePhaseType.TOGGLE_IS_EXEMPT.name())
                 .userId(user.getId())
                 .participatePhaseId(participatePhaseId)
                 .data(null)
@@ -363,127 +360,28 @@ public class ChallengeService
     // RabbitMQ의 페이즈 참여 정보 변경 메시지 수신(구독) 서비스
     @RabbitListener(queues = "${RABBITMQ_QUEUE_NAME}")
     @Transactional
-    public void updateParticipatePhaseInfo(UpdateParticipatePhaseMessage message)
+    public void updateParticipatePhase(UpdateParticipatePhaseMessage message)
     {
         // 사용자 정보
         User user = userRepository.findById(message.getUserId())
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, message.getUserId()));
 
+        // 페이즈 참여 정보
+        ParticipatePhase participatePhase = participatePhaseRepository.findById(message.getParticipatePhaseId())
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, message.getParticipatePhaseId()));
+
+        // 페이즈 참여 정보 변경 전략 확인
+        UpdateParticipatePhaseStrategy updateParticipatePhaseStrategy = updateParticipatePhaseStrategyMap.get(message.getType());
+
+        // 존재하지 않는 페이즈 참여 정보 변경 종류라면 예외 처리
+        if(updateParticipatePhaseStrategy == null)
+            throw new CustomException(CustomExceptionCode.INVALID_UPDATE_PARTICIPATE_PHASE_TYPE, message.getType());
+
+        // 페이즈 참여 정보 변경
         try {
-            if (message.getType().equals(UpdateParticipatePhaseType.UPDATE_COMMENT)) {
-                updateParticipatePhaseComment(user, message.getParticipatePhaseId(), (String) message.getData());
-            } else if (message.getType().equals(UpdateParticipatePhaseType.UPDATE_CURRENT_COUNT)) {
-                updateParticipatePhaseCurrentCount(user, message.getParticipatePhaseId(), (int) message.getData());
-            } else if (message.getType().equals(UpdateParticipatePhaseType.TOGGLE_IS_EXEMPT)) {
-                toggleIsExempt(user, message.getParticipatePhaseId());
-            } else {
-                throw new CustomException(CustomExceptionCode.INVALID_UPDATE_PARTICIPATE_PHASE_TYPE, message.getType().name());
-            }
+            updateParticipatePhaseStrategy.updateParticipatePhase(user, participatePhase, message.getData());
         } catch (CustomException e) {
             log.error(e.getErrorCode().getMessage());
         }
-    }
-
-    // 페이즈 참여 정보 한마디 수정
-    public void updateParticipatePhaseComment(User user, Long participatePhaseId, String comment) throws CustomException
-    {
-        // 페이즈 참여 정보
-        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
-
-        // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
-
-        // 한마디 길이 체크
-        challengeUtil.checkParticipatePhaseCommentLength(comment);
-
-        // 한마디 수정
-        participatePhase.updateComment(comment);
-        participatePhaseRepository.save(participatePhase);
-
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
-    }
-
-    // 페이즈 참여 정보 현재 달성 개수 변경
-    @Async("participatePhaseThreadPool")
-    @Transactional
-    public void updateParticipatePhaseCurrentCount(User user, Long participatePhaseId, int value) throws CustomException
-    {
-        // 페이즈 참여 정보
-        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
-
-        // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
-
-        // 챌린지
-        Challenge challenge = participatePhase.getPhase().getChallenge();
-
-        // 현재 달성 개수가 범위를 벗어나면 예외 처리
-        challengeUtil.checkCurrentCount(value, challenge);
-
-        // 기존 달성 개수
-        int originalValue = participatePhase.getCurrentCount();
-
-        // 현재 달성 개수 변경
-        participatePhase.updateCurrentCount(value);
-        participatePhaseRepository.save(participatePhase);
-
-        // 기존에 목표 개수를 달성하지 못했지만 새롭게 목표 개수에 달성했다면, 챌린지 참여 정보에서 성공 개수 1 증가
-        // 기존에 목표 개수를 달성했지만 새롭게 목표 개수에 달성하지 못했다면, 챌린지 참여 정보에서 성공 개수 1 감소
-        if(originalValue < challenge.getGoalCount() && value == challenge.getGoalCount())
-        {
-            // 챌린지 참여 정보
-            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
-                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
-
-            participateChallenge.increaseCountSuccess();
-            participateChallengeRepository.save(participateChallenge);
-        }
-        else if(originalValue == challenge.getGoalCount() && value < challenge.getGoalCount())
-        {
-            // 챌린지 참여 정보
-            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
-                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
-
-            participateChallenge.decreaseCountSuccess();
-            participateChallengeRepository.save(participateChallenge);
-        }
-
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
-    }
-
-    // 페이즈 참여 정보 면제 여부 토글
-    @Async("participatePhaseThreadPool")
-    @Transactional
-    public void toggleIsExempt(User user, Long participatePhaseId) throws CustomException
-    {
-        // 페이즈 참여 정보
-        ParticipatePhase participatePhase = participatePhaseRepository.findById(participatePhaseId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
-
-        // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
-
-        // 챌린지
-        Challenge challenge = participatePhase.getPhase().getChallenge();
-
-        // 챌린지 참여 정보
-        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
-
-        // 기존 면제 여부 값에 따라 챌린지 참여 정보의 면제 개수 갱신
-        if(participatePhase.isExempt())
-            participateChallenge.decreaseCountExemption();
-        else
-            participateChallenge.increaseCountExemption();
-
-        // 면제 여부 토글
-        participatePhase.toggleIsExempt();
-
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
     }
 }

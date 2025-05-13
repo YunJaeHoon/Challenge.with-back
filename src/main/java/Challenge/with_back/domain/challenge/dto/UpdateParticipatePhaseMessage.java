@@ -7,8 +7,8 @@ import lombok.*;
 @Builder
 public class UpdateParticipatePhaseMessage
 {
-    private UpdateParticipatePhaseType type;        // 업데이트 종류
-    private Long userId;                            // 사용자 ID
-    private Long participatePhaseId;                // 페이즈 참여 정보 ID
-    private Object data;                            // 데이터
+    private String type;                // 업데이트 종류
+    private Long userId;                // 사용자 ID
+    private Long participatePhaseId;    // 페이즈 참여 정보 ID
+    private Object data;                // 데이터
 }
