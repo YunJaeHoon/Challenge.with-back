@@ -1,6 +1,7 @@
 package Challenge.with_back.domain.account.service;
 
 import Challenge.with_back.common.enums.ProfileImage;
+import Challenge.with_back.common.security.jwt.Token;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
 import Challenge.with_back.domain.account.util.AccountUtil;
@@ -119,7 +120,7 @@ public class AccountService
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, id));
 
         // Access token 발급
-        String accessToken = jwtUtil.getToken(id, true);
+        String accessToken = jwtUtil.getToken(id, Token.ACCESS_TOKEN);
 
         return AccessTokenDto.builder()
                 .accessToken(accessToken)

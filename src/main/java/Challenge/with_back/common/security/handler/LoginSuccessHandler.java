@@ -5,6 +5,7 @@ import Challenge.with_back.common.security.dto.AccessTokenDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.common.security.jwt.JwtUtil;
+import Challenge.with_back.common.security.jwt.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -41,7 +42,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
         boolean rememberMe = "true".equalsIgnoreCase(rememberMeParam);
 
         // Access token 생성
-        String accessToken = jwtUtil.getToken(user.getId(), true);
+        String accessToken = jwtUtil.getToken(user.getId(), Token.ACCESS_TOKEN);
 
         AccessTokenDto data = AccessTokenDto.builder()
                 .accessToken(accessToken)
@@ -49,8 +50,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 
         if(rememberMe)
         {
-            String refreshToken = jwtUtil.getToken(user.getId(), false);
-            Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, false);
+            String refreshToken = jwtUtil.getToken(user.getId(), Token.REFRESH_TOKEN);
+            Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, Token.REFRESH_TOKEN);
 
             response.addCookie(refreshTokenCookie);
         }
