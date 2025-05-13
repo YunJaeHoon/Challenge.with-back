@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class PremiumCheckAspect
+public class                                      PremiumCheckAspect
 {
     private final AccountUtil accountUtil;
 

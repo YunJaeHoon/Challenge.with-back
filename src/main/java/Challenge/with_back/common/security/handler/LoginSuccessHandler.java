@@ -4,7 +4,7 @@ import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.common.security.dto.AccessTokenDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
-import Challenge.with_back.common.security.JwtUtil;
+import Challenge.with_back.common.security.jwt.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

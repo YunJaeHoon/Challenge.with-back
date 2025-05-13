@@ -2,7 +2,7 @@ package Challenge.with_back.common.security.handler;
 
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
-import Challenge.with_back.common.security.JwtUtil;
+import Challenge.with_back.common.security.jwt.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

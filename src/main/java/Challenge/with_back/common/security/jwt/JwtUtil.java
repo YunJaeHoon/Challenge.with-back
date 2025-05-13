@@ -1,4 +1,4 @@
-package Challenge.with_back.common.security;
+package Challenge.with_back.common.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

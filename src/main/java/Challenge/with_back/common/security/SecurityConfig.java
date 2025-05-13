@@ -1,6 +1,6 @@
 package Challenge.with_back.common.security;
 
-import Challenge.with_back.common.security.filter.JwtFilter;
+import Challenge.with_back.common.security.jwt.JwtFilter;
 import Challenge.with_back.common.security.exception.CustomAccessDeniedHandler;
 import Challenge.with_back.common.security.exception.CustomAuthenticationEntryPoint;
 import Challenge.with_back.common.security.handler.LoginFailureHandler;

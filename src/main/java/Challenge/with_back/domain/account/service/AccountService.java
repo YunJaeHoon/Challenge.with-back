@@ -14,7 +14,7 @@ import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.LoginMethod;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
-import Challenge.with_back.common.security.JwtUtil;
+import Challenge.with_back.common.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
