@@ -1,5 +1,6 @@
 package Challenge.with_back.common.rabbitmq;
 
+import Challenge.with_back.common.response.exception.SilentExceptionHandler;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -66,6 +67,9 @@ public class RabbitMQConfig
 
         // 예외 발생 시 메시지를 큐에 다시 넣지 않음
         factory.setDefaultRequeueRejected(false);
+
+        // 기본 예외 로그 비활성화
+        factory.setErrorHandler(new SilentExceptionHandler());
 
         // JSON 형식의 메시지와 객체 간의 직렬화 및 역직렬화가 가능하도록 설정
         factory.setMessageConverter(jackson2JsonMessageConverter());
