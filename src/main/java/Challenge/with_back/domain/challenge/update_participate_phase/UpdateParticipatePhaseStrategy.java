@@ -5,5 +5,5 @@ import Challenge.with_back.common.entity.rdbms.User;
 
 public interface UpdateParticipatePhaseStrategy
 {
-    public void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data);
+    void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data);
 }

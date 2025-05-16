@@ -48,11 +48,11 @@ public class ChallengeService
     private final RabbitTemplate rabbitTemplate;
     private final Map<String, UpdateParticipatePhaseStrategy> updateParticipatePhaseStrategyMap;
 
-    @Value("${RABBITMQ_EXCHANGE_NAME}")
-    private String exchangeName;
+    @Value("${RABBITMQ_UPDATE_PARTICIPATE_PHASE_EXCHANGE_NAME}")
+    private String updateParticipatePhaseExchangeName;
 
-    @Value("${RABBITMQ_ROUTING_KEY}")
-    private String routingKey;
+    @Value("${RABBITMQ_UPDATE_PARTICIPATE_PHASE_ROUTING_KEY}")
+    private String updateParticipatePhaseRoutingKey;
 
     // 챌린지 생성
     @Transactional
@@ -328,7 +328,7 @@ public class ChallengeService
                 .data(comment)
                 .build();
 
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+        rabbitTemplate.convertAndSend(updateParticipatePhaseExchangeName, updateParticipatePhaseRoutingKey, message);
     }
 
     // 페이즈 참여 정보 현재 달성 개수 변경 요청 메시지를 RabbitMQ의 큐로 발행
@@ -341,7 +341,7 @@ public class ChallengeService
                 .data(value)
                 .build();
 
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+        rabbitTemplate.convertAndSend(updateParticipatePhaseExchangeName, updateParticipatePhaseRoutingKey, message);
     }
 
     // 페이즈 참여 정보 면제 여부 토글 요청 메시지를 RabbitMQ의 큐로 발행
@@ -354,11 +354,11 @@ public class ChallengeService
                 .data(null)
                 .build();
 
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+        rabbitTemplate.convertAndSend(updateParticipatePhaseExchangeName, updateParticipatePhaseRoutingKey, message);
     }
 
     // RabbitMQ의 페이즈 참여 정보 변경 메시지 수신(구독) 서비스
-    @RabbitListener(queues = "${RABBITMQ_QUEUE_NAME}")
+    @RabbitListener(queues = "${RABBITMQ_UPDATE_PARTICIPATE_PHASE_QUEUE_NAME}")
     @Transactional
     public void updateParticipatePhase(UpdateParticipatePhaseMessage message)
     {
@@ -382,6 +382,7 @@ public class ChallengeService
             updateParticipatePhaseStrategy.updateParticipatePhase(user, participatePhase, message.getData());
         } catch (CustomException e) {
             log.error(e.getErrorCode().getMessage());
+            throw e;
         }
     }
 }

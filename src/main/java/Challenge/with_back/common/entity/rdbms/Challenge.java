@@ -120,9 +120,4 @@ public class Challenge extends BasicEntity
 	public void increaseCountCurrentParticipant() {
 		this.countCurrentParticipant++;
 	}
-
-	// 참여자 인원수 1명 감소
-	public void decreaseCountCurrentParticipant() {
-		this.countCurrentParticipant--;
-	}
 }
