@@ -1,5 +1,6 @@
 package Challenge.with_back.domain.account.util;
 
+import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepository;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.entity.redis.CheckVerificationCode;
@@ -26,6 +27,7 @@ public class AccountUtil
 	private final UserRepository userRepository;
 	private final VerificationCodeRepository verificationCodeRepository;
 	private final CheckVerificationCodeRepository checkVerificationCodeRepository;
+	private final ParticipateChallengeRepository participateChallengeRepository;
 
 	// Authentication 데이터에서 User 엔티티 추출
 	public User getUserFromAuthentication(Authentication authentication)
@@ -136,6 +138,6 @@ public class AccountUtil
 	// 사용자가 이미 참여 챌린지 개수가 최대인지 확인
 	public boolean isParticipatingInMaxChallenges(User user)
 	{
-		return user.getCountParticipateChallenge() >= getMaxChallengeCount(user);
+		return participateChallengeRepository.countAllOngoing(user) >= getMaxChallengeCount(user);
 	}
 }

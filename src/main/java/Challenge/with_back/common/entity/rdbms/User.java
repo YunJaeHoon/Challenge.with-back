@@ -74,10 +74,6 @@ public class User extends BasicEntity
     @NotNull
     @Convert(converter = AccountRoleConverter.class)
     private AccountRole accountRole;
-    
-    // 참여 중인 챌린지 개수
-    @NotNull
-    private int countParticipateChallenge;
 
     // 비밀번호 초기화
     public void resetPassword(String newPassword) {
@@ -92,15 +88,5 @@ public class User extends BasicEntity
     // 읽지 않은 알림 개수 1개 감소
     public void decreaseCountUnreadNotification() {
         this.countUnreadNotification--;
-    }
-
-    // 참여 중인 챌린지 개수 1개 증가
-    public void increaseCountParticipateChallenge() {
-        this.countParticipateChallenge++;
-    }
-
-    // 참여 중인 챌린지 개수 1개 감소
-    public void decreaseCountParticipateChallenge() {
-        this.countParticipateChallenge--;
     }
 }

@@ -23,6 +23,14 @@ public interface ParticipateChallengeRepository extends JpaRepository<Participat
     """)
     List<ParticipateChallenge> findAllOngoing(User user);
 
+    // 특정 사용자로 현재 진행 중인 챌린지 참여 정보 개수 세기
+    @Query("""
+        SELECT count(pc)
+        FROM ParticipateChallenge pc
+        WHERE pc.user = :user AND pc.challenge.isFinished = false
+    """)
+    int countAllOngoing(User user);
+
     // 특정 챌린지로 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
     List<ParticipateChallenge> findAllByChallengeOrderByCreatedAtDesc(Challenge challenge);
 }

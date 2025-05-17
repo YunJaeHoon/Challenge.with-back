@@ -146,7 +146,6 @@ public class ChallengeUtil
 		challengeRepository.save(challenge);
 
 		// 사용자 참여 챌린지 개수 1개 증가
-		user.increaseCountParticipateChallenge();
 		userRepository.save(user);
 	}
 

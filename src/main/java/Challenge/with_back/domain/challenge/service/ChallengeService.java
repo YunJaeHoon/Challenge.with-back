@@ -140,9 +140,6 @@ public class ChallengeService
 
             // 챌린지 참여자 인원수 1명 증가
             challenge.increaseCountCurrentParticipant();
-
-            // 사용자 참여 챌린지 개수 1개 증가
-            participant.increaseCountParticipateChallenge();
         });
 
         userRepository.saveAll(participantList);
@@ -157,7 +154,7 @@ public class ChallengeService
     public GetMyChallengeDto getMyChallenges(User user)
     {
         // 참여 중인 챌린지 개수
-        int countChallenge = user.getCountParticipateChallenge();
+        int countChallenge = participateChallengeRepository.countAllOngoing(user);
 
         // 챌린지 개수 상한값
         int maxChallengeCount = accountUtil.getMaxChallengeCount(user);
