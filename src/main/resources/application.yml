@@ -102,5 +102,15 @@ spring:
         job:
             enabled: false  # 프로젝트 실행 시 자동으로 배치 작업이 가동되는 것을 방지
 
+## Prometheus
+management:
+    endpoints:
+        web:
+            exposure:
+                include: prometheus, health, info
+    metrics:
+        tags:
+            application: ${spring.application.name}
+
 
 

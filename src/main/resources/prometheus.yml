@@ -1,0 +1,25 @@
+global:
+    scrape_interval: 15s        # 스크랩 간격
+    scrape_timeout: 15s         # 스크랩 타임아웃
+    evaluation_interval: 2m     # 규칙 검증 간격
+
+    # 모든 메트릭에 추가된 전역 레이블
+    external_labels:
+        monitor: 'system-monitor'
+
+    # 쿼리 로그를 저장할 파일 경로
+    query_log_file: query_log_file.log
+
+# 적용할 규칙 파일 경로
+rule_files:
+    - "rule.yml"
+
+scrape_configs:
+
+    - job_name: "application"                   # 스크랩 작업 이름
+      metrics_path: "/actuator/prometheus"      # 애플리케이션 메트릭을 얻기 위한 엔드포인트
+      scheme: 'http'                            # 스크랩 대상 프로토콜
+      scrape_interval: 5s
+      static_configs:
+          - targets:
+                - "host.docker.internal:8080"   # 스크랩 대상 static 타깃

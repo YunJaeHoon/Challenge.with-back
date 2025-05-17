@@ -24,12 +24,12 @@ repositories {
 }
 
 dependencies {
-	// 테스트
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Spring Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// 테스트
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -70,6 +70,12 @@ dependencies {
 
 	// RabbitMQ
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+	// Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
