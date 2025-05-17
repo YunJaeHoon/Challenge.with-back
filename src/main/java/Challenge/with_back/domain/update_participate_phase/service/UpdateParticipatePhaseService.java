@@ -8,7 +8,6 @@ import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
-import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
 import Challenge.with_back.domain.challenge.dto.UpdateParticipatePhaseMessage;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
@@ -17,6 +16,8 @@ import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UpdateParticipatePhaseService
 {
     private final UserRepository userRepository;
@@ -45,6 +45,8 @@ public class UpdateParticipatePhaseService
 
     private final RabbitTemplate rabbitTemplate;
     private final Map<String, UpdateParticipatePhaseStrategy> updateParticipatePhaseStrategyMap;
+
+    private static final Logger log = LoggerFactory.getLogger(UpdateParticipatePhaseService.class);
 
     @Value("${RABBITMQ_UPDATE_PARTICIPATE_PHASE_EXCHANGE_NAME}")
     private String updateParticipatePhaseExchangeName;
@@ -198,7 +200,7 @@ public class UpdateParticipatePhaseService
         try {
             updateParticipatePhaseStrategy.updateParticipatePhase(user, participatePhase, message.getData());
         } catch (CustomException e) {
-            log.error(e.getErrorCode().getMessage());
+            log.error("{}: {}\n{}", e.getErrorCode().name(), e.getErrorCode().getMessage(), message.toString());
             throw e;
         }
     }

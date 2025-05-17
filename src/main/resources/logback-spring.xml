@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 콘솔 출력 (기존 설정 유지용) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- update_participate_phase_error.log 전용 파일 appender (날짜별 분할 없이 하나의 파일에 누적 기록) -->
+    <appender name="UPDATE_PARTICIPATE_PHASE_ERROR" class="ch.qos.logback.core.FileAppender">
+        <file>logs/update_participate_phase_error.log</file>
+        <append>true</append> <!-- true: 기존 로그에 계속 추가 -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 커스텀 로거: 특정 클래스에서 에러만 기록 -->
+    <logger name="Challenge.with_back.domain.update_participate_phase.service.UpdateParticipatePhaseService"
+            level="ERROR"
+            additivity="false">
+        <appender-ref ref="UPDATE_PARTICIPATE_PHASE_ERROR"/>
+    </logger>
+
+    <!-- 루트 로거 (기존 콘솔 출력 유지) -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

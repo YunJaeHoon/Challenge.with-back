@@ -5,6 +5,7 @@ import lombok.*;
 
 @Getter
 @Builder
+@ToString
 public class UpdateParticipatePhaseMessage
 {
     private String type;                // 업데이트 종류
