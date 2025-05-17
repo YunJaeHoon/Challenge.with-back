@@ -114,7 +114,6 @@ public class ChallengeService
                 .unit(unit)
                 .isPublic(createChallengeDto.getIsPublic())
                 .maxParticipantCount(maxParticipantCount)
-                .countCurrentParticipant(0)
                 .countPhase(0)
                 .lastActiveDate(LocalDate.now())
                 .isFinished(false)
@@ -137,9 +136,6 @@ public class ChallengeService
                     .build();
 
             participateChallengeList.add(participateChallenge);
-
-            // 챌린지 참여자 인원수 1명 증가
-            challenge.increaseCountCurrentParticipant();
         });
 
         userRepository.saveAll(participantList);

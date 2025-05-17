@@ -99,7 +99,7 @@ public class ChallengeUtil
 			throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
 
 		// 이미 챌린지에 참여자가 가득 찼는지 확인
-		if(challenge.getMaxParticipantCount() == challenge.getCountCurrentParticipant())
+		if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallenge(challenge))
 			throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
 
 		// 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
@@ -140,13 +140,6 @@ public class ChallengeUtil
 
 		// 페이즈 참여 정보 저장
 		participatePhaseRepository.save(participatePhase);
-
-		// 챌린지 참여자 인원수 1명 증가
-		challenge.increaseCountCurrentParticipant();
-		challengeRepository.save(challenge);
-
-		// 사용자 참여 챌린지 개수 1개 증가
-		userRepository.save(user);
 	}
 
 	// 다음 페이즈 생성

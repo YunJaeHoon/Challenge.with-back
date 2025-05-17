@@ -61,12 +61,8 @@ public class Challenge extends BasicEntity
 	// 최대 참여자 인원수
 	@NotNull
 	private int maxParticipantCount;
-	
-	// 현재 참여자 인원수
-	@NotNull
-	private int countCurrentParticipant;
 
-	// 페이즈 총 개수
+	// 만들어 놓은 페이즈 총 개수
 	@NotNull
 	private int countPhase;
 	
@@ -96,10 +92,5 @@ public class Challenge extends BasicEntity
 	// 페이즈 개수 1개 증가
 	public void increaseCountPhase() {
 		this.countPhase++;
-	}
-
-	// 참여자 인원수 1명 증가
-	public void increaseCountCurrentParticipant() {
-		this.countCurrentParticipant++;
 	}
 }
