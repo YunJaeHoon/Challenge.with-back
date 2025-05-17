@@ -135,7 +135,6 @@ public class ChallengeUtil
 				.currentCount(0)
 				.isExempt(false)
 				.comment("")
-				.countEvidencePhoto(0)
 				.build();
 
 		// 페이즈 참여 정보 저장
@@ -184,7 +183,6 @@ public class ChallengeUtil
 						.currentCount(0)
 						.isExempt(false)
 						.comment("")
-						.countEvidencePhoto(0)
 						.build();
 
 				participatePhaseList.add(participatePhase);

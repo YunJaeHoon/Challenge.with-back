@@ -10,4 +10,7 @@ public interface EvidencePhotoRepository extends JpaRepository<EvidencePhoto, Lo
 {
     // 페이즈 참여 정보로 모든 증거사진 조회
     List<EvidencePhoto> findAllByParticipatePhase(ParticipatePhase participatePhase);
+
+    // 페이즈 참여 정보로 모든 증거사진 개수 세기
+    int countAllByParticipatePhase(ParticipatePhase participatePhase);
 }

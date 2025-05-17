@@ -48,21 +48,6 @@ public class ParticipatePhase extends BasicEntity
     @Column(columnDefinition = "TEXT")
     private String comment;
 
-    // 증거 사진 개수
-    @NotNull
-    @Column(columnDefinition = "TINYINT")
-    private int countEvidencePhoto;
-
-    // 증거 사진 개수 증가
-    public void increaseCountEvidencePhoto(int value) {
-        this.countEvidencePhoto += value;
-    }
-
-    // 증거 사진 개수 1개 감소
-    public void decreaseCountEvidencePhoto() {
-        this.countEvidencePhoto--;
-    }
-
     // 한마디 수정
     public void updateComment(String comment) {
         this.comment = comment;

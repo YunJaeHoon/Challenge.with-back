@@ -240,7 +240,7 @@ public class ChallengeService
         long maxEvidencePhotoCount = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
 
         // 증거사진 최대 개수를 초과한다면 예외처리
-        if(participatePhase.getCountEvidencePhoto() + images.size() > maxEvidencePhotoCount)
+        if(evidencePhotoRepository.countAllByParticipatePhase(participatePhase) + images.size() > maxEvidencePhotoCount)
             throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, maxEvidencePhotoCount);
 
         // 증거사진 dto 리스트
@@ -273,12 +273,9 @@ public class ChallengeService
                     .build());
         });
 
-        // 증거사진 개수 갱신
-        participatePhase.increaseCountEvidencePhoto(images.size());
-        participatePhaseRepository.save(participatePhase);
-
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
         challengeUtil.renewLastActiveDate(participatePhase);
+        participatePhaseRepository.save(participatePhase);
 
         return evidencePhotoDtoList;
     }
@@ -297,15 +294,12 @@ public class ChallengeService
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
         challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
 
-        // 증거사진 개수 갱신
-        participatePhase.decreaseCountEvidencePhoto();
-        participatePhaseRepository.save(participatePhase);
-
         // 증거사진 삭제
         evidencePhotoRepository.delete(evidencePhoto);
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
         challengeUtil.renewLastActiveDate(participatePhase);
+        participatePhaseRepository.save(participatePhase);
 
         // S3에서 삭제
         s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
