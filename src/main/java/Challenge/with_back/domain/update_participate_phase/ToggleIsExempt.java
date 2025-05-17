@@ -1,4 +1,4 @@
-package Challenge.with_back.domain.challenge.update_participate_phase;
+package Challenge.with_back.domain.update_participate_phase;
 
 import Challenge.with_back.common.entity.rdbms.Challenge;
 import Challenge.with_back.common.entity.rdbms.ParticipateChallenge;
@@ -11,7 +11,6 @@ import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component("TOGGLE_IS_EXEMPT")
 @RequiredArgsConstructor

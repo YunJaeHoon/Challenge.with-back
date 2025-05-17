@@ -1,15 +1,12 @@
-package Challenge.with_back.domain.challenge.update_participate_phase;
+package Challenge.with_back.domain.update_participate_phase;
 
 import Challenge.with_back.common.entity.rdbms.ParticipatePhase;
 import Challenge.with_back.common.entity.rdbms.User;
-import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepository;
 import Challenge.with_back.common.repository.rdbms.ParticipatePhaseRepository;
 import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component("UPDATE_COMMENT")
 @RequiredArgsConstructor

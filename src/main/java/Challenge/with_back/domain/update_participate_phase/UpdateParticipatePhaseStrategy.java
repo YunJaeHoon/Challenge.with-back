@@ -1,4 +1,4 @@
-package Challenge.with_back.domain.challenge.update_participate_phase;
+package Challenge.with_back.domain.update_participate_phase;
 
 import Challenge.with_back.common.entity.rdbms.ParticipatePhase;
 import Challenge.with_back.common.entity.rdbms.User;
