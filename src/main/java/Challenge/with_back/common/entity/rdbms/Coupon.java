@@ -2,15 +2,14 @@ package Challenge.with_back.common.entity.rdbms;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class Coupon extends BasicEntity
 {
@@ -37,12 +36,4 @@ public class Coupon extends BasicEntity
     // 만료 날짜
     @NotNull
     private LocalDate expirationDate;
-
-    @Builder
-    public Coupon(User user, String name, String description, LocalDate expirationDate) {
-        this.user = user;
-        this.name = name;
-        this.description = description;
-        this.expirationDate = expirationDate;
-    }
 }

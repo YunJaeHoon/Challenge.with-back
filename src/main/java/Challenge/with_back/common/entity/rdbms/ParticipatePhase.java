@@ -2,10 +2,7 @@ package Challenge.with_back.common.entity.rdbms;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(
@@ -16,7 +13,9 @@ import lombok.NoArgsConstructor;
                 @UniqueConstraint(columnNames = {"user", "phase"})
         }
 )
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class ParticipatePhase extends BasicEntity
 {
@@ -53,16 +52,6 @@ public class ParticipatePhase extends BasicEntity
     @NotNull
     @Column(columnDefinition = "TINYINT")
     private int countEvidencePhoto;
-
-    @Builder
-    public ParticipatePhase(User user, Phase phase, int currentCount, boolean isExempt, String comment, int countEvidencePhoto) {
-        this.user = user;
-        this.phase = phase;
-        this.currentCount = currentCount;
-        this.isExempt = isExempt;
-        this.comment = comment;
-        this.countEvidencePhoto = countEvidencePhoto;
-    }
 
     // 증거 사진 개수 증가
     public void increaseCountEvidencePhoto(int value) {

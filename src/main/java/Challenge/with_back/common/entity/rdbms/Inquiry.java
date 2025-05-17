@@ -4,15 +4,14 @@ import Challenge.with_back.common.enums.InquiryCategory;
 import Challenge.with_back.common.enums.InquiryCategoryConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class Inquiry extends BasicEntity
 {
@@ -45,13 +44,4 @@ public class Inquiry extends BasicEntity
     // 답변 날짜
     @NotNull
     private LocalDateTime answerDate;
-
-    @Builder
-    public Inquiry(User user, InquiryCategory category, String question, String answer, LocalDateTime answerDate) {
-        this.user = user;
-        this.category = category;
-        this.question = question;
-        this.answer = answer;
-        this.answerDate = answerDate;
-    }
 }

@@ -4,14 +4,13 @@ import Challenge.with_back.common.enums.InquiryCategory;
 import Challenge.with_back.common.enums.InquiryCategoryConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 // 자주 묻는 질문
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class FAQ extends BasicEntity
 {
@@ -34,11 +33,4 @@ public class FAQ extends BasicEntity
     @NotNull
     @Column(columnDefinition = "TEXT")
     private String answer;
-
-    @Builder
-    public FAQ(InquiryCategory category, String question, String answer) {
-        this.category = category;
-        this.question = question;
-        this.answer = answer;
-    }
 }

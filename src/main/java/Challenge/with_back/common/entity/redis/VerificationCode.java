@@ -4,7 +4,9 @@ import org.springframework.data.annotation.Id;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 @RedisHash(value = "verification_code", timeToLive = 60 * 10)
 public class VerificationCode
@@ -18,13 +20,6 @@ public class VerificationCode
 
     // 틀린 개수
     private int countWrong;
-
-    @Builder
-    public VerificationCode(String email, String code, int countWrong) {
-        this.email = email;
-        this.code = code;
-        this.countWrong = countWrong;
-    }
 
     // 틀린 개수 증가
     public void increaseCountWrong() {

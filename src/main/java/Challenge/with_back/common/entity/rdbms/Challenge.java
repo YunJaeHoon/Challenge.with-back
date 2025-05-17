@@ -4,15 +4,14 @@ import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.enums.ChallengeUnitConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class Challenge extends BasicEntity
 {
@@ -78,23 +77,6 @@ public class Challenge extends BasicEntity
 	// 종료했는가?
 	@NotNull
 	private boolean isFinished;
-	
-	@Builder
-	public Challenge(User superAdmin, String icon, String colorTheme, String name, String description, int goalCount, ChallengeUnit unit, boolean isPublic, int maxParticipantCount, int countCurrentParticipant, int countPhase, LocalDate lastActiveDate, boolean isFinished) {
-		this.superAdmin = superAdmin;
-		this.icon = icon;
-		this.colorTheme = colorTheme;
-		this.name = name;
-		this.description = description;
-		this.goalCount = goalCount;
-		this.unit = unit;
-		this.isPublic = isPublic;
-		this.maxParticipantCount = maxParticipantCount;
-		this.countCurrentParticipant = countCurrentParticipant;
-		this.countPhase = countPhase;
-		this.lastActiveDate = lastActiveDate;
-		this.isFinished = isFinished;
-	}
 
 	// 페이즈 시작 날짜 계산
 	public LocalDate calcPhaseStartDate(int number) {

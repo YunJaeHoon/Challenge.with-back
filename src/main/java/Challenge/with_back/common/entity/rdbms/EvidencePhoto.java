@@ -10,7 +10,9 @@ import lombok.*;
                 @Index(name = "idx_participatePhase", columnList = "participate_phase")
         }
 )
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class EvidencePhoto extends BasicEntity
 {
@@ -36,11 +38,4 @@ public class EvidencePhoto extends BasicEntity
     @Column(length = 255)
     @Setter
     private String filename;
-
-    @Builder
-    public EvidencePhoto(ParticipatePhase participatePhase, String photoUrl, String filename) {
-        this.participatePhase = participatePhase;
-        this.photoUrl = photoUrl;
-        this.filename = filename;
-    }
 }

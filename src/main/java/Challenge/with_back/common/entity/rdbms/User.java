@@ -12,7 +12,9 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class User extends BasicEntity
 {
@@ -76,22 +78,6 @@ public class User extends BasicEntity
     // 참여 중인 챌린지 개수
     @NotNull
     private int countParticipateChallenge;
-
-    @Builder
-    public User(LoginMethod loginMethod, String email, String password, String nickname, String profileImageUrl, String selfIntroduction, boolean allowEmailMarketing, LocalDate premiumExpirationDate, int countUnreadNotification, String paymentInformationEmail, AccountRole accountRole, int countParticipateChallenge) {
-        this.loginMethod = loginMethod;
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
-        this.selfIntroduction = selfIntroduction;
-        this.allowEmailMarketing = allowEmailMarketing;
-        this.premiumExpirationDate = premiumExpirationDate;
-        this.countUnreadNotification = countUnreadNotification;
-        this.paymentInformationEmail = paymentInformationEmail;
-        this.accountRole = accountRole;
-        this.countParticipateChallenge = countParticipateChallenge;
-    }
 
     // 비밀번호 초기화
     public void resetPassword(String newPassword) {

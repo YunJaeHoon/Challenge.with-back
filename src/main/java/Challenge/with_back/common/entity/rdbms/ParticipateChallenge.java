@@ -4,10 +4,7 @@ import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeRoleConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -21,7 +18,9 @@ import java.time.LocalDate;
                 @UniqueConstraint(columnNames = {"user", "challenge"})
         }
 )
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class ParticipateChallenge extends BasicEntity
 {
@@ -66,18 +65,6 @@ public class ParticipateChallenge extends BasicEntity
     // 마지막 활동 날짜
     @NotNull
     private LocalDate lastActiveDate;
-
-    @Builder
-    public ParticipateChallenge(User user, Challenge challenge, String determination, ChallengeRole challengeRole, int countSuccess, int countExemption, boolean isPublic, LocalDate lastActiveDate) {
-        this.user = user;
-        this.challenge = challenge;
-        this.determination = determination;
-        this.challengeRole = challengeRole;
-        this.countSuccess = countSuccess;
-        this.countExemption = countExemption;
-        this.isPublic = isPublic;
-        this.lastActiveDate = lastActiveDate;
-    }
 
     // 마지막 활동 날짜 갱신
     public void renewLastActiveDate() {

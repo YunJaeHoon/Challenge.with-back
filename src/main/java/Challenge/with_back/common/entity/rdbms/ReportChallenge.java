@@ -4,13 +4,12 @@ import Challenge.with_back.common.enums.ChallengeReportCategory;
 import Challenge.with_back.common.enums.ChallengeReportCategoryConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class ReportChallenge extends BasicEntity
 {
@@ -39,12 +38,4 @@ public class ReportChallenge extends BasicEntity
     // 세부 내용
     @Column(columnDefinition = "TEXT")
     private String detail;
-
-    @Builder
-    public ReportChallenge(User user, Challenge challenge, ChallengeReportCategory category, String detail) {
-        this.user = user;
-        this.challenge = challenge;
-        this.category = category;
-        this.detail = detail;
-    }
 }

@@ -2,10 +2,7 @@ package Challenge.with_back.common.entity.rdbms;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -15,7 +12,9 @@ import java.time.LocalDate;
                 @UniqueConstraint(columnNames = {"challenge", "number"})
         }
 )
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class Phase extends BasicEntity
 {
@@ -50,14 +49,4 @@ public class Phase extends BasicEntity
     // 종료 날짜
     @NotNull
     private LocalDate endDate;
-
-    @Builder
-    public Phase(Challenge challenge, String name, String description, int number, LocalDate startDate, LocalDate endDate) {
-        this.challenge = challenge;
-        this.name = name;
-        this.description = description;
-        this.number = number;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
 }

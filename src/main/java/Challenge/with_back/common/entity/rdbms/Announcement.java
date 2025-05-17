@@ -6,8 +6,9 @@ import lombok.*;
 
 // 공지사항
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@Builder
 public class Announcement extends BasicEntity
 {
     @Id
@@ -24,10 +25,4 @@ public class Announcement extends BasicEntity
     @NotNull
     @Column(columnDefinition = "TEXT")
     private String content;
-
-    @Builder
-    public Announcement(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
 }

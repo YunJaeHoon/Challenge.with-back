@@ -2,13 +2,12 @@ package Challenge.with_back.common.entity.rdbms;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class ChallengeBlock extends BasicEntity
 {
@@ -28,10 +27,4 @@ public class ChallengeBlock extends BasicEntity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge")
     private Challenge challenge;
-
-    @Builder
-    public ChallengeBlock(User user, Challenge challenge) {
-        this.user = user;
-        this.challenge = challenge;
-    }
 }

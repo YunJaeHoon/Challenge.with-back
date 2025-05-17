@@ -2,13 +2,12 @@ package Challenge.with_back.common.entity.rdbms;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class FriendRequest extends BasicEntity
 {
@@ -28,10 +27,4 @@ public class FriendRequest extends BasicEntity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver")
     private User receiver;
-
-    @Builder
-    public FriendRequest(User sender, User receiver) {
-        this.sender = sender;
-        this.receiver = receiver;
-    }
 }

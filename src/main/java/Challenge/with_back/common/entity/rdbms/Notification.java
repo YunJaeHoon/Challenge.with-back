@@ -9,7 +9,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class Notification extends BasicEntity
 {
@@ -45,16 +47,6 @@ public class Notification extends BasicEntity
 
     // 열람 날짜
     private LocalDateTime viewedAt;
-
-    @Builder
-    public Notification(User user, NotificationType type, String title, String content, boolean isRead, LocalDateTime viewedAt) {
-        this.user = user;
-        this.type = type;
-        this.title = title;
-        this.content = content;
-        this.isRead = isRead;
-        this.viewedAt = viewedAt;
-    }
 
     // 알림을 읽음으로 표시
     public void markAsRead() {
