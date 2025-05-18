@@ -24,6 +24,7 @@ import java.io.IOException;
 public class LoginSuccessHandler implements AuthenticationSuccessHandler
 {
     private final JwtUtil jwtUtil;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -31,8 +32,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException
     {
-        ObjectMapper objectMapper = new ObjectMapper();
-
         // 계정 정보
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
