@@ -16,6 +16,10 @@
 
 <br/>
 
+![챌린지-페이즈 관계도](https://github.com/user-attachments/assets/7c1014c8-212d-4467-a513-a3be46b333af)
+
+<br/>
+
 ## 주요 기능
 
 
