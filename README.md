@@ -1,23 +1,23 @@
 # Challenge.with
 
 > **프론트엔드 GitHub** : https://github.com/YunJaeHoon/Challenge.with-front
->
->
+> 
 > **백엔드 GitHub** : https://github.com/YunJaeHoon/Challenge.with-back
->
+
+<br/>
 
 ## 개요
 
----
 
 - 개인으로 진행 중인 챌린지 참여 플랫폼 개발 프로젝트입니다.
 - 기획 & 디자인 & 프론트엔드 개발 & 백엔드 개발 등 모든 작업을 혼자서 수행 중입니다.
 - 혼자서 또는 친구들과 함께 챌린지를 진행하고 참여 정보를 확인할 수 있는 서비스입니다.
 - 현재 진행 중인 프로젝트입니다.
 
+<br/>
+
 ## 주요 기능
 
----
 
 - 회원가입 및 로그인
 - 사용자 간의 친구 요청/삭제/차단
@@ -28,9 +28,10 @@
 - 본인과 다른 사람들의 챌린지 참여 정보 조회
 - 프리미엄 권한에 따라, 증거사진 등록 등의 프리미엄 서비스 제공
 
+<br/>
+
 ## 핵심 로직
 
----
 
 - Spring Security를 활용한 인증 처리 ( 일반 로그인 및 OAuth 2.0 )
 - AWS S3를 활용한 증거사진 등록 및 삭제
@@ -45,6 +46,10 @@
 - 인덱스를 활용한 빠른 데이터베이스 조회
 - Unique constraint를 통한 데이터 무결성 보장
 
+<br/>
+
 ## 와이어프레임
 
 https://www.figma.com/board/oMGyaiPFxrKeX1qyd8EZKp/Challenge.with-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84?node-id=0-1&p=f&t=Tf1B83Nn3CSDM3BQ-0
+
+<br/>
