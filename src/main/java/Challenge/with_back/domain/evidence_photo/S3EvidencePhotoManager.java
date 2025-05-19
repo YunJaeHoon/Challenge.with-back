@@ -57,7 +57,6 @@ public class S3EvidencePhotoManager
     }
 
     // S3 이미지 삭제
-    @Async("evidencePhotoThreadPool")
     public void delete(String filename)
     {
         try {
