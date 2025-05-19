@@ -3,7 +3,7 @@ spring:
     ## 기본 설정
     application:
         name: Challenge.with-back
-        version: v1.0.0
+        version: v0.1.0
 
     ## MariaDB
     datasource:
