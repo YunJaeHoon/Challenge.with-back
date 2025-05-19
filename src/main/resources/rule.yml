@@ -1,0 +1,25 @@
+groups:
+
+    - name: system-monitor  # 그룹 이름
+
+      # 그룹에 속하는 알람 규칙 정의
+      rules:
+          - alert: InstanceDown     # 알람 이름
+            expr: up == 0           # 알람이 발생할 표현식 정의
+            for: 5m                 # 조건이 유지되어야 하는 시간
+
+            # 알람에 대한 추가 레이블
+            labels:
+                severity: page
+
+            # 알람에 대한 추가 설명을 제공하는 어노테이션
+            annotations:
+                summary: "Instance {{ $labels.instance }} down"
+                description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes."
+
+          - alert: APIHighRequestLatency
+            expr: api_http_request_latencies_second{quantile="0.5"} > 1
+            for: 10m
+            annotations:
+                summary: "High request latency on {{ $labels.instance }}"
+                description: "{{ $labels.instance }} has a median request latency above 1s (current value: {{ $value }}s)"

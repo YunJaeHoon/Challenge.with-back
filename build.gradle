@@ -24,11 +24,58 @@ repositories {
 }
 
 dependencies {
+
+	// Spring Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	// 테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Spring Data JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// MariaDB
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
+
+	// 데이터 검증
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// 이메일
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// AWS S3
+	implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1')
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
+	// Spring Batch
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+	testImplementation 'org.springframework.batch:spring-batch-test'
+
+	// RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+	// Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
