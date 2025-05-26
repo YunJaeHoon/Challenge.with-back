@@ -98,7 +98,6 @@ public class AccountService
                 .nickname(user.getNickname())
                 .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
                 .role(user.getAccountRole().name())
-                .isPremium(user.getPremiumExpirationDate().isAfter(LocalDate.now()))
                 .countUnreadNotification(user.getCountUnreadNotification())
                 .build();
     }

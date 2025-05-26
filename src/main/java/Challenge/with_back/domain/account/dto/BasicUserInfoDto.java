@@ -11,6 +11,5 @@ public class BasicUserInfoDto
     private String nickname;
     private String profileImageUrl;
     private String role;
-    private Boolean isPremium;
     private int countUnreadNotification;
 }
