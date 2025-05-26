@@ -86,6 +86,7 @@ public class AccountService
     {
         return UserRoleDto.builder()
                 .role(user.getAccountRole().name())
+                .isPremium(accountUtil.isPremium(user))
                 .build();
     }
 

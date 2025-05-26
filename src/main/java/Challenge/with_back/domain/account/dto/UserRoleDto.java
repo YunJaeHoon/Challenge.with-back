@@ -7,5 +7,6 @@ import lombok.Getter;
 @Getter
 public class UserRoleDto
 {
-    private String role;    // 권한
+    private String role;        // 권한
+    private Boolean isPremium;  // 프리미엄 여부
 }
