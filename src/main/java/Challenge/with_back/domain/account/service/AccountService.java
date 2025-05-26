@@ -16,6 +16,7 @@ import Challenge.with_back.common.enums.LoginMethod;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import Challenge.with_back.common.security.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -102,7 +103,7 @@ public class AccountService
     }
 
     // Access token 재발급
-    public AccessTokenDto reissueAccessToken(String refreshToken)
+    public Cookie reissueAccessToken(String refreshToken)
     {
         // Refresh token 존재 여부 체크
         if(refreshToken == null)
@@ -122,9 +123,7 @@ public class AccountService
         // Access token 발급
         String accessToken = jwtUtil.getToken(id, Token.ACCESS_TOKEN);
 
-        return AccessTokenDto.builder()
-                .accessToken(accessToken)
-                .build();
+        return jwtUtil.parseTokenToCookie(accessToken, Token.ACCESS_TOKEN);
     }
 
     // 이메일 인증번호 전송

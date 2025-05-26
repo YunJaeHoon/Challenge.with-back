@@ -7,6 +7,8 @@ import Challenge.with_back.domain.account.service.AccountService;
 import Challenge.with_back.common.security.dto.AccessTokenDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,15 +73,18 @@ public class AccountController
 	// Access token 재발급
 	@PostMapping("/reissue-access-token")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> reissueAccessToken(@CookieValue(name = "refreshToken", required = false) String refreshToken)
+	public ResponseEntity<SuccessResponseDto> reissueAccessToken(
+			@CookieValue(name = "refreshToken", required = false) String refreshToken,
+			HttpServletResponse response)
 	{
-		AccessTokenDto dto = accountService.reissueAccessToken(refreshToken);
+		Cookie cookie = accountService.reissueAccessToken(refreshToken);
+		response.addCookie(cookie);
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
 									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("Access token을 성공적으로 재발급하였습니다.")
-									 .data(dto)
+									 .data(null)
 									 .build());
 	}
 	
