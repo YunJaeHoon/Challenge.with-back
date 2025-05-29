@@ -77,7 +77,8 @@ public enum CustomExceptionCode
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 삭제 중 오류가 발생하였습니다."),
 
     // Spring Batch 예외
-    SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "스프링 배치를 통한 스케줄러 작업 중 오류가 발생하였습니다."),
+    CREATE_PHASE_SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "페이즈 생성: 스프링 배치를 통한 스케줄러 작업 중 오류가 발생하였습니다."),
+    DELETE_FRIEND_REQUEST_SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "친구 요청 데이터 삭제: 스프링 배치를 통한 스케줄러 작업 중 오류가 발생하였습니다."),
 
     UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 못한 에러가 발생하였습니다.");
 

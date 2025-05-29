@@ -57,7 +57,7 @@ public class CreatePhaseConfig
     @Bean
     public ItemReader<Challenge> createPhaseReader()
     {
-        // 모든 챌린지 읽기
+        // 챌린지 읽기
         return new RepositoryItemReaderBuilder<Challenge>()
                 .repository(challengeRepository)
                 .methodName("findAll")

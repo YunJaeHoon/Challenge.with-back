@@ -3,7 +3,6 @@ package Challenge.with_back.common.batch.scheduler;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -15,15 +14,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component
-@Slf4j
 @RequiredArgsConstructor
-public class CreatePhaseScheduler
+public class DeleteFriendRequestScheduler
 {
     private final JobLauncher jobLauncher;
-    private final Job createPhaseJob;
+    private final Job deleteFriendRequestJob;
 
-    // 매일 오전 4시에 실행
-    @Scheduled(cron = "* * 4 * * *")
+    // 매일 오전 5시에 실행
+    @Scheduled(cron = "* * 5 * * *")
     public void run()
     {
         try {
@@ -31,10 +29,9 @@ public class CreatePhaseScheduler
                     .addString("runTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
                     .toJobParameters();
 
-            jobLauncher.run(createPhaseJob, jobParameters);
+            jobLauncher.run(deleteFriendRequestJob, jobParameters);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new CustomException(CustomExceptionCode.CREATE_PHASE_SCHEDULER_ERROR, e.getMessage());
+            throw new CustomException(CustomExceptionCode.DELETE_FRIEND_REQUEST_SCHEDULER_ERROR, e.getMessage());
         }
     }
 }
