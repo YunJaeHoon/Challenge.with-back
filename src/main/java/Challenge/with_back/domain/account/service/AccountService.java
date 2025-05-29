@@ -81,23 +81,13 @@ public class AccountService
         welcomeNotificationFactory.createNotification(user);
     }
 
-    // 계정 권한 확인
-    public UserRoleDto getRole(User user)
-    {
-        return UserRoleDto.builder()
-                .role(user.getAccountRole().name())
-                .isPremium(accountUtil.isPremium(user))
-                .build();
-    }
-
     // 사용자 기본 정보 조회
     public BasicUserInfoDto getBasicInfo(User user)
     {
         return BasicUserInfoDto.builder()
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
                 .role(user.getAccountRole().name())
+                .isPremium(accountUtil.isPremium(user))
+                .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
                 .countUnreadNotification(user.getCountUnreadNotification())
                 .build();
     }

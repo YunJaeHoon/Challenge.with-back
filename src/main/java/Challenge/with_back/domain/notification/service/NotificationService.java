@@ -28,14 +28,10 @@ public class NotificationService
 	private final TestNotificationFactory testNotificationFactory;
 	
 	// 알림 조회
-	public NotificationListDto getNotifications(Long userId, Pageable pageable)
+	public NotificationListDto getNotifications(User user, Pageable pageable)
 	{
-		// 사용자 조회
-		User user = userRepository.findById(userId)
-							.orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, userId));
-		
 		// 사용자 ID로 알림 조회
-		Page<Notification> notificationPage = notificationRepository.findPageByUserId(userId, pageable);
+		Page<Notification> notificationPage = notificationRepository.findPageByUserId(user.getId(), pageable);
 		
 		// 알림이 존재하지 않는 경우, 예외 발생
 		if (notificationPage.isEmpty())
@@ -75,15 +71,15 @@ public class NotificationService
 	
 	// 알림 삭제
 	@Transactional
-	public void deleteNotification(Long notificationId, Long userId)
+	public void deleteNotification(Long notificationId, User user)
 	{
 		// 알림 조회
 		Notification notification = notificationRepository.findById(notificationId)
 											.orElseThrow(() -> new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, notificationId));
 		
 		// 해당 사용자의 알림인지 확인
-		if(!Objects.equals(notification.getUser().getId(), userId))
-			throw new CustomException(CustomExceptionCode.NOTIFICATION_OWNERSHIP_INVALID, userId);
+		if(!Objects.equals(notification.getUser().getId(), user.getId()))
+			throw new CustomException(CustomExceptionCode.NOTIFICATION_OWNERSHIP_INVALID, user.getId());
 		
 		// 알림 삭제
 		notificationRepository.delete(notification);

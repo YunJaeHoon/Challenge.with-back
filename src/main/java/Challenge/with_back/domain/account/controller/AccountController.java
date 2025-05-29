@@ -38,22 +38,6 @@ public class AccountController
 									 .build());
 	}
 	
-	// 계정 권한 확인
-	@GetMapping("/user/role")
-	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-	public ResponseEntity<SuccessResponseDto> getRole(@AuthenticationPrincipal CustomUserDetails userDetails)
-	{
-		User user = userDetails.getUser();
-		UserRoleDto dto = accountService.getRole(user);
-		
-		return ResponseEntity.status(HttpStatus.OK)
-					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
-									 .message("계정 권한을 성공적으로 확인하였습니다.")
-									 .data(dto)
-									 .build());
-	}
-	
 	// 사용자 기본 정보 조회
 	@GetMapping("/user/basic-info")
 	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
