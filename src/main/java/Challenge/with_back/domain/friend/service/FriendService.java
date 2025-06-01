@@ -67,9 +67,9 @@ public class FriendService
         friendRequestRepository.save(friendRequest);
     }
 
-    // 친구 요청 수락
+    // 친구 요청 수락 또는 거절
     @Transactional
-    public void acceptFriendRequest(User receiver, Long friendRequestId)
+    public void answerFriendRequest(User receiver, Long friendRequestId, boolean isAccept)
     {
         /// 예외 처리
         /// 1. 친구 요청 데이터가 존재하지 않는 경우, 예외 처리
@@ -87,14 +87,18 @@ public class FriendService
             throw new CustomException(CustomExceptionCode.ALREADY_FRIEND, null);
         }
 
-        // 친구 데이터 생성
-        Friend friend = Friend.builder()
-                .user1(friendRequest.getSender())
-                .user2(friendRequest.getReceiver())
-                .build();
+        // 친구 요청을 수락하는 경우
+        if(isAccept)
+        {
+            // 친구 데이터 생성
+            Friend friend = Friend.builder()
+                    .user1(friendRequest.getSender())
+                    .user2(friendRequest.getReceiver())
+                    .build();
 
-        // 친구 데이터 저장
-        friendRepository.save(friend);
+            // 친구 데이터 저장
+            friendRepository.save(friend);
+        }
 
         // 친구 요청 데이터 삭제
         friendRequestRepository.delete(friendRequest);

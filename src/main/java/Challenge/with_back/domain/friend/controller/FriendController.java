@@ -5,6 +5,7 @@ import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.domain.friend.dto.AcceptFriendRequestDto;
+import Challenge.with_back.domain.friend.dto.RejectFreindRequestDto;
 import Challenge.with_back.domain.friend.dto.SendFriendRequestDto;
 import Challenge.with_back.domain.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
@@ -48,12 +49,29 @@ public class FriendController
                                                                   @RequestBody AcceptFriendRequestDto dto)
     {
         User receiver = userDetails.getUser();
-        friendService.acceptFriendRequest(receiver, dto.getFriendRequestId());
+        friendService.answerFriendRequest(receiver, dto.getFriendRequestId(), true);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 요청을 성공적으로 수락하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 친구 요청 거절
+    @PostMapping("/friend-request/reject")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> rejectFriendRequest(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                  @RequestBody RejectFreindRequestDto dto)
+    {
+        User receiver = userDetails.getUser();
+        friendService.answerFriendRequest(receiver, dto.getFriendRequestId(), false);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("친구 요청을 성공적으로 거절하였습니다.")
                         .data(null)
                         .build());
     }
