@@ -10,5 +10,5 @@ import java.util.List;
 public class NotificationListDto
 {
 	private List<NotificationDto> content;		// 알림 리스트
-	private Boolean isLast;									// 마지막 페이지인가?
+	private Boolean isLast;						// 마지막 페이지인가?
 }

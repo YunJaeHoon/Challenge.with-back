@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -33,9 +34,14 @@ public class NotificationService
 		// 사용자 ID로 알림 조회
 		Page<Notification> notificationPage = notificationRepository.findPageByUserId(user.getId(), pageable);
 		
-		// 알림이 존재하지 않는 경우, 예외 발생
-		if (notificationPage.isEmpty())
-			throw new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, null);
+		// 알림이 존재하지 않는 경우, 예외 처리
+		if(notificationPage.isEmpty()) {
+			throw new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, Map.of(
+					"pageSize", pageable.getPageSize(),
+					"currentPage", pageable.getPageNumber(),
+					"totalPage", notificationPage.getTotalPages()
+			));
+		}
 		
 		// 알림 페이지를 알림 리스트로 변경
 		List<NotificationDto> notificationList = notificationPage.stream()

@@ -10,10 +10,17 @@ import Challenge.with_back.common.repository.rdbms.FriendRequestRepository;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.domain.friend.dto.FriendDto;
+import Challenge.with_back.domain.friend.dto.FriendListDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -155,5 +162,45 @@ public class FriendService
                 .build();
 
         friendBlockRepository.save(friendBlock);
+    }
+
+    // 친구 조회
+    public FriendListDto getFriends(User user, Pageable pageable)
+    {
+        // 사용자 ID로 친구 데이터 페이지 조회
+        Page<Friend> friendPage = friendRepository.findPageByUserId(user.getId(), pageable);
+
+        // 친구가 존재하지 않는 경우, 예외 처리
+        if(friendPage.isEmpty()) {
+            throw new CustomException(CustomExceptionCode.FRIEND_NOT_FOUND, Map.of(
+                    "pageSize", pageable.getPageSize(),
+                    "currentPage", pageable.getPageNumber(),
+                    "totalPage", friendPage.getTotalPages()
+            ));
+        }
+
+        // 친구 데이터 페이지를 FriendDto 리스트로 변경
+        List<FriendDto> friendList = friendPage.stream()
+                .map(friend -> {
+
+                    // 친구를 맺은 사용자 데이터
+                    User friendUser = Objects.equals(user.getId(), friend.getUser1().getId()) ? friend.getUser2() : friend.getUser1();
+
+                    return FriendDto.builder()
+                            .FriendId(friend.getId())
+                            .userId(friendUser.getId())
+                            .email(friendUser.getEmail())
+                            .nickname(friendUser.getNickname())
+                            .profileImageUrl(friendUser.getProfileImageUrl())
+                            .build();
+                }).toList();
+
+        return FriendListDto.builder()
+                .friendList(friendList)
+                .pageSize(pageable.getPageSize())
+                .currentPageNumber(pageable.getPageNumber())
+                .totalPageCount(friendPage.getTotalPages())
+                .isLastPage(friendPage.isLast())
+                .build();
     }
 }

@@ -4,19 +4,15 @@ import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
-import Challenge.with_back.domain.friend.dto.AcceptFriendRequestDto;
-import Challenge.with_back.domain.friend.dto.CreateFriendBlockDto;
-import Challenge.with_back.domain.friend.dto.RejectFreindRequestDto;
-import Challenge.with_back.domain.friend.dto.SendFriendRequestDto;
+import Challenge.with_back.domain.friend.dto.*;
 import Challenge.with_back.domain.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.print.Pageable;
 
 @RestController
 @RequestMapping("/api")
@@ -90,6 +86,22 @@ public class FriendController
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 차단을 성공하였습니다.")
                         .data(null)
+                        .build());
+    }
+
+    // 친구 조회
+    @GetMapping("/friend")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> getFriends(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        FriendListDto data = friendService.getFriends(user, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("친구를 성공적으로 조회하였습니다.")
+                        .data(data)
                         .build());
     }
 }
