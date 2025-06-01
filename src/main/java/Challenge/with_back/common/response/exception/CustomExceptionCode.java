@@ -42,6 +42,7 @@ public enum CustomExceptionCode
     FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 요청 데이터가 존재하지 않습니다."),
     SAME_SENDER_AND_RECEIVER(HttpStatus.BAD_REQUEST, "본인에게 친구 요청을 보낼 수는 없습니다."),
     ALREADY_FRIEND(HttpStatus.CONFLICT, "이미 둘은 친구 사이입니다."),
+    ALREADY_BLOCKED_FRIEND(HttpStatus.CONFLICT, "이미 차단한 사용자입니다."),
 
     // 알림 예외
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다."),
