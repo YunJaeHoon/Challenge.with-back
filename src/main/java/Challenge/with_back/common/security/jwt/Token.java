@@ -13,5 +13,5 @@ public enum Token
 
     private final String name;
     private final int validTime;
-    private boolean isHttpOnly;
+    private final boolean isHttpOnly;
 }

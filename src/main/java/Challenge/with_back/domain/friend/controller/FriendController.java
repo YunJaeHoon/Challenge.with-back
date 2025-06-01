@@ -4,6 +4,7 @@ import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
+import Challenge.with_back.domain.friend.dto.AcceptFriendRequestDto;
 import Challenge.with_back.domain.friend.dto.SendFriendRequestDto;
 import Challenge.with_back.domain.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,23 @@ public class FriendController
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 요청을 성공하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 친구 요청 수락
+    @PostMapping("/friend-request/accept")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> acceptFriendRequest(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                  @RequestBody AcceptFriendRequestDto dto)
+    {
+        User receiver = userDetails.getUser();
+        friendService.acceptFriendRequest(receiver, dto.getFriendRequestId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("친구 요청을 성공적으로 수락하였습니다.")
                         .data(null)
                         .build());
     }

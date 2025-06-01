@@ -1,5 +1,6 @@
 package Challenge.with_back.domain.friend.service;
 
+import Challenge.with_back.common.entity.rdbms.Friend;
 import Challenge.with_back.common.entity.rdbms.FriendRequest;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.repository.rdbms.FriendBlockRepository;
@@ -27,14 +28,27 @@ public class FriendService
     @Transactional
     public void sendFriendRequest(User sender, Long receiverId)
     {
-        // 친구 요청을 보낸 사람과 받는 사람이 동일한지 확인
+        /// 예외 처리
+        /// 1. 친구 요청을 보낸 사람과 받는 사람이 동일한 경우, 예외 처리
+        /// 2. 친구 요청을 받는 사람이 존재하지 않는 경우, 예외 처리
+        /// 3. 이미 둘이 친구 사이인 경우, 예외 처리
+
+        // 친구 요청을 보낸 사람과 받는 사람이 동일한 경우, 예외 처리
         if(sender.getId().equals(receiverId)) {
             throw new CustomException(CustomExceptionCode.SAME_SENDER_AND_RECEIVER, receiverId);
         }
 
-        // 친구 요청을 받는 사람이 존재하는지 확인
+        // 친구 요청을 받는 사람이 존재하지 않는 경우, 예외 처리
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, receiverId));
+
+        // 이미 둘이 친구 사이인 경우, 예외 처리
+        if(
+                friendRepository.findByUser1IdAndUser2Id(sender.getId(), receiver.getId()).isPresent() ||
+                friendRepository.findByUser1IdAndUser2Id(receiver.getId(), sender.getId()).isPresent()
+        ) {
+            throw new CustomException(CustomExceptionCode.ALREADY_FRIEND, null);
+        }
 
         // 기존에 존재하던 친구 요청 데이터
         Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findBySenderIdAndReceiverId(sender.getId(), receiverId);
@@ -51,5 +65,38 @@ public class FriendService
 
         // 새로운 친구 요청 데이터 추가
         friendRequestRepository.save(friendRequest);
+    }
+
+    // 친구 요청 수락
+    @Transactional
+    public void acceptFriendRequest(User receiver, Long friendRequestId)
+    {
+        /// 예외 처리
+        /// 1. 친구 요청 데이터가 존재하지 않는 경우, 예외 처리
+        /// 2. 이미 둘이 친구 사이인 경우, 예외 처리
+
+        // 친구 요청 데이터 조회
+        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.FRIEND_REQUEST_NOT_FOUND, friendRequestId));
+
+        // 이미 둘이 친구 사이인 경우, 예외 처리
+        if(
+                friendRepository.findByUser1IdAndUser2Id(friendRequest.getSender().getId(), receiver.getId()).isPresent() ||
+                friendRepository.findByUser1IdAndUser2Id(receiver.getId(), friendRequest.getSender().getId()).isPresent()
+        ) {
+            throw new CustomException(CustomExceptionCode.ALREADY_FRIEND, null);
+        }
+
+        // 친구 데이터 생성
+        Friend friend = Friend.builder()
+                .user1(friendRequest.getSender())
+                .user2(friendRequest.getReceiver())
+                .build();
+
+        // 친구 데이터 저장
+        friendRepository.save(friend);
+
+        // 친구 요청 데이터 삭제
+        friendRequestRepository.delete(friendRequest);
     }
 }
