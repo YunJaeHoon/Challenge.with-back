@@ -122,4 +122,38 @@ public class FriendService
         // 친구 요청 데이터 삭제
         friendRequestRepository.delete(friendRequest);
     }
+
+    // 친구 차단
+    @Transactional
+    public void createFriendBlock(User blockingUser, Long blockedUserId)
+    {
+        /// 예외 처리
+        /// 1. 차단을 하는 사람과 차단을 당하는 사람이 동일한 경우, 예외 처리
+        /// 2. 차단을 당하는 사용자 데이터가 존재하지 않는 경우, 예외 처리
+        /// 3. 이미 차단한 경우, 예외 처리
+
+        // 친구 요청을 보낸 사람과 받는 사람이 동일한 경우, 예외 처리
+        if(blockingUser.getId().equals(blockedUserId)) {
+            throw new CustomException(CustomExceptionCode.SAME_BLOCKING_USER_AND_BLOCKED_USER, blockedUserId);
+        }
+
+        // 차단을 당하는 사용자 데이터가 존재하지 않는 경우, 예외 처리
+        User blockedUser = userRepository.findById(blockedUserId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, blockedUserId));
+
+        // 이미 차단한 경우, 예외 처리
+        if(friendBlockRepository.findByBlockingUserIdAndBlockedUserId(blockingUser.getId(), blockedUser.getId()).isPresent()) {
+            throw new CustomException(CustomExceptionCode.ALREADY_BLOCKED_FRIEND, null);
+        }
+
+        /// 친구 차단 데이터 생성
+
+        // 친구 차단 데이터 생성
+        FriendBlock friendBlock = FriendBlock.builder()
+                .blockingUser(blockingUser)
+                .blockedUser(blockedUser)
+                .build();
+
+        friendBlockRepository.save(friendBlock);
+    }
 }

@@ -5,6 +5,7 @@ import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.domain.friend.dto.AcceptFriendRequestDto;
+import Challenge.with_back.domain.friend.dto.CreateFriendBlockDto;
 import Challenge.with_back.domain.friend.dto.RejectFreindRequestDto;
 import Challenge.with_back.domain.friend.dto.SendFriendRequestDto;
 import Challenge.with_back.domain.friend.service.FriendService;
@@ -13,10 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
 
 @RestController
 @RequestMapping("/api")
@@ -72,6 +72,23 @@ public class FriendController
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 요청을 성공적으로 거절하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 친구 차단
+    @PostMapping("/friend-block")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> createFriendBlock(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                @RequestBody CreateFriendBlockDto dto)
+    {
+        User blockingUser = userDetails.getUser();
+        friendService.createFriendBlock(blockingUser, dto.getBlockedUserId());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("친구 차단을 성공하였습니다.")
                         .data(null)
                         .build());
     }
