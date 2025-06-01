@@ -164,6 +164,29 @@ public class FriendService
         friendBlockRepository.save(friendBlock);
     }
 
+    // 친구 차단 해제
+    @Transactional
+    public void deleteFriendBlock(User blockingUser, Long friendBlockId)
+    {
+        /// 예외 처리
+        /// 1. 친구 차단 데이터가 존재하지 않는 경우, 예외 처리
+        /// 2. 친구 차단 데이터의 차단한 사용자가 친구 차단 해제 요청자와 동일하지 않은 경우, 예외 처리
+
+        // 친구 차단 데이터가 존재하지 않는 경우, 예외 처리
+        FriendBlock friendBlock = friendBlockRepository.findById(friendBlockId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.FRIEND_BLOCK_NOT_FOUND, friendBlockId));
+
+        // 친구 차단 데이터의 차단한 사용자가 친구 차단 해제 요청자와 동일하지 않은 경우, 예외 처리
+        if(!friendBlock.getBlockingUser().getId().equals(blockingUser.getId())) {
+            throw new CustomException(CustomExceptionCode.DIFFERENT_BLOCKING_USER_AND_REQUESTER, friendBlockId);
+        }
+
+        /// 친구 차단 데이터 삭제
+
+        // 친구 차단 데이터 삭제
+        friendBlockRepository.delete(friendBlock);
+    }
+
     // 친구 조회
     public FriendListDto getFriends(User user, Pageable pageable)
     {

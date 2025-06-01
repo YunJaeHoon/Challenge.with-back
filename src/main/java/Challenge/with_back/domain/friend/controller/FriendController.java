@@ -89,6 +89,23 @@ public class FriendController
                         .build());
     }
 
+    // 친구 차단 해제
+    @DeleteMapping("/friend-block/{friendBlockId}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> deleteFriendBlock(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                @PathVariable Long friendBlockId)
+    {
+        User blockingUser = userDetails.getUser();
+        friendService.deleteFriendBlock(blockingUser, friendBlockId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("친구 차단을 성공적으로 해제하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
     // 친구 조회
     @GetMapping("/friend")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
