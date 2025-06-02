@@ -10,6 +10,8 @@ import Challenge.with_back.common.repository.rdbms.FriendRequestRepository;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import Challenge.with_back.common.response.exception.CustomException;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.domain.friend.dto.FriendBlockDto;
+import Challenge.with_back.domain.friend.dto.FriendBlockListDto;
 import Challenge.with_back.domain.friend.dto.FriendDto;
 import Challenge.with_back.domain.friend.dto.FriendListDto;
 import jakarta.transaction.Transactional;
@@ -187,8 +189,8 @@ public class FriendService
         friendBlockRepository.delete(friendBlock);
     }
 
-    // 친구 조회
-    public FriendListDto getFriends(User user, Pageable pageable)
+    // 친구 리스트 조회
+    public FriendListDto getFriendList(User user, Pageable pageable)
     {
         // 사용자 ID로 친구 데이터 페이지 조회
         Page<Friend> friendPage = friendRepository.findPageByUserId(user.getId(), pageable);
@@ -210,7 +212,7 @@ public class FriendService
                     User friendUser = Objects.equals(user.getId(), friend.getUser1().getId()) ? friend.getUser2() : friend.getUser1();
 
                     return FriendDto.builder()
-                            .FriendId(friend.getId())
+                            .friendId(friend.getId())
                             .userId(friendUser.getId())
                             .email(friendUser.getEmail())
                             .nickname(friendUser.getNickname())
@@ -224,6 +226,41 @@ public class FriendService
                 .currentPageNumber(pageable.getPageNumber())
                 .totalPageCount(friendPage.getTotalPages())
                 .isLastPage(friendPage.isLast())
+                .build();
+    }
+
+    // 친구 차단 리스트 조회
+    public FriendBlockListDto getFriendBlockList(User user, Pageable pageable)
+    {
+        // 사용자 ID로 친구 차단 데이터 페이지 조회
+        Page<FriendBlock> friendBlockPage = friendBlockRepository.findByBlockingUserId(user.getId(), pageable);
+
+        // 친구 차단 데이터가 존재하지 않는 경우, 예외 처리
+        if(friendBlockPage.isEmpty()) {
+            throw new CustomException(CustomExceptionCode.FRIEND_BLOCK_NOT_FOUND, Map.of(
+                    "pageSize", pageable.getPageSize(),
+                    "currentPage", pageable.getPageNumber(),
+                    "totalPage", friendBlockPage.getTotalPages()
+            ));
+        }
+
+        // 친구 차단 데이터 페이지를 FriendBlockDto 리스트로 변경
+        List<FriendBlockDto> friendBlockList = friendBlockPage.stream()
+                .map(friendBlock -> FriendBlockDto.builder()
+                        .friendBlockId(friendBlock.getId())
+                        .userId(friendBlock.getBlockedUser().getId())
+                        .email(friendBlock.getBlockedUser().getEmail())
+                        .nickname(friendBlock.getBlockedUser().getNickname())
+                        .profileImageUrl(friendBlock.getBlockedUser().getProfileImageUrl())
+                        .build()
+                ).toList();
+
+        return FriendBlockListDto.builder()
+                .friendBlockList(friendBlockList)
+                .pageSize(pageable.getPageSize())
+                .currentPageNumber(pageable.getPageNumber())
+                .totalPageCount(friendBlockPage.getTotalPages())
+                .isLastPage(friendBlockPage.isLast())
                 .build();
     }
 }

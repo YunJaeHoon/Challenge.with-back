@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class FriendDto
 {
-    private Long FriendId;      // 친구 데이터 ID
+    private Long friendId;      // 친구 데이터 ID
     private Long userId;        // 친구를 맺은 사용자 ID
 
     private String email;               // 친구 이메일

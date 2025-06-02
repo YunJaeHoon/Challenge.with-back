@@ -106,18 +106,34 @@ public class FriendController
                         .build());
     }
 
-    // 친구 조회
+    // 친구 리스트 조회
     @GetMapping("/friend")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<SuccessResponseDto> getFriends(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails)
+    public ResponseEntity<SuccessResponseDto> getFriendList(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails)
     {
         User user = userDetails.getUser();
-        FriendListDto data = friendService.getFriends(user, pageable);
+        FriendListDto data = friendService.getFriendList(user, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
-                        .message("친구를 성공적으로 조회하였습니다.")
+                        .message("친구 리스트를 성공적으로 조회하였습니다.")
+                        .data(data)
+                        .build());
+    }
+
+    // 친구 차단 리스트 조회
+    @GetMapping("/friend-block")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> getFriendBlockList(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        FriendBlockListDto data = friendService.getFriendBlockList(user, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("친구 차단 리스트를 성공적으로 조회하였습니다.")
                         .data(data)
                         .build());
     }
