@@ -16,6 +16,7 @@ import Challenge.with_back.domain.friend.dto.FriendDto;
 import Challenge.with_back.domain.friend.dto.FriendListDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class FriendService
     private final FriendRequestRepository friendRequestRepository;
     private final FriendBlockRepository friendBlockRepository;
     private final UserRepository userRepository;
+
+    @Value("${PROFILE_IMAGE_BUCKET_URL}")
+    String profileImageBucketUrl;
 
     // 친구 요청
     @Transactional
@@ -216,7 +220,7 @@ public class FriendService
                             .userId(friendUser.getId())
                             .email(friendUser.getEmail())
                             .nickname(friendUser.getNickname())
-                            .profileImageUrl(friendUser.getProfileImageUrl())
+                            .profileImageUrl(profileImageBucketUrl + friendUser.getProfileImageUrl())
                             .build();
                 }).toList();
 
@@ -251,7 +255,7 @@ public class FriendService
                         .userId(friendBlock.getBlockedUser().getId())
                         .email(friendBlock.getBlockedUser().getEmail())
                         .nickname(friendBlock.getBlockedUser().getNickname())
-                        .profileImageUrl(friendBlock.getBlockedUser().getProfileImageUrl())
+                        .profileImageUrl(profileImageBucketUrl + friendBlock.getBlockedUser().getProfileImageUrl())
                         .build()
                 ).toList();
 
