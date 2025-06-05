@@ -29,10 +29,10 @@ public class ChallengeUtil
 	private final AccountUtil accountUtil;
 	
 	// 챌린지 색상 테마 이름으로 색상 코드 찾기
-	public String getColor(String colorThemeName)
+	public ChallengeColorTheme getColor(String colorThemeName)
 	{
 		try {
-			return ChallengeColorTheme.valueOf(colorThemeName).getColor();
+			return ChallengeColorTheme.valueOf(colorThemeName);
 		} catch (IllegalArgumentException e) {
 			throw new CustomException(CustomExceptionCode.INVALID_CHALLENGE_COLOR_THEME, colorThemeName);
 		}

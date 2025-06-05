@@ -1,5 +1,7 @@
 package Challenge.with_back.common.entity.rdbms;
 
+import Challenge.with_back.common.enums.ChallengeColorTheme;
+import Challenge.with_back.common.enums.ChallengeColorThemeConverter;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.enums.ChallengeUnitConverter;
 import jakarta.persistence.*;
@@ -33,8 +35,8 @@ public class Challenge extends BasicEntity
 	
 	// 색 테마
 	@NotNull
-	@Column(columnDefinition = "char(6)")
-	private String colorTheme;
+	@Convert(converter = ChallengeColorThemeConverter.class)
+	private ChallengeColorTheme colorTheme;
 	
 	// 이름
 	@NotNull

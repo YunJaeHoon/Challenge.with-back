@@ -1,6 +1,7 @@
 package Challenge.with_back.domain.challenge.service;
 
 import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.enums.ChallengeColorTheme;
 import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
@@ -47,7 +48,7 @@ public class ChallengeService
     public void createChallenge(CreateChallengeDto createChallengeDto, User user)
     {
         // 챌린지 색상 코드, 단위 추출
-        String colorTheme = challengeUtil.getColor(createChallengeDto.getColorTheme());
+        ChallengeColorTheme colorTheme = challengeUtil.getColor(createChallengeDto.getColorTheme());
         ChallengeUnit unit = challengeUtil.getUnit(createChallengeDto.getUnit());
 
         // 챌린지 이름 및 설명 길이 체크
@@ -181,7 +182,7 @@ public class ChallengeService
                             .challengeId(challenge.getId())
                             .superAdminId(challenge.getSuperAdmin().getId())
                             .icon(challenge.getIcon())
-                            .colorTheme(challenge.getColorTheme())
+                            .colorTheme(challenge.getColorTheme().name())
                             .challengeName(challenge.getName())
                             .challengeDescription(challenge.getDescription())
                             .maxParticipantCount(challenge.getMaxParticipantCount())
