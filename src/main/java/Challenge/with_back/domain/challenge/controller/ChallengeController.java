@@ -56,4 +56,19 @@ public class ChallengeController
                         .data(data)
                         .build());
     }
+
+    // 챌린지 삭제
+    @DeleteMapping("/challenge/{challengeId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<SuccessResponseDto> deleteChallenge(@PathVariable Long challengeId)
+    {
+        challengeService.deleteChallenge(challengeId);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("챌린지 삭제를 성공적으로 완료하였습니다.")
+                        .data(null)
+                        .build());
+    }
 }

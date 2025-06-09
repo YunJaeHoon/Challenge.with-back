@@ -72,7 +72,7 @@ public class UpdateParticipatePhaseService
         long maxEvidencePhotoCount = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
 
         // 증거사진 최대 개수를 초과한다면 예외처리
-        if(evidencePhotoRepository.countAllByParticipatePhase(participatePhase) + images.size() > maxEvidencePhotoCount)
+        if(evidencePhotoRepository.countAllByParticipatePhaseId(participatePhaseId) + images.size() > maxEvidencePhotoCount)
             throw new CustomException(CustomExceptionCode.TOO_MANY_EVIDENCE_PHOTO, maxEvidencePhotoCount);
 
         // 증거사진 dto 리스트

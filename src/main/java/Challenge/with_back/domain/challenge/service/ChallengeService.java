@@ -2,13 +2,7 @@ package Challenge.with_back.domain.challenge.service;
 
 import Challenge.with_back.common.entity.rdbms.*;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
-import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import Challenge.with_back.common.repository.rdbms.*;
-import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
-import Challenge.with_back.domain.challenge.dto.UpdateParticipatePhaseMessage;
-import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseStrategy;
-import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
-import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.response.exception.CustomException;
@@ -17,14 +11,10 @@ import Challenge.with_back.domain.account.util.AccountUtil;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -36,12 +26,15 @@ public class ChallengeService
 {
     private final UserRepository userRepository;
     private final ChallengeRepository challengeRepository;
+    private final PhaseRepository phaseRepository;
     private final ParticipateChallengeRepository participateChallengeRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
     private final EvidencePhotoRepository evidencePhotoRepository;
 
     private final AccountUtil accountUtil;
     private final ChallengeUtil challengeUtil;
+
+    private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
     // 챌린지 생성
     @Transactional
@@ -138,9 +131,6 @@ public class ChallengeService
     // 현재 진행 중인 내 챌린지 조회
     public GetMyChallengeDto getMyChallenges(User user)
     {
-        // 참여 중인 챌린지 개수
-        int countChallenge = participateChallengeRepository.countAllOngoing(user);
-
         // 챌린지 개수 상한값
         int maxChallengeCount = accountUtil.getMaxChallengeCount(user);
 
@@ -159,11 +149,11 @@ public class ChallengeService
                     Phase phase = challengeUtil.getCurrentPhase(challenge);
 
                     // 현재 페이즈 참여 정보
-                    ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseAndUser(phase, user)
+                    ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseIdAndUserId(phase.getId(), user.getId())
                             .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
 
                     // 증거사진 리스트
-                    List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhase(participatePhase);
+                    List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhaseId(participatePhase.getId());
 
                     // 증거사진 리스트를 증거사진 dto 리스트로 변경
                     List<GetMyChallengeDto.EvidencePhotoDto> evidencePhotos = evidencePhotoList.stream()
@@ -205,9 +195,45 @@ public class ChallengeService
                 .toList();
 
         return GetMyChallengeDto.builder()
-                .countChallenge(countChallenge)
+                .countChallenge(participateChallengeList.size())
                 .maxChallengeCount(maxChallengeCount)
                 .challenges(challengeDtoList)
                 .build();
+    }
+
+    public void deleteChallenge(Long challengeId)
+    {
+        /// 증거사진을 S3에서 삭제
+
+        // 챌린지 데이터 조회
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, null));
+
+        // 페이즈 리스트 조회
+        List<Phase> phaseList = phaseRepository.findAllByChallengeId(challenge.getId());
+
+        phaseList.forEach(phase -> {
+
+            // 페이즈 참가 데이터 리스트 조회
+            List<ParticipatePhase> participatePhaseList = participatePhaseRepository.findAllByPhaseId(phase.getId());
+
+            participatePhaseList.forEach(participatePhase -> {
+
+                // 증거사진 데이터 리스트 조회
+                List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhaseId(participatePhase.getId());
+
+                // S3에서 증거사진 삭제
+                evidencePhotoList.forEach(evidencePhoto -> {
+                    s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
+                });
+
+            });
+
+        });
+
+        /// 챌린지 삭제
+
+        // 챌린지 데이터 삭제
+        challengeRepository.delete(challenge);
     }
 }

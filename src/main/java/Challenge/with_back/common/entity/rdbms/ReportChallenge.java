@@ -27,7 +27,13 @@ public class ReportChallenge extends BasicEntity
     // 신고 대상 챌린지
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge")
+    @JoinColumn(
+            name = "challenge",
+            foreignKey = @ForeignKey(
+                    name = "fk_report_challenge_to_challenge",
+                    foreignKeyDefinition = "FOREIGN KEY (challenge) REFERENCES challenge(id) ON DELETE CASCADE"
+            )
+    )
     private Challenge challenge;
 
     // 분류

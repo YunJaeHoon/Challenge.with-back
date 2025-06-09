@@ -25,6 +25,12 @@ public class ChallengeBlock extends BasicEntity
     // 차단 대상 챌린지
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge")
+    @JoinColumn(
+            name = "challenge",
+            foreignKey = @ForeignKey(
+                    name = "fk_challenge_block_to_challenge",
+                    foreignKeyDefinition = "FOREIGN KEY (challenge) REFERENCES challenge(id) ON DELETE CASCADE"
+            )
+    )
     private Challenge challenge;
 }
