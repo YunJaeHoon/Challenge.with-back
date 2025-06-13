@@ -5,6 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
+@Table(
+        indexes = {
+                @Index(name = "idx_user1AndUser2", columnList = "user1, user2"),
+                @Index(name = "idx_user2AndUser1", columnList = "user2, user1"),
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user1", "user2"})
+        }
+)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
