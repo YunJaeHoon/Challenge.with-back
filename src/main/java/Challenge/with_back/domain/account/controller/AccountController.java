@@ -8,6 +8,7 @@ import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AccountController
 	// 회원가입
 	@PostMapping("/join")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> join(@RequestBody JoinDto dto)
+	public ResponseEntity<SuccessResponseDto> join(@Valid @RequestBody JoinDto dto)
 	{
 		accountService.join(dto);
 		
@@ -74,7 +75,7 @@ public class AccountController
 	// 이메일 인증번호 전송
 	@PostMapping("/send-verification-code")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> sendVerificationCode(@Valid @RequestBody SendVerificationCodeDto dto)
 	{
 		accountService.sendVerificationCode(dto);
 		
@@ -89,7 +90,7 @@ public class AccountController
 	// 이메일 인증번호 확인: 회원가입
 	@PostMapping("/check-verification-code/join")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForJoin(@RequestBody CheckVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForJoin(@Valid @RequestBody CheckVerificationCodeDto dto)
 	{
 		accountService.checkVerificationCodeForJoin(dto);
 		
@@ -104,7 +105,7 @@ public class AccountController
 	// 이메일 인증번호 확인: 비밀번호 초기화
 	@PostMapping("/check-verification-code/reset-password")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForResetPassword(@RequestBody CheckVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForResetPassword(@Valid @RequestBody CheckVerificationCodeDto dto)
 	{
 		accountService.checkVerificationCodeForResetPassword(dto);
 		
@@ -119,7 +120,7 @@ public class AccountController
 	// 비밀번호 초기화
 	@PostMapping("/user/reset-password")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> resetPassword(@RequestBody CheckVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> resetPassword(@Valid @RequestBody CheckVerificationCodeDto dto)
 	{
 		accountService.resetPassword(dto);
 		

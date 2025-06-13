@@ -6,6 +6,7 @@ import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.domain.friend.dto.*;
 import Challenge.with_back.domain.friend.service.FriendService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class FriendController
     @PostMapping("/friend-request")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> sendFriendRequest(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                @RequestBody SendFriendRequestDto dto)
+                                                                @Valid @RequestBody SendFriendRequestDto dto)
     {
         User sender = userDetails.getUser();
         friendService.sendFriendRequest(sender, dto.getReceiverId());
@@ -42,7 +43,7 @@ public class FriendController
     @PostMapping("/friend-request/accept")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> acceptFriendRequest(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                  @RequestBody AcceptFriendRequestDto dto)
+                                                                  @Valid @RequestBody AcceptFriendRequestDto dto)
     {
         User receiver = userDetails.getUser();
         friendService.answerFriendRequest(receiver, dto.getFriendRequestId(), true);
@@ -59,7 +60,7 @@ public class FriendController
     @PostMapping("/friend-request/reject")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> rejectFriendRequest(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                  @RequestBody RejectFreindRequestDto dto)
+                                                                  @Valid @RequestBody RejectFreindRequestDto dto)
     {
         User receiver = userDetails.getUser();
         friendService.answerFriendRequest(receiver, dto.getFriendRequestId(), false);
@@ -76,7 +77,7 @@ public class FriendController
     @PostMapping("/friend-block")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> createFriendBlock(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                @RequestBody CreateFriendBlockDto dto)
+                                                                @Valid @RequestBody CreateFriendBlockDto dto)
     {
         User blockingUser = userDetails.getUser();
         friendService.createFriendBlock(blockingUser, dto.getBlockedUserId());

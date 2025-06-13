@@ -6,6 +6,7 @@ import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.challenge.service.ChallengeService;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class ChallengeController
     // 챌린지 생성
     @PostMapping("/challenge")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<SuccessResponseDto> createChallenge(@RequestBody CreateChallengeDto dto,
+    public ResponseEntity<SuccessResponseDto> createChallenge(@Valid @RequestBody CreateChallengeDto dto,
                                                               @AuthenticationPrincipal CustomUserDetails userDetails)
     {
         User user = userDetails.getUser();

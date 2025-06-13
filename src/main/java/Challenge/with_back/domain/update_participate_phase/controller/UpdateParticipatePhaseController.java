@@ -9,6 +9,7 @@ import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
 import Challenge.with_back.domain.update_participate_phase.dto.UpdateCommentDto;
 import Challenge.with_back.domain.update_participate_phase.dto.UpdateCurrentCountDto;
 import Challenge.with_back.domain.update_participate_phase.service.UpdateParticipatePhaseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +69,7 @@ public class UpdateParticipatePhaseController
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> updateParticipatePhaseComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                             @PathVariable Long participatePhaseId,
-                                                                            @RequestBody UpdateCommentDto dto)
+                                                                            @Valid @RequestBody UpdateCommentDto dto)
     {
         User user = userDetails.getUser();
         updateParticipatePhaseService.sendUpdateParticipatePhaseComment(user, participatePhaseId, dto.getComment());
@@ -86,7 +87,7 @@ public class UpdateParticipatePhaseController
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> updateParticipatePhaseCurrentCount(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                  @PathVariable Long participatePhaseId,
-                                                                                 @RequestBody UpdateCurrentCountDto dto)
+                                                                                 @Valid @RequestBody UpdateCurrentCountDto dto)
     {
         User user = userDetails.getUser();
         updateParticipatePhaseService.sendUpdateParticipatePhaseCurrentCount(user, participatePhaseId, dto.getValue());

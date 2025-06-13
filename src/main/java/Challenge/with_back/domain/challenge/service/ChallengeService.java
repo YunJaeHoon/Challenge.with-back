@@ -30,6 +30,7 @@ public class ChallengeService
     private final ParticipateChallengeRepository participateChallengeRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
     private final EvidencePhotoRepository evidencePhotoRepository;
+    private final FriendRepository friendRepository;
 
     private final AccountUtil accountUtil;
     private final ChallengeUtil challengeUtil;
@@ -40,9 +41,20 @@ public class ChallengeService
     @Transactional
     public void createChallenge(CreateChallengeDto createChallengeDto, User user)
     {
+        /// 형식 체크
+        /// 1. 챌린지 색상 코드 및 단위 추출
+        /// 2. 챌린지 이름 및 설명 길이 체크
+        /// 3. 챌린지 목표 개수 크기 체크
+        /// 4. 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+        /// 5. 본인과 초대한 사용자들의 인원수가 챌린지 최대 참여자 인원수를 초과했는지 확인
+
+        /// 1
+
         // 챌린지 색상 코드, 단위 추출
         ChallengeColorTheme colorTheme = challengeUtil.getColor(createChallengeDto.getColorTheme());
         ChallengeUnit unit = challengeUtil.getUnit(createChallengeDto.getUnit());
+
+        /// 2
 
         // 챌린지 이름 길이 체크
         challengeUtil.checkNameLength(createChallengeDto.getName());
@@ -51,42 +63,60 @@ public class ChallengeService
         if(createChallengeDto.getDescription() != null)
             challengeUtil.checkDescriptionLength(createChallengeDto.getDescription());
 
+        /// 3
+
         // 챌린지 목표 개수 크기 체크
         challengeUtil.checkGoalCount(createChallengeDto.getGoalCount());
 
-        // 챌린지 최대 참여자 인원수
-        int maxParticipantCount = createChallengeDto.getIsAlone() ? 1 :
-                accountUtil.isPremium(user) ? 100 : 5;
+        /// 4
 
         // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
         if(accountUtil.isParticipatingInMaxChallenges(user))
             throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
 
-        // 참가자 리스트
-        List<User> participantList = new ArrayList<>();
-        participantList.add(user);
+        /// 5
+
+        // 챌린지 최대 참여자 인원수
+        int maxParticipantCount = createChallengeDto.getIsAlone() ? 1 :
+                accountUtil.isPremium(user) ? 100 : 5;
+
+        // 초대한 사용자 리스트
+        List<User> inviteUserList = new ArrayList<>();
 
         createChallengeDto.getInviteUserIdList().forEach(inviteUserId -> {
 
-            // 사용자 정보 확인
+            // 초대한 사용자 정보
             Optional<User> InviteUserOptional = userRepository.findById(inviteUserId);
 
             // 존재하지 않는 사용자면 그냥 넘어감
-            if(InviteUserOptional.isEmpty())
+            if(InviteUserOptional.isEmpty()) {
                 return;
+            }
 
             User inviteUser = InviteUserOptional.get();
 
-            // 최대 개수로 챌린지를 참여하고 있다면 그냥 넘어감
-            if(accountUtil.isParticipatingInMaxChallenges(inviteUser))
+            // 초대한 사용자가 최대 개수로 챌린지를 참여하고 있다면 그냥 넘어감
+            if(accountUtil.isParticipatingInMaxChallenges(inviteUser)) {
                 return;
+            }
 
-            participantList.add(inviteUser);
+            // 본인과 초대한 사용자가 친구가 아니라면 그냥 넘어감
+            if(
+                    friendRepository.findByUser1IdAndUser2Id(user.getId(), inviteUser.getId()).isEmpty() &&
+                    friendRepository.findByUser1IdAndUser2Id(inviteUser.getId(), user.getId()).isEmpty()
+            ) {
+                return;
+            }
+
+            inviteUserList.add(inviteUser);
+
         });
 
         // 참가자들의 인원수가 챌린지 최대 참여자 인원수보다 많으면 예외 처리
-        if(participantList.size() > maxParticipantCount)
+        if(inviteUserList.size() + 1 > maxParticipantCount)
             throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, createChallengeDto.getInviteUserIdList().size() + 1);
+
+        /// 챌린지 생성
 
         // 챌린지 생성
         Challenge challenge = Challenge.builder()
@@ -94,7 +124,7 @@ public class ChallengeService
                 .icon(createChallengeDto.getIcon())
                 .colorTheme(colorTheme)
                 .name(createChallengeDto.getName().trim())
-                .description(createChallengeDto.getDescription() == null ? "" : createChallengeDto.getDescription().trim())
+                .description(createChallengeDto.getDescription().trim())
                 .goalCount(createChallengeDto.getGoalCount())
                 .unit(unit)
                 .isPublic(createChallengeDto.getIsPublic())
@@ -104,31 +134,28 @@ public class ChallengeService
                 .isFinished(false)
                 .build();
 
-        // 챌린지 참여 정보 리스트
-        List<ParticipateChallenge> participateChallengeList = new ArrayList<>();
+        /// 챌린지 참여 정보 생성
 
         // 챌린지 참여 정보 생성
-        participantList.forEach(participant -> {
-            ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
-                    .user(participant)
-                    .challenge(challenge)
-                    .determination("")
-                    .challengeRole(Objects.equals(participant, user) ? ChallengeRole.SUPER_ADMIN : ChallengeRole.USER)
-                    .countSuccess(0)
-                    .countExemption(0)
-                    .isPublic(true)
-                    .lastActiveDate(LocalDate.now())
-                    .build();
+        ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
+                .user(user)
+                .challenge(challenge)
+                .determination("")
+                .challengeRole(ChallengeRole.SUPER_ADMIN)
+                .countSuccess(0)
+                .countExemption(0)
+                .isPublic(true)
+                .lastActiveDate(LocalDate.now())
+                .build();
 
-            participateChallengeList.add(participateChallenge);
-        });
-
-        userRepository.saveAll(participantList);
         challengeRepository.save(challenge);
-        participateChallengeRepository.saveAll(participateChallengeList);
+        participateChallengeRepository.save(participateChallenge);
 
         // 페이즈 10개 생성
         challengeUtil.createPhases(challenge, 10);
+
+        // TODO: 챌린지 초대 데이터 생성
+        // TODO: 초대한 사용자들에게 챌린지 초대 알림 및 이메일 전송
     }
 
     // 현재 진행 중인 내 챌린지 조회
