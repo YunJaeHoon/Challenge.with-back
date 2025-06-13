@@ -2,31 +2,16 @@ package Challenge.with_back.domain.challenge.util;
 
 import Challenge.with_back.common.entity.rdbms.*;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
-import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;
-import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.domain.account.service.AccountService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ChallengeValidator
 {
-	private final ChallengeRepository challengeRepository;
-	private final PhaseRepository phaseRepository;
-	private final ParticipateChallengeRepository participateChallengeRepository;
-	private final ParticipatePhaseRepository participatePhaseRepository;
-
-	private final AccountService accountService;
-	
 	// 챌린지 색상 테마 이름으로 색상 코드 찾기
 	public ChallengeColorTheme getColor(String colorThemeName)
 	{
@@ -80,150 +65,5 @@ public class ChallengeValidator
 	{
 		if(goalCount <= 0 || goalCount > 100)
 			throw new CustomException(CustomExceptionCode.INVALID_CHALLENGE_GOAL_COUNT, goalCount);
-	}
-
-	// 현재 페이즈 조회
-	public Phase getCurrentPhase(Challenge challenge)
-	{
-		return phaseRepository.findByChallengeIdAndNumber(challenge.getId(), challenge.calcCurrentPhaseNumber())
-				.orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, null));
-	}
-
-	// 챌린지 가입
-	@Transactional
-	public void joinChallenge(Challenge challenge, User user, ChallengeRole role)
-	{
-		// 공개 챌린지인지 확인
-		if(!challenge.isPublic())
-			throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
-
-		// 이미 챌린지에 참여자가 가득 찼는지 확인
-		if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallenge(challenge))
-			throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
-
-		// 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
-		if(accountService.isParticipatingInMaxChallenges(user))
-			throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
-
-		// 이미 사용자가 해당 챌린지에 가입했는지 확인
-		if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent())
-			throw new CustomException(CustomExceptionCode.ALREADY_PARTICIPATING_CHALLENGE, null);
-
-		// 챌린지 참여 정보 생성
-		ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
-				.user(user)
-				.challenge(challenge)
-				.determination("")
-				.challengeRole(role)
-				.countSuccess(0)
-				.countExemption(0)
-				.isPublic(true)
-				.lastActiveDate(LocalDate.now())
-				.build();
-
-		// 챌린지 참여 정보 저장
-		participateChallengeRepository.save(participateChallenge);
-
-		// 현재 페이즈 조회
-		Phase phase = getCurrentPhase(challenge);
-
-		// 페이즈 참여 정보 생성
-		ParticipatePhase participatePhase = ParticipatePhase.builder()
-				.user(user)
-				.phase(phase)
-				.currentCount(0)
-				.isExempt(false)
-				.comment("")
-				.build();
-
-		// 페이즈 참여 정보 저장
-		participatePhaseRepository.save(participatePhase);
-	}
-
-	// 다음 페이즈 생성
-	@Transactional
-	public void createPhases(Challenge challenge, int count)
-	{
-		// 챌린지 참여 정보 리스트
-		List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByChallengeOrderByCreatedAtDesc(challenge);
-
-		// 페이즈 리스트
-		List<Phase> phaseList = new ArrayList<>();
-
-		// 페이즈 참여 정보 리스트
-		List<ParticipatePhase> participatePhaseList = new ArrayList<>();
-
-		for(int i = 0; i < count; i++)
-		{
-			// 챌린지의 페이즈 개수 증가
-			challenge.increaseCountPhase();
-
-			// 페이즈 시작 날짜 및 종료 날짜 계산
-			LocalDate startDate = challenge.calcPhaseStartDate(challenge.getCountPhase());
-			LocalDate endDate = challenge.getUnit().calcPhaseEndDate(startDate);
-
-			// 페이즈 생성
-			Phase phase = Phase.builder()
-					.challenge(challenge)
-					.name(challenge.getCountPhase() + "번째 페이즈")
-					.description("")
-					.number(challenge.getCountPhase())
-					.startDate(startDate)
-					.endDate(endDate)
-					.build();
-
-			phaseList.add(phase);
-
-			// 페이즈 참여 정보 생성
-			participateChallengeList.forEach(participateChallenge -> {
-				ParticipatePhase participatePhase = ParticipatePhase.builder()
-						.user(participateChallenge.getUser())
-						.phase(phase)
-						.currentCount(0)
-						.isExempt(false)
-						.comment("")
-						.build();
-
-				participatePhaseList.add(participatePhase);
-			});
-
-			challengeRepository.save(challenge);
-		}
-
-		phaseRepository.saveAll(phaseList);
-		participatePhaseRepository.saveAll(participatePhaseList);
-	}
-
-	// 페이즈 참여 정보 소유자 확인
-	public void checkParticipatePhaseOwnership(User user, ParticipatePhase participatePhase)
-	{
-		if(!participatePhase.getUser().getId().equals(user.getId()))
-			throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
-	}
-
-	// 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-	@Transactional
-	public void renewLastActiveDate(ParticipatePhase participatePhase)
-	{
-		// 사용자
-		User user = participatePhase.getUser();
-
-		// 페이즈
-		Phase phase = participatePhase.getPhase();
-
-		// 챌린지
-		Challenge challenge = phase.getChallenge();
-
-		// 챌린지 마지막 활동 날짜 갱신
-		challenge.renewLastActiveDate();
-		challengeRepository.save(challenge);
-
-		// 챌린지 참여 정보
-		ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
-				.orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
-
-		// 챌린지 참여 정보 마지막 활동 날짜 갱신
-		participateChallenge.renewLastActiveDate();
-		participateChallengeRepository.save(participateChallenge);
 	}
 }

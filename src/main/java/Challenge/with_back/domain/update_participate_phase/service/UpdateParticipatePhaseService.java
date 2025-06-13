@@ -1,9 +1,6 @@
 package Challenge.with_back.domain.update_participate_phase.service;
 
-import Challenge.with_back.common.entity.rdbms.EvidencePhoto;
-import Challenge.with_back.common.entity.rdbms.ParticipatePhase;
-import Challenge.with_back.common.entity.rdbms.Phase;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.rdbms.*;
 import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.exception.CustomException;
@@ -35,10 +32,10 @@ import java.util.UUID;
 public class UpdateParticipatePhaseService
 {
     private final UserRepository userRepository;
+    private final ChallengeRepository challengeRepository;
+    private final ParticipateChallengeRepository participateChallengeRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
     private final EvidencePhotoRepository evidencePhotoRepository;
-
-    private final ChallengeValidator challengeValidator;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
@@ -62,9 +59,10 @@ public class UpdateParticipatePhaseService
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
 
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeValidator.checkParticipatePhaseOwnership(user, participatePhase);
+        if(!participatePhase.getUser().getId().equals(user.getId()))
+            throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
 
-        // 페이즈
+        // 페이즈 조회
         Phase phase = participatePhase.getPhase();
 
         // 증거사진 최대 개수
@@ -104,8 +102,21 @@ public class UpdateParticipatePhaseService
                     .build());
         });
 
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeValidator.renewLastActiveDate(participatePhase);
+        /// 챌린지 및 챌린지 참여 데이터 마지막 활동 날짜 갱신
+
+        // 챌린지 조회
+        Challenge challenge = phase.getChallenge();
+
+        // 챌린지 참여 데이터 조회
+        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+                        .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
+
+        // 마지막 활동 날짜 갱신
+        challenge.renewLastActiveDate();
+        participateChallenge.renewLastActiveDate();
+
+        // 변경 사항 저장
+        challengeRepository.save(challenge);
         participatePhaseRepository.save(participatePhase);
 
         return evidencePhotoDtoList;
@@ -119,21 +130,38 @@ public class UpdateParticipatePhaseService
         EvidencePhoto evidencePhoto = evidencePhotoRepository.findById(evidencePhotoId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.EVIDENCE_PHOTO_NOT_FOUND, evidencePhotoId));
 
-        // 페이즈 참여 정보
+        // 페이즈 참여 데이터
         ParticipatePhase participatePhase = evidencePhoto.getParticipatePhase();
 
-        // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeValidator.checkParticipatePhaseOwnership(user, participatePhase);
+        // 페이즈 참여 데이터가 해당 사용자 것인지 확인
+        if(!participatePhase.getUser().getId().equals(user.getId()))
+            throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
 
         // 증거사진 삭제
         evidencePhotoRepository.delete(evidencePhoto);
 
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeValidator.renewLastActiveDate(participatePhase);
-        participatePhaseRepository.save(participatePhase);
-
         // S3에서 삭제
         s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
+
+        /// 챌린지 및 챌린지 참여 데이터 마지막 활동 날짜 갱신
+
+        // 페이즈 조회
+        Phase phase = participatePhase.getPhase();
+
+        // 챌린지 조회
+        Challenge challenge = phase.getChallenge();
+
+        // 챌린지 참여 데이터 조회
+        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
+
+        // 마지막 활동 날짜 갱신
+        challenge.renewLastActiveDate();
+        participateChallenge.renewLastActiveDate();
+
+        // 변경 사항 저장
+        challengeRepository.save(challenge);
+        participatePhaseRepository.save(participatePhase);
     }
 
     // 페이즈 참여 정보 한마디 수정 요청 메시지를 RabbitMQ의 큐로 발행
@@ -197,7 +225,32 @@ public class UpdateParticipatePhaseService
 
         // 페이즈 참여 정보 변경
         try {
+
+            /// 페이즈 참여 정보 갱신
+
+            // 페이즈 참여 정보 갱신
             updateParticipatePhaseStrategy.updateParticipatePhase(user, participatePhase, message.getData());
+
+            /// 챌린지 및 챌린지 참여 데이터 마지막 활동 날짜 갱신
+
+            // 페이즈 조회
+            Phase phase = participatePhase.getPhase();
+
+            // 챌린지 조회
+            Challenge challenge = phase.getChallenge();
+
+            // 챌린지 참여 데이터 조회
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
+
+            // 마지막 활동 날짜 갱신
+            challenge.renewLastActiveDate();
+            participateChallenge.renewLastActiveDate();
+
+            // 변경 사항 저장
+            challengeRepository.save(challenge);
+            participatePhaseRepository.save(participatePhase);
+
         } catch (CustomException e) {
             log.error("{}: {}\n{}", e.getErrorCode().name(), e.getErrorCode().getMessage(), message.toString());
             throw e;

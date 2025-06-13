@@ -25,7 +25,8 @@ public class ToggleIsExempt implements UpdateParticipatePhaseStrategy
     public void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data) throws CustomException
     {
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeValidator.checkParticipatePhaseOwnership(user, participatePhase);
+        if(!participatePhase.getUser().getId().equals(user.getId()))
+            throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
 
         // 챌린지
         Challenge challenge = participatePhase.getPhase().getChallenge();
@@ -43,9 +44,7 @@ public class ToggleIsExempt implements UpdateParticipatePhaseStrategy
         // 면제 여부 토글
         participatePhase.toggleIsExempt();
 
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeValidator.renewLastActiveDate(participatePhase);
-
+        // 변경 사항 저장
         participateChallengeRepository.save(participateChallenge);
         participatePhaseRepository.save(participatePhase);
     }

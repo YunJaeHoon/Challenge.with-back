@@ -11,6 +11,7 @@ import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
+import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -155,7 +156,7 @@ public class ChallengeService
         /// 페이즈 생성
 
         // 페이즈 10개 생성
-        challengeValidator.createPhases(challenge, 10);
+        createPhases(challenge, 10);
 
         /// 챌린지 초대 데이터 생성
 
@@ -172,6 +173,59 @@ public class ChallengeService
         inviteChallengeRepository.saveAll(inviteChallengeList);
 
         // TODO: 초대한 사용자들에게 챌린지 초대 알림 및 이메일 전송
+    }
+
+    // 챌린지 가입
+    @Transactional
+    public void joinChallenge(Challenge challenge, User user, ChallengeRole role)
+    {
+        // 공개 챌린지인지 확인
+        if(!challenge.isPublic())
+            throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
+
+        // 이미 챌린지에 참여자가 가득 찼는지 확인
+        if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallenge(challenge))
+            throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
+
+        // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+        if(isParticipatingInMaxChallenges(user))
+            throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
+
+        // 이미 사용자가 해당 챌린지에 가입했는지 확인
+        if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_PARTICIPATING_CHALLENGE, null);
+
+        // 챌린지 참여 정보 생성
+        ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
+                .user(user)
+                .challenge(challenge)
+                .determination("")
+                .challengeRole(role)
+                .countSuccess(0)
+                .countExemption(0)
+                .isPublic(true)
+                .lastActiveDate(LocalDate.now())
+                .build();
+
+        // 챌린지 참여 정보 저장
+        participateChallengeRepository.save(participateChallenge);
+
+        // TODO: 현재 페이즈 이후의 모든 페이즈에 대한 참여 정보를 생성해야 함.
+
+        // 현재 페이즈 조회
+        Phase phase = getCurrentPhase(challenge);
+
+        // 페이즈 참여 정보 생성
+        ParticipatePhase participatePhase = ParticipatePhase.builder()
+                .user(user)
+                .phase(phase)
+                .currentCount(0)
+                .isExempt(false)
+                .comment("")
+                .build();
+
+        // 페이즈 참여 정보 저장
+        participatePhaseRepository.save(participatePhase);
     }
 
     // 현재 진행 중인 내 챌린지 조회
@@ -192,7 +246,7 @@ public class ChallengeService
                     Challenge challenge = participateChallenge.getChallenge();
 
                     // 현재 페이즈
-                    Phase phase = challengeValidator.getCurrentPhase(challenge);
+                    Phase phase = getCurrentPhase(challenge);
 
                     // 현재 페이즈 참여 정보
                     ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseIdAndUserId(phase.getId(), user.getId())
@@ -290,5 +344,69 @@ public class ChallengeService
     public boolean isParticipatingInMaxChallenges(User user)
     {
         return participateChallengeRepository.countAllOngoing(user) >= user.getMaxChallengeCount();
+    }
+
+    // 현재 페이즈 조회
+    public Phase getCurrentPhase(Challenge challenge)
+    {
+        return phaseRepository.findByChallengeIdAndNumber(challenge.getId(), challenge.calcCurrentPhaseNumber())
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, null));
+    }
+
+    public void createPhases(Challenge challenge, int count)
+    {
+        /// 생성할 페이즈 개수만큼 다음을 수행
+        /// 1. 챌린지의 페이즈 개수 1 증가
+        /// 2. 페이즈 생성
+        /// 3. 페이즈 참여 정보 생성
+
+        // 챌린지 참여 정보 리스트
+        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByChallengeOrderByCreatedAtDesc(challenge);
+
+        // 페이즈 리스트
+        List<Phase> phaseList = new ArrayList<>();
+
+        // 페이즈 참여 정보 리스트
+        List<ParticipatePhase> participatePhaseList = new ArrayList<>();
+
+        // 생성할 페이즈 개수만큼 반복
+        for(int i = 0; i < count; i++)
+        {
+            // 챌린지의 페이즈 개수 증가
+            challenge.increaseCountPhase();
+
+            // 페이즈 시작 날짜 및 종료 날짜 계산
+            LocalDate startDate = challenge.calcPhaseStartDate(challenge.getCountPhase());
+            LocalDate endDate = challenge.getUnit().calcPhaseEndDate(startDate);
+
+            // 페이즈 생성
+            Phase phase = Phase.builder()
+                    .challenge(challenge)
+                    .name(challenge.getCountPhase() + "번째 페이즈")
+                    .description("")
+                    .number(challenge.getCountPhase())
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .build();
+
+            phaseList.add(phase);
+
+            // 페이즈 참여 정보 생성
+            participateChallengeList.forEach(participateChallenge -> {
+                ParticipatePhase participatePhase = ParticipatePhase.builder()
+                        .user(participateChallenge.getUser())
+                        .phase(phase)
+                        .currentCount(0)
+                        .isExempt(false)
+                        .comment("")
+                        .build();
+
+                participatePhaseList.add(participatePhase);
+            });
+        }
+
+        challengeRepository.save(challenge);
+        phaseRepository.saveAll(phaseList);
+        participatePhaseRepository.saveAll(participatePhaseList);
     }
 }
