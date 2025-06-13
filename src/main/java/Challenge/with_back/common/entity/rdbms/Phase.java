@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(
@@ -55,4 +56,7 @@ public class Phase extends BasicEntity
     // 종료 날짜
     @NotNull
     private LocalDate endDate;
+
+    @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParticipatePhase> participatePhaseList;
 }

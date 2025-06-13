@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -75,6 +76,18 @@ public class Challenge extends BasicEntity
 	// 종료했는가?
 	@NotNull
 	private boolean isFinished;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ReportChallenge> reportChallengeList;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParticipateChallenge> participateChallengeList;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ChallengeBlock> challengeBlockList;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Phase> phaseList;
 
 	// 페이즈 시작 날짜 계산
 	public LocalDate calcPhaseStartDate(int number) {

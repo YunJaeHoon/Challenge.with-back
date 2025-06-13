@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Entity
 @Table(
         indexes = {
@@ -55,6 +57,9 @@ public class ParticipatePhase extends BasicEntity
     // 한마디
     @Column(columnDefinition = "TEXT")
     private String comment;
+
+    @OneToMany(mappedBy = "participatePhase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EvidencePhoto> evidencePhotoList;
 
     // 한마디 수정
     public void updateComment(String comment) {

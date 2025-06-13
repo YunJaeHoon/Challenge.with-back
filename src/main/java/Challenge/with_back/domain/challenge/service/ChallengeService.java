@@ -44,9 +44,12 @@ public class ChallengeService
         ChallengeColorTheme colorTheme = challengeUtil.getColor(createChallengeDto.getColorTheme());
         ChallengeUnit unit = challengeUtil.getUnit(createChallengeDto.getUnit());
 
-        // 챌린지 이름 및 설명 길이 체크
+        // 챌린지 이름 길이 체크
         challengeUtil.checkNameLength(createChallengeDto.getName());
-        challengeUtil.checkDescriptionLength(createChallengeDto.getDescription());
+
+        // 챌린지 설명 길이 체크
+        if(createChallengeDto.getDescription() != null)
+            challengeUtil.checkDescriptionLength(createChallengeDto.getDescription());
 
         // 챌린지 목표 개수 크기 체크
         challengeUtil.checkGoalCount(createChallengeDto.getGoalCount());
@@ -90,8 +93,8 @@ public class ChallengeService
                 .superAdmin(user)
                 .icon(createChallengeDto.getIcon())
                 .colorTheme(colorTheme)
-                .name(createChallengeDto.getName())
-                .description(createChallengeDto.getDescription())
+                .name(createChallengeDto.getName().trim())
+                .description(createChallengeDto.getDescription() == null ? "" : createChallengeDto.getDescription().trim())
                 .goalCount(createChallengeDto.getGoalCount())
                 .unit(unit)
                 .isPublic(createChallengeDto.getIsPublic())
@@ -201,6 +204,7 @@ public class ChallengeService
                 .build();
     }
 
+    // 챌린지 삭제
     public void deleteChallenge(Long challengeId)
     {
         /// 증거사진을 S3에서 삭제
