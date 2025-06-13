@@ -31,6 +31,7 @@ public class ChallengeService
     private final ParticipatePhaseRepository participatePhaseRepository;
     private final EvidencePhotoRepository evidencePhotoRepository;
     private final FriendRepository friendRepository;
+    private final InviteChallengeRepository inviteChallengeRepository;
 
     private final AccountUtil accountUtil;
     private final ChallengeUtil challengeUtil;
@@ -131,9 +132,12 @@ public class ChallengeService
                 .isFinished(false)
                 .build();
 
-        /// 챌린지 참여 정보 생성
+        // 챌린지 저장
+        challengeRepository.save(challenge);
 
-        // 챌린지 참여 정보 생성
+        /// 챌린지 참여 데이터 생성
+
+        // 챌린지 참여 데이터 생성
         ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
                 .user(user)
                 .challenge(challenge)
@@ -145,13 +149,28 @@ public class ChallengeService
                 .lastActiveDate(LocalDate.now())
                 .build();
 
-        challengeRepository.save(challenge);
+        // 챌린지 참여 데이터 저장
         participateChallengeRepository.save(participateChallenge);
+
+        /// 페이즈 생성
 
         // 페이즈 10개 생성
         challengeUtil.createPhases(challenge, 10);
 
-        // TODO: 챌린지 초대 데이터 생성
+        /// 챌린지 초대 데이터 생성
+
+        // 챌린지 초대 데이터 생성
+        List<InviteChallenge> inviteChallengeList = inviteUserList.stream().map(inviteUser -> {
+            return InviteChallenge.builder()
+                    .sender(user)
+                    .receiver(inviteUser)
+                    .challenge(challenge)
+                    .build();
+        }).toList();
+
+        // 챌린지 초대 데이터 저장
+        inviteChallengeRepository.saveAll(inviteChallengeList);
+
         // TODO: 초대한 사용자들에게 챌린지 초대 알림 및 이메일 전송
     }
 
