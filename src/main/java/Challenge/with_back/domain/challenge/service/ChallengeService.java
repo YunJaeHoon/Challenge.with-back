@@ -101,10 +101,7 @@ public class ChallengeService
             }
 
             // 본인과 초대한 사용자가 친구가 아니라면 그냥 넘어감
-            if(
-                    friendRepository.findByUser1IdAndUser2Id(user.getId(), inviteUser.getId()).isEmpty() &&
-                    friendRepository.findByUser1IdAndUser2Id(inviteUser.getId(), user.getId()).isEmpty()
-            ) {
+            if(friendRepository.findByUser1IdAndUser2Id(user.getId(), inviteUser.getId()).isEmpty()) {
                 return;
             }
 

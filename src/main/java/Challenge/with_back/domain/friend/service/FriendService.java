@@ -57,10 +57,7 @@ public class FriendService
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.USER_NOT_FOUND, receiverId));
 
         // 이미 둘이 친구 사이인 경우, 예외 처리
-        if(
-                friendRepository.findByUser1IdAndUser2Id(sender.getId(), receiver.getId()).isPresent() ||
-                friendRepository.findByUser1IdAndUser2Id(receiver.getId(), sender.getId()).isPresent()
-        ) {
+        if(friendRepository.findByUser1IdAndUser2Id(sender.getId(), receiver.getId()).isPresent()) {
             throw new CustomException(CustomExceptionCode.ALREADY_FRIEND, null);
         }
 

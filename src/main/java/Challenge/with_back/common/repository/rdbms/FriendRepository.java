@@ -13,7 +13,13 @@ import java.util.Optional;
 public interface FriendRepository extends JpaRepository<Friend, Long>
 {
     // 사용자1, 사용자2로 친구 데이터 조회
-    Optional<Friend> findByUser1IdAndUser2Id(Long user1Id, Long user2Id);
+    @Query("""
+        SELECT f
+        FROM Friend f
+        WHERE (f.user1.id = :user1Id AND f.user2.id = :user2Id)
+           OR (f.user1.id = :user2Id AND f.user2.id = :user1Id)
+    """)
+    Optional<Friend> findByUser1IdAndUser2Id(@Param("user1Id") Long user1Id, @Param("user2Id") Long user2Id);
 
     @Query("SELECT f FROM Friend f WHERE f.user1.id = :userId OR f.user2.id = :userId")
     Page<Friend> findPageByUserId(@Param("userId") Long userId, Pageable pageable);
