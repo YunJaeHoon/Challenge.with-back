@@ -4,7 +4,7 @@ import Challenge.with_back.common.enums.ProfileImage;
 import Challenge.with_back.common.security.jwt.Token;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
-import Challenge.with_back.domain.account.util.AccountUtil;
+import Challenge.with_back.domain.account.util.AccountValidator;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.common.exception.CustomExceptionCode;
@@ -31,7 +31,7 @@ public class AccountService
     private final UserRepository userRepository;
     private final CheckVerificationCodeRepository checkVerificationCodeRepository;
 
-    private final AccountUtil accountUtil;
+    private final AccountValidator accountValidator;
     private final JwtUtil jwtUtil;
 
     private final VerificationCodeEmailFactory verificationCodeEmailFactory;
@@ -52,11 +52,11 @@ public class AccountService
             throw new CustomException(CustomExceptionCode.CHECK_VERIFICATION_CODE_NOT_FOUND, dto.getEmail());
 
         // 계정 중복 확인
-        accountUtil.shouldNotExistingUser(dto.getEmail());
+        accountValidator.shouldNotExistingUser(dto.getEmail());
 
         // 데이터 형식 체크
-        accountUtil.checkPasswordFormat(dto.getPassword());
-        accountUtil.checkNicknameFormat(dto.getNickname());
+        accountValidator.checkPasswordFormat(dto.getPassword());
+        accountValidator.checkNicknameFormat(dto.getNickname());
 
         // 계정 생성
         User user = User.builder()
@@ -85,7 +85,7 @@ public class AccountService
     {
         return BasicUserInfoDto.builder()
                 .role(user.getAccountRole().name())
-                .isPremium(accountUtil.isPremium(user))
+                .isPremium(accountValidator.isPremium(user))
                 .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
                 .countUnreadNotification(user.getCountUnreadNotification())
                 .build();
@@ -127,20 +127,20 @@ public class AccountService
     public void checkVerificationCodeForJoin(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        accountValidator.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
         // 계정 중복 확인
-        accountUtil.shouldNotExistingUser(dto.getEmail());
+        accountValidator.shouldNotExistingUser(dto.getEmail());
     }
 
     // 이메일 인증번호 확인: 비밀번호 초기화
     public void checkVerificationCodeForResetPassword(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        accountValidator.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
         // 계정 존재 확인
-        accountUtil.shouldExistingUser(dto.getEmail());
+        accountValidator.shouldExistingUser(dto.getEmail());
     }
 
     // 비밀번호 초기화
@@ -148,7 +148,7 @@ public class AccountService
     public void resetPassword(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        accountValidator.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
          // 이메일 전송
         resetPasswordEmailFactory.sendEmail(dto.getEmail());

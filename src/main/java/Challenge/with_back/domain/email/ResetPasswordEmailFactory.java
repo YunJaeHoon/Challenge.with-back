@@ -2,7 +2,7 @@ package Challenge.with_back.domain.email;
 
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
-import Challenge.with_back.domain.account.util.AccountUtil;
+import Challenge.with_back.domain.account.util.AccountValidator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -15,14 +15,14 @@ import java.util.stream.IntStream;
 @Component
 public class ResetPasswordEmailFactory extends EmailFactory
 {
-    private final AccountUtil accountUtil;
+    private final AccountValidator accountValidator;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     
     // 생성자
-    public ResetPasswordEmailFactory(JavaMailSender javaMailSender, AccountUtil accountUtil, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public ResetPasswordEmailFactory(JavaMailSender javaMailSender, AccountValidator accountValidator, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         super(javaMailSender);
-        this.accountUtil = accountUtil;
+        this.accountValidator = accountValidator;
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -41,7 +41,7 @@ public class ResetPasswordEmailFactory extends EmailFactory
                 .collect(Collectors.joining());
 
         // 계정 존재 확인
-        User user = accountUtil.shouldExistingUser(to);
+        User user = accountValidator.shouldExistingUser(to);
 
         // 비밀번호 변경
         user.resetPassword(bCryptPasswordEncoder.encode(password));

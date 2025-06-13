@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public class AccountUtil
+public class AccountValidator
 {
 	private final UserRepository userRepository;
 	private final VerificationCodeRepository verificationCodeRepository;

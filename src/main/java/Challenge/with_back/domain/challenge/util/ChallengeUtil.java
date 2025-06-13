@@ -7,7 +7,7 @@ import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.domain.account.util.AccountUtil;
+import Challenge.with_back.domain.account.util.AccountValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class ChallengeUtil
 	private final ParticipateChallengeRepository participateChallengeRepository;
 	private final ParticipatePhaseRepository participatePhaseRepository;
 
-	private final AccountUtil accountUtil;
+	private final AccountValidator accountValidator;
 	
 	// 챌린지 색상 테마 이름으로 색상 코드 찾기
 	public ChallengeColorTheme getColor(String colorThemeName)
@@ -103,7 +103,7 @@ public class ChallengeUtil
 			throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
 
 		// 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
-		if(accountUtil.isParticipatingInMaxChallenges(user))
+		if(accountValidator.isParticipatingInMaxChallenges(user))
 			throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
 
 		// 이미 사용자가 해당 챌린지에 가입했는지 확인

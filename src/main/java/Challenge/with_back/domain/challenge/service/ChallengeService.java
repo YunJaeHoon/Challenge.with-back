@@ -7,7 +7,7 @@ import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.domain.account.util.AccountUtil;
+import Challenge.with_back.domain.account.util.AccountValidator;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeUtil;
@@ -33,7 +33,7 @@ public class ChallengeService
     private final FriendRepository friendRepository;
     private final InviteChallengeRepository inviteChallengeRepository;
 
-    private final AccountUtil accountUtil;
+    private final AccountValidator accountValidator;
     private final ChallengeUtil challengeUtil;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
@@ -72,14 +72,14 @@ public class ChallengeService
         /// 4
 
         // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
-        if(accountUtil.isParticipatingInMaxChallenges(user))
+        if(accountValidator.isParticipatingInMaxChallenges(user))
             throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
 
         /// 5
 
         // 챌린지 최대 참여자 인원수
         int maxParticipantCount = createChallengeDto.getIsAlone() ? 1 :
-                accountUtil.isPremium(user) ? 100 : 5;
+                accountValidator.isPremium(user) ? 100 : 5;
 
         // 초대한 사용자 리스트
         List<User> inviteUserList = new ArrayList<>();
@@ -97,7 +97,7 @@ public class ChallengeService
             User inviteUser = InviteUserOptional.get();
 
             // 초대한 사용자가 최대 개수로 챌린지를 참여하고 있다면 그냥 넘어감
-            if(accountUtil.isParticipatingInMaxChallenges(inviteUser)) {
+            if(accountValidator.isParticipatingInMaxChallenges(inviteUser)) {
                 return;
             }
 
@@ -178,7 +178,7 @@ public class ChallengeService
     public GetMyChallengeDto getMyChallenges(User user)
     {
         // 챌린지 개수 상한값
-        int maxChallengeCount = accountUtil.getMaxChallengeCount(user);
+        int maxChallengeCount = accountValidator.getMaxChallengeCount(user);
 
         // 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
         List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllOngoing(user);

@@ -2,7 +2,7 @@ package Challenge.with_back.domain.email;
 
 import Challenge.with_back.common.entity.redis.VerificationCode;
 import Challenge.with_back.common.repository.redis.VerificationCodeRepository;
-import Challenge.with_back.domain.account.util.AccountUtil;
+import Challenge.with_back.domain.account.util.AccountValidator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 @Component
 public class VerificationCodeEmailFactory extends EmailFactory
 {
-    private final AccountUtil accountUtil;
+    private final AccountValidator accountValidator;
     private final VerificationCodeRepository verificationCodeRepository;
     
     // 생성자
-    public VerificationCodeEmailFactory(JavaMailSender javaMailSender, AccountUtil accountUtil, VerificationCodeRepository verificationCodeRepository) {
+    public VerificationCodeEmailFactory(JavaMailSender javaMailSender, AccountValidator accountValidator, VerificationCodeRepository verificationCodeRepository) {
         super(javaMailSender);
-        this.accountUtil = accountUtil;
+        this.accountValidator = accountValidator;
         this.verificationCodeRepository = verificationCodeRepository;
     }
 
@@ -36,7 +36,7 @@ public class VerificationCodeEmailFactory extends EmailFactory
                 .collect(Collectors.joining());
 
         // 해당 이메일을 통해 이미 인증번호를 발급했다면 삭제
-        accountUtil.deleteVerificationCode(to);
+        accountValidator.deleteVerificationCode(to);
 
         // 새로운 인증번호 정보 등록
         VerificationCode verificationCode = VerificationCode.builder()
