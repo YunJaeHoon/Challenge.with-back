@@ -1,9 +1,9 @@
 package Challenge.with_back.common.security;
 
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.enums.LoginMethod;
-import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

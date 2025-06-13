@@ -1,7 +1,7 @@
 package Challenge.with_back.common.security.handler;
 
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
-import Challenge.with_back.common.response.exception.ExceptionResponseDto;
+import Challenge.with_back.common.exception.CustomExceptionCode;
+import Challenge.with_back.common.response.ExceptionResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

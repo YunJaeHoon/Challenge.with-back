@@ -1,8 +1,7 @@
 package Challenge.with_back.common.security.handler;
 
-import Challenge.with_back.common.response.success.CustomSuccessCode;
-import Challenge.with_back.common.response.success.SuccessResponseDto;
-import Challenge.with_back.common.security.dto.AccessTokenDto;
+import Challenge.with_back.common.response.CustomSuccessCode;
+import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.common.security.jwt.JwtUtil;

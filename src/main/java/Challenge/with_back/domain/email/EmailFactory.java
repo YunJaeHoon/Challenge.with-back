@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.email;
 
-import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.exception.CustomException;
+import Challenge.with_back.common.exception.CustomExceptionCode;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;

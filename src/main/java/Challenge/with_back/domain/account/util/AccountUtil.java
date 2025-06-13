@@ -1,12 +1,12 @@
 package Challenge.with_back.domain.account.util;
 
 import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepository;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.entity.redis.CheckVerificationCode;
 import Challenge.with_back.common.entity.redis.VerificationCode;
 import Challenge.with_back.common.enums.LoginMethod;
-import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import Challenge.with_back.common.repository.redis.CheckVerificationCodeRepository;
 import Challenge.with_back.common.repository.redis.VerificationCodeRepository;

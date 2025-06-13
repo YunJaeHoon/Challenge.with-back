@@ -1,6 +1,6 @@
 package Challenge.with_back.common.rabbitmq;
 
-import Challenge.with_back.common.response.exception.SilentExceptionHandler;
+import Challenge.with_back.common.exception.SilentExceptionHandler;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

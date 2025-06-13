@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.notification.service;
 
-import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.exception.CustomException;
+import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.notification.dto.NotificationDto;
 import Challenge.with_back.domain.notification.TestNotificationFactory;
 import Challenge.with_back.domain.notification.dto.NotificationListDto;
