@@ -8,7 +8,7 @@ import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepositor
 import Challenge.with_back.common.repository.rdbms.ParticipatePhaseRepository;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +18,14 @@ public class ToggleIsExempt implements UpdateParticipatePhaseStrategy
 {
     private final ParticipateChallengeRepository participateChallengeRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
-    private final ChallengeUtil challengeUtil;
+    private final ChallengeValidator challengeValidator;
 
     // 면제 여부 토글
     @Override
     public void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data) throws CustomException
     {
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+        challengeValidator.checkParticipatePhaseOwnership(user, participatePhase);
 
         // 챌린지
         Challenge challenge = participatePhase.getPhase().getChallenge();
@@ -44,7 +44,7 @@ public class ToggleIsExempt implements UpdateParticipatePhaseStrategy
         participatePhase.toggleIsExempt();
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
+        challengeValidator.renewLastActiveDate(participatePhase);
 
         participateChallengeRepository.save(participateChallenge);
         participatePhaseRepository.save(participatePhase);

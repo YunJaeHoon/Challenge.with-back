@@ -8,7 +8,6 @@ import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.domain.account.util.AccountValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ChallengeUtil
+public class ChallengeValidator
 {
 	private final ChallengeRepository challengeRepository;
 	private final PhaseRepository phaseRepository;

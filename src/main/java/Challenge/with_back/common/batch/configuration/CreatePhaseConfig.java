@@ -1,6 +1,6 @@
 package Challenge.with_back.common.batch.configuration;
 
-import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.common.entity.rdbms.Challenge;
 import Challenge.with_back.common.repository.rdbms.ChallengeRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class CreatePhaseConfig
 
     private final ChallengeRepository challengeRepository;
 
-    private final ChallengeUtil challengeUtil;
+    private final ChallengeValidator challengeValidator;
 
     /// Job
 
@@ -79,7 +79,7 @@ public class CreatePhaseConfig
                     continue;
                 }
 
-                challengeUtil.createPhases(challenge, challenge.calcCurrentPhaseNumber() + 10 - challenge.getCountPhase());
+                challengeValidator.createPhases(challenge, challenge.calcCurrentPhaseNumber() + 10 - challenge.getCountPhase());
             }
         };
     }

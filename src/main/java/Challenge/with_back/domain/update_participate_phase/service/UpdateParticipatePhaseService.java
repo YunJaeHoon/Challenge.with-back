@@ -10,7 +10,7 @@ import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
 import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseMessage;
-import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseStrategy;
@@ -38,7 +38,7 @@ public class UpdateParticipatePhaseService
     private final ParticipatePhaseRepository participatePhaseRepository;
     private final EvidencePhotoRepository evidencePhotoRepository;
 
-    private final ChallengeUtil challengeUtil;
+    private final ChallengeValidator challengeValidator;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
@@ -62,7 +62,7 @@ public class UpdateParticipatePhaseService
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, participatePhaseId));
 
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+        challengeValidator.checkParticipatePhaseOwnership(user, participatePhase);
 
         // 페이즈
         Phase phase = participatePhase.getPhase();
@@ -105,7 +105,7 @@ public class UpdateParticipatePhaseService
         });
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
+        challengeValidator.renewLastActiveDate(participatePhase);
         participatePhaseRepository.save(participatePhase);
 
         return evidencePhotoDtoList;
@@ -123,13 +123,13 @@ public class UpdateParticipatePhaseService
         ParticipatePhase participatePhase = evidencePhoto.getParticipatePhase();
 
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+        challengeValidator.checkParticipatePhaseOwnership(user, participatePhase);
 
         // 증거사진 삭제
         evidencePhotoRepository.delete(evidencePhoto);
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
+        challengeValidator.renewLastActiveDate(participatePhase);
         participatePhaseRepository.save(participatePhase);
 
         // S3에서 삭제

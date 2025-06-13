@@ -8,7 +8,7 @@ import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepositor
 import Challenge.with_back.common.repository.rdbms.ParticipatePhaseRepository;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
 {
     private final ParticipateChallengeRepository participateChallengeRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
-    private final ChallengeUtil challengeUtil;
+    private final ChallengeValidator challengeValidator;
 
     // 현재 달성 개수 변경
     @Override
@@ -28,13 +28,13 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
         int value = (int) data;
 
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+        challengeValidator.checkParticipatePhaseOwnership(user, participatePhase);
 
         // 챌린지
         Challenge challenge = participatePhase.getPhase().getChallenge();
 
         // 현재 달성 개수가 범위를 벗어나면 예외 처리
-        challengeUtil.checkCurrentCount(value, challenge);
+        challengeValidator.checkCurrentCount(value, challenge);
 
         // 기존 달성 개수
         int originalValue = participatePhase.getCurrentCount();
@@ -64,7 +64,7 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
         }
 
         // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
+        challengeValidator.renewLastActiveDate(participatePhase);
 
         participatePhaseRepository.save(participatePhase);
     }

@@ -7,11 +7,9 @@ import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.domain.account.util.AccountValidator;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
-import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,7 @@ public class ChallengeService
     private final FriendRepository friendRepository;
     private final InviteChallengeRepository inviteChallengeRepository;
 
-    private final ChallengeUtil challengeUtil;
+    private final ChallengeValidator challengeValidator;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
@@ -54,22 +52,22 @@ public class ChallengeService
         /// 1
 
         // 챌린지 색상 코드, 단위 추출
-        ChallengeColorTheme colorTheme = challengeUtil.getColor(createChallengeDto.getColorTheme());
-        ChallengeUnit unit = challengeUtil.getUnit(createChallengeDto.getUnit());
+        ChallengeColorTheme colorTheme = challengeValidator.getColor(createChallengeDto.getColorTheme());
+        ChallengeUnit unit = challengeValidator.getUnit(createChallengeDto.getUnit());
 
         /// 2
 
         // 챌린지 이름 길이 체크
-        challengeUtil.checkNameLength(createChallengeDto.getName());
+        challengeValidator.checkNameLength(createChallengeDto.getName());
 
         // 챌린지 설명 길이 체크
         if(createChallengeDto.getDescription() != null)
-            challengeUtil.checkDescriptionLength(createChallengeDto.getDescription());
+            challengeValidator.checkDescriptionLength(createChallengeDto.getDescription());
 
         /// 3
 
         // 챌린지 목표 개수 크기 체크
-        challengeUtil.checkGoalCount(createChallengeDto.getGoalCount());
+        challengeValidator.checkGoalCount(createChallengeDto.getGoalCount());
 
         /// 4
 
@@ -157,7 +155,7 @@ public class ChallengeService
         /// 페이즈 생성
 
         // 페이즈 10개 생성
-        challengeUtil.createPhases(challenge, 10);
+        challengeValidator.createPhases(challenge, 10);
 
         /// 챌린지 초대 데이터 생성
 
@@ -194,7 +192,7 @@ public class ChallengeService
                     Challenge challenge = participateChallenge.getChallenge();
 
                     // 현재 페이즈
-                    Phase phase = challengeUtil.getCurrentPhase(challenge);
+                    Phase phase = challengeValidator.getCurrentPhase(challenge);
 
                     // 현재 페이즈 참여 정보
                     ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseIdAndUserId(phase.getId(), user.getId())
