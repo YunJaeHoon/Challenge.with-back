@@ -1,6 +1,5 @@
 package Challenge.with_back.domain.challenge.controller;
 
-import Challenge.with_back.common.aop.annotation.PremiumOnly;
 import Challenge.with_back.domain.challenge.dto.*;
 import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
@@ -13,9 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")

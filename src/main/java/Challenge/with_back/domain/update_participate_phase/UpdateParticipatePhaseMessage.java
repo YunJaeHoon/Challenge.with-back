@@ -1,6 +1,5 @@
-package Challenge.with_back.domain.challenge.dto;
+package Challenge.with_back.domain.update_participate_phase;
 
-import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import lombok.*;
 
 @Getter

@@ -1,4 +1,4 @@
-package Challenge.with_back.domain.challenge.dto;
+package Challenge.with_back.domain.update_participate_phase.dto;
 
 import lombok.Builder;
 import lombok.Getter;

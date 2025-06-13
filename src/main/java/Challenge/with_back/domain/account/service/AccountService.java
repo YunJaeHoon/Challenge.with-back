@@ -9,7 +9,6 @@ import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.common.response.exception.CustomExceptionCode;
 import Challenge.with_back.common.repository.redis.CheckVerificationCodeRepository;
-import Challenge.with_back.common.security.dto.AccessTokenDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.LoginMethod;

@@ -4,7 +4,6 @@ import Challenge.with_back.common.response.success.CustomSuccessCode;
 import Challenge.with_back.common.response.success.SuccessResponseDto;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.common.security.dto.AccessTokenDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import jakarta.servlet.http.Cookie;

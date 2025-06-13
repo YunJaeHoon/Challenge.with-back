@@ -1,4 +1,1 @@
-2025-05-17 23:02:11 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
-Challenge.with_back.domain.challenge.dto.UpdateParticipatePhaseMessage@6de0d49c
-2025-05-17 23:03:19 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
-UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=39, participatePhaseId=155, data=11)
+

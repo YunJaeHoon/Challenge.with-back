@@ -3,7 +3,6 @@ package Challenge.with_back.domain.challenge.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
