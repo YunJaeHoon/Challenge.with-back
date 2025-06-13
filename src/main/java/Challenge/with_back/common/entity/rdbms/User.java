@@ -89,4 +89,14 @@ public class User extends BasicEntity
     public void decreaseCountUnreadNotification() {
         this.countUnreadNotification--;
     }
+
+    // 프리미엄인지 확인
+    public boolean isPremium() {
+        return premiumExpirationDate.isAfter(LocalDate.now());
+    }
+
+    // 참여 가능한 챌린지 최대 개수 확인
+    public int getMaxChallengeCount() {
+        return isPremium() ? 20 : 3;
+    }
 }

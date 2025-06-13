@@ -1,6 +1,11 @@
 package Challenge.with_back.domain.account.service;
 
+import Challenge.with_back.common.entity.redis.CheckVerificationCode;
+import Challenge.with_back.common.entity.redis.VerificationCode;
 import Challenge.with_back.common.enums.ProfileImage;
+import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepository;
+import Challenge.with_back.common.repository.redis.VerificationCodeRepository;
+import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.common.security.jwt.Token;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
@@ -18,18 +23,22 @@ import Challenge.with_back.common.security.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService
 {
     private final UserRepository userRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
     private final CheckVerificationCodeRepository checkVerificationCodeRepository;
+    private final ParticipateChallengeRepository participateChallengeRepository;
 
     private final AccountValidator accountValidator;
     private final JwtUtil jwtUtil;
@@ -43,6 +52,8 @@ public class AccountService
     @Value("${PROFILE_IMAGE_BUCKET_URL}")
     String profileImageBucketUrl;
 
+    /// 서비스
+
     // 회원가입
     @Transactional
     public void join(JoinDto dto)
@@ -52,7 +63,8 @@ public class AccountService
             throw new CustomException(CustomExceptionCode.CHECK_VERIFICATION_CODE_NOT_FOUND, dto.getEmail());
 
         // 계정 중복 확인
-        accountValidator.shouldNotExistingUser(dto.getEmail());
+        if(userRepository.findByEmailAndLoginMethod(dto.getEmail(), LoginMethod.NORMAL).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, dto.getEmail());
 
         // 데이터 형식 체크
         accountValidator.checkPasswordFormat(dto.getPassword());
@@ -85,7 +97,7 @@ public class AccountService
     {
         return BasicUserInfoDto.builder()
                 .role(user.getAccountRole().name())
-                .isPremium(accountValidator.isPremium(user))
+                .isPremium(user.isPremium())
                 .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
                 .countUnreadNotification(user.getCountUnreadNotification())
                 .build();
@@ -127,20 +139,22 @@ public class AccountService
     public void checkVerificationCodeForJoin(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountValidator.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
         // 계정 중복 확인
-        accountValidator.shouldNotExistingUser(dto.getEmail());
+        if(userRepository.findByEmailAndLoginMethod(dto.getEmail(), LoginMethod.NORMAL).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, dto.getEmail());
     }
 
     // 이메일 인증번호 확인: 비밀번호 초기화
     public void checkVerificationCodeForResetPassword(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountValidator.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
         // 계정 존재 확인
-        accountValidator.shouldExistingUser(dto.getEmail());
+        if(userRepository.findByEmailAndLoginMethod(dto.getEmail(), LoginMethod.NORMAL).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, dto.getEmail());
     }
 
     // 비밀번호 초기화
@@ -148,9 +162,61 @@ public class AccountService
     public void resetPassword(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountValidator.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
          // 이메일 전송
         resetPasswordEmailFactory.sendEmail(dto.getEmail());
+    }
+
+    /// 공통 로직
+
+    // Authentication 데이터에서 User 엔티티 추출
+    public User getUserFromAuthentication(Authentication authentication)
+    {
+        if (authentication == null || !authentication.isAuthenticated())
+            throw new CustomException(CustomExceptionCode.NOT_LOGIN, null);
+
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof CustomUserDetails userDetails))
+            throw new CustomException(CustomExceptionCode.INVALID_AUTHENTICATION, null);
+
+        // 사용자 객체 반환
+        return userDetails.getUser();
+    }
+
+    // 인증번호 일치 여부 확인
+    @Transactional(noRollbackFor = CustomException.class)
+    public void checkVerificationCodeCorrectness(String email, String code)
+    {
+        // 인증번호 존재 여부 확인
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.VERIFICATION_CODE_NOT_FOUND, email));
+
+        // 인증번호 일치 여부 확인
+        if(!verificationCode.getCode().equals(code))
+        {
+            if(verificationCode.getCountWrong() >= 5)
+            {
+                verificationCodeRepository.delete(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.TOO_MANY_WRONG_VERIFICATION_CODE, null);
+            }
+            else
+            {
+                verificationCode.increaseCountWrong();
+                verificationCodeRepository.save(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.WRONG_VERIFICATION_CODE, null);
+            }
+        }
+
+        // 새로운 인증번호 확인 정보 등록
+        CheckVerificationCode checkVerificationCode = CheckVerificationCode.builder()
+                .email(email)
+                .build();
+
+        // 생성한 인증번호 확인 정보 저장
+        checkVerificationCodeRepository.save(checkVerificationCode);
     }
 }

@@ -7,6 +7,7 @@ import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
+import Challenge.with_back.domain.account.service.AccountService;
 import Challenge.with_back.domain.account.util.AccountValidator;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
@@ -33,10 +34,11 @@ public class ChallengeService
     private final FriendRepository friendRepository;
     private final InviteChallengeRepository inviteChallengeRepository;
 
-    private final AccountValidator accountValidator;
     private final ChallengeUtil challengeUtil;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
+
+    /// 서비스
 
     // 챌린지 생성
     @Transactional
@@ -72,14 +74,14 @@ public class ChallengeService
         /// 4
 
         // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
-        if(accountValidator.isParticipatingInMaxChallenges(user))
+        if(isParticipatingInMaxChallenges(user))
             throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
 
         /// 5
 
         // 챌린지 최대 참여자 인원수
         int maxParticipantCount = createChallengeDto.getIsAlone() ? 1 :
-                accountValidator.isPremium(user) ? 100 : 5;
+                user.isPremium() ? 100 : 5;
 
         // 초대한 사용자 리스트
         List<User> inviteUserList = new ArrayList<>();
@@ -97,7 +99,7 @@ public class ChallengeService
             User inviteUser = InviteUserOptional.get();
 
             // 초대한 사용자가 최대 개수로 챌린지를 참여하고 있다면 그냥 넘어감
-            if(accountValidator.isParticipatingInMaxChallenges(inviteUser)) {
+            if(isParticipatingInMaxChallenges(inviteUser)) {
                 return;
             }
 
@@ -177,8 +179,8 @@ public class ChallengeService
     // 현재 진행 중인 내 챌린지 조회
     public GetMyChallengeDto getMyChallenges(User user)
     {
-        // 챌린지 개수 상한값
-        int maxChallengeCount = accountValidator.getMaxChallengeCount(user);
+        // 참여 가능한 챌린지 최대 개수
+        int maxChallengeCount = user.getMaxChallengeCount();
 
         // 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
         List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllOngoing(user);
@@ -282,5 +284,13 @@ public class ChallengeService
 
         // 챌린지 데이터 삭제
         challengeRepository.delete(challenge);
+    }
+
+    /// 공통 로직
+
+    // 사용자가 참여 중인 챌린지 개수가 최대인지 확인
+    public boolean isParticipatingInMaxChallenges(User user)
+    {
+        return participateChallengeRepository.countAllOngoing(user) >= user.getMaxChallengeCount();
     }
 }
