@@ -12,8 +12,10 @@ public enum ChallengeColorTheme
     ORANGE("주황"),
     YELLOW("노랑"),
     GREEN("초록"),
+    SKYBLUE("하늘"),
     BLUE("파랑"),
-    WHITE("하양"),
+    PURPLE("보라"),
+    PINK("분홍"),
     GRAY("회색");
 
     private final String description;
