@@ -48,7 +48,6 @@ public class ResetPasswordEmailFactory extends EmailFactory
 
         // 비밀번호 변경
         user.resetPassword(bCryptPasswordEncoder.encode(password));
-        userRepository.save(user);
 
         return Email.builder()
                        .to(to)

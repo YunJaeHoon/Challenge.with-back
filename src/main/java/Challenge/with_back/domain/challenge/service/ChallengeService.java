@@ -11,7 +11,6 @@ import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
-import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -229,6 +228,7 @@ public class ChallengeService
     }
 
     // 현재 진행 중인 내 챌린지 조회
+    @Transactional(readOnly = true)
     public GetMyChallengeDto getMyChallenges(User user)
     {
         // 참여 가능한 챌린지 최대 개수
@@ -302,6 +302,7 @@ public class ChallengeService
     }
 
     // 챌린지 삭제
+    @Transactional
     public void deleteChallenge(Long challengeId)
     {
         /// 증거사진을 S3에서 삭제
@@ -341,18 +342,22 @@ public class ChallengeService
     /// 공통 로직
 
     // 사용자가 참여 중인 챌린지 개수가 최대인지 확인
+    @Transactional(readOnly = true)
     public boolean isParticipatingInMaxChallenges(User user)
     {
         return participateChallengeRepository.countAllOngoing(user) >= user.getMaxChallengeCount();
     }
 
     // 현재 페이즈 조회
+    @Transactional(readOnly = true)
     public Phase getCurrentPhase(Challenge challenge)
     {
         return phaseRepository.findByChallengeIdAndNumber(challenge.getId(), challenge.calcCurrentPhaseNumber())
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, null));
     }
 
+    // 요청 개수만큼 페이즈 생성
+    @Transactional
     public void createPhases(Challenge challenge, int count)
     {
         /// 생성할 페이즈 개수만큼 다음을 수행
@@ -405,7 +410,6 @@ public class ChallengeService
             });
         }
 
-        challengeRepository.save(challenge);
         phaseRepository.saveAll(phaseList);
         participatePhaseRepository.saveAll(participatePhaseList);
     }

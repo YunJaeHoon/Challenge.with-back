@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +92,7 @@ public class AccountService
     }
 
     // 사용자 기본 정보 조회
+    @Transactional(readOnly = true)
     public BasicUserInfoDto getBasicInfo(User user)
     {
         return BasicUserInfoDto.builder()
@@ -104,6 +104,7 @@ public class AccountService
     }
 
     // Access token 재발급
+    @Transactional(readOnly = true)
     public Cookie reissueAccessToken(String refreshToken)
     {
         // Refresh token 존재 여부 체크
@@ -136,6 +137,7 @@ public class AccountService
     }
 
     // 이메일 인증번호 확인: 회원가입
+    @Transactional
     public void checkVerificationCodeForJoin(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
@@ -147,6 +149,7 @@ public class AccountService
     }
 
     // 이메일 인증번호 확인: 비밀번호 초기화
+    @Transactional
     public void checkVerificationCodeForResetPassword(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
@@ -173,7 +176,7 @@ public class AccountService
     // Authentication 데이터에서 User 엔티티 추출
     public User getUserFromAuthentication(Authentication authentication)
     {
-        if (authentication == null || !authentication.isAuthenticated())
+        if(authentication == null || !authentication.isAuthenticated())
             throw new CustomException(CustomExceptionCode.NOT_LOGIN, null);
 
         Object principal = authentication.getPrincipal();

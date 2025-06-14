@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public abstract class EmailFactory
     private final JavaMailSender javaMailSender;
     
     // 이메일 전송
+    @Transactional
     @Async("emailThreadPool")
     public void sendEmail(String to)
     {

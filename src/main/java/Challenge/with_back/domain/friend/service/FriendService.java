@@ -14,12 +14,12 @@ import Challenge.with_back.domain.friend.dto.FriendBlockDto;
 import Challenge.with_back.domain.friend.dto.FriendBlockListDto;
 import Challenge.with_back.domain.friend.dto.FriendDto;
 import Challenge.with_back.domain.friend.dto.FriendListDto;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -101,10 +101,7 @@ public class FriendService
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.FRIEND_REQUEST_NOT_FOUND, friendRequestId));
 
         // 이미 둘이 친구 사이인 경우, 예외 처리
-        if(
-                friendRepository.findByUser1IdAndUser2Id(friendRequest.getSender().getId(), receiver.getId()).isPresent() ||
-                friendRepository.findByUser1IdAndUser2Id(receiver.getId(), friendRequest.getSender().getId()).isPresent()
-        ) {
+        if(friendRepository.findByUser1IdAndUser2Id(friendRequest.getSender().getId(), receiver.getId()).isPresent()) {
             throw new CustomException(CustomExceptionCode.ALREADY_FRIEND, null);
         }
 
@@ -191,6 +188,7 @@ public class FriendService
     }
 
     // 친구 리스트 조회
+    @Transactional(readOnly = true)
     public FriendListDto getFriendList(User user, Pageable pageable)
     {
         // 사용자 ID로 친구 데이터 페이지 조회
@@ -231,6 +229,7 @@ public class FriendService
     }
 
     // 친구 차단 리스트 조회
+    @Transactional(readOnly = true)
     public FriendBlockListDto getFriendBlockList(User user, Pageable pageable)
     {
         // 사용자 ID로 친구 차단 데이터 페이지 조회
