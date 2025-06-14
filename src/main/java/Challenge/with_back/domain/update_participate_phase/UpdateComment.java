@@ -8,16 +8,17 @@ import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component("UPDATE_COMMENT")
 @RequiredArgsConstructor
 public class UpdateComment implements UpdateParticipatePhaseStrategy
 {
-    private final ParticipatePhaseRepository participatePhaseRepository;
     private final ChallengeValidator challengeValidator;
 
     // 한마디 변경
     @Override
+    @Transactional
     public void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data) throws CustomException
     {
         // 한마디
@@ -32,8 +33,5 @@ public class UpdateComment implements UpdateParticipatePhaseStrategy
 
         // 한마디 수정
         participatePhase.updateComment(comment);
-
-        // 변경 사항 저장
-        participatePhaseRepository.save(participatePhase);
     }
 }

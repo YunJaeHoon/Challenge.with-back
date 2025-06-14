@@ -11,6 +11,7 @@ import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component("UPDATE_CURRENT_COUNT")
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
 
     // 현재 달성 개수 변경
     @Override
+    @Transactional
     public void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data) throws CustomException
     {
         // 달성 개수
@@ -52,7 +54,6 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
 
             participateChallenge.increaseCountSuccess();
-            participateChallengeRepository.save(participateChallenge);
         }
         else if(originalValue == challenge.getGoalCount() && value < challenge.getGoalCount())
         {
@@ -61,10 +62,6 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
 
             participateChallenge.decreaseCountSuccess();
-            participateChallengeRepository.save(participateChallenge);
         }
-
-        // 변경 사항 저장
-        participatePhaseRepository.save(participatePhase);
     }
 }

@@ -11,17 +11,17 @@ import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component("TOGGLE_IS_EXEMPT")
 @RequiredArgsConstructor
 public class ToggleIsExempt implements UpdateParticipatePhaseStrategy
 {
     private final ParticipateChallengeRepository participateChallengeRepository;
-    private final ParticipatePhaseRepository participatePhaseRepository;
-    private final ChallengeValidator challengeValidator;
 
     // 면제 여부 토글
     @Override
+    @Transactional
     public void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data) throws CustomException
     {
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
@@ -43,9 +43,5 @@ public class ToggleIsExempt implements UpdateParticipatePhaseStrategy
 
         // 면제 여부 토글
         participatePhase.toggleIsExempt();
-
-        // 변경 사항 저장
-        participateChallengeRepository.save(participateChallenge);
-        participatePhaseRepository.save(participatePhase);
     }
 }
