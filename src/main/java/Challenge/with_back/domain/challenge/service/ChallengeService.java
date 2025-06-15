@@ -178,6 +178,11 @@ public class ChallengeService
     @Transactional
     public void joinChallenge(Challenge challenge, User user, ChallengeRole role)
     {
+        /// 예외 처리
+        /// 1. 공개 챌린지인지 확인
+        /// 2. 이미 챌린지에 참여자가 가득 찼는지 확인
+        /// 3. 이미 사용자가 해당 챌린지에 가입했는지 확인
+
         // 공개 챌린지인지 확인
         if(!challenge.isPublic())
             throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
@@ -194,7 +199,9 @@ public class ChallengeService
         if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent())
             throw new CustomException(CustomExceptionCode.ALREADY_PARTICIPATING_CHALLENGE, null);
 
-        // 챌린지 참여 정보 생성
+        /// 챌린지 참여 데이터 생성
+
+        // 챌린지 참여 데이터 생성
         ParticipateChallenge participateChallenge = ParticipateChallenge.builder()
                 .user(user)
                 .challenge(challenge)
@@ -209,22 +216,29 @@ public class ChallengeService
         // 챌린지 참여 정보 저장
         participateChallengeRepository.save(participateChallenge);
 
-        // TODO: 현재 페이즈 이후의 모든 페이즈에 대한 참여 정보를 생성해야 함.
+        /// 현재 페이즈 이상의 모든 페이즈에 대한 참여 데이터 생성
 
-        // 현재 페이즈 조회
-        Phase phase = getCurrentPhase(challenge);
+        // 현재 페이즈 이상의 모든 페이즈 리스트 조회
+        List<Phase> phaseList = getPhaseListFromCurrent(challenge);
 
-        // 페이즈 참여 정보 생성
-        ParticipatePhase participatePhase = ParticipatePhase.builder()
-                .user(user)
-                .phase(phase)
-                .currentCount(0)
-                .isExempt(false)
-                .comment("")
-                .build();
+        // 페이즈 참여 데이터 리스트
+        List<ParticipatePhase> participatePhaseList = new ArrayList<>();
 
-        // 페이즈 참여 정보 저장
-        participatePhaseRepository.save(participatePhase);
+        // 각각에 대해 페이즈 참여 데이터 생성
+        phaseList.forEach(phase -> {
+            ParticipatePhase participatePhase = ParticipatePhase.builder()
+                    .user(user)
+                    .phase(phase)
+                    .currentCount(0)
+                    .isExempt(false)
+                    .comment("")
+                    .build();
+
+            participatePhaseList.add(participatePhase);
+        });
+
+        // 모든 페이즈 참여 데이터 저장
+        participatePhaseRepository.saveAll(participatePhaseList);
     }
 
     // 현재 진행 중인 내 챌린지 조회
@@ -354,6 +368,13 @@ public class ChallengeService
     {
         return phaseRepository.findByChallengeIdAndNumber(challenge.getId(), challenge.calcCurrentPhaseNumber())
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, null));
+    }
+
+    // 현재 페이즈부터의 모든 페이즈 조회
+    @Transactional(readOnly = true)
+    public List<Phase> getPhaseListFromCurrent(Challenge challenge)
+    {
+        return phaseRepository.findAllFromNumber(challenge.getId(), challenge.calcCurrentPhaseNumber());
     }
 
     // 요청 개수만큼 페이즈 생성
