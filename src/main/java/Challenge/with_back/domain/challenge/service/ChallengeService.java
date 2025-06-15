@@ -11,6 +11,7 @@ import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
+import Challenge.with_back.domain.notification.InviteChallengeNotificationFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,8 @@ public class ChallengeService
     private final InviteChallengeRepository inviteChallengeRepository;
 
     private final ChallengeValidator challengeValidator;
+
+    private final InviteChallengeNotificationFactory inviteChallengeNotificationFactory;
 
     private final S3EvidencePhotoManager s3EvidencePhotoManager;
 
@@ -171,7 +174,12 @@ public class ChallengeService
         // 챌린지 초대 데이터 저장
         inviteChallengeRepository.saveAll(inviteChallengeList);
 
-        // TODO: 초대한 사용자들에게 챌린지 초대 알림 및 이메일 전송
+        /// 초대한 사용자들에게 챌린지 초대 알림 전송
+
+        // 각각의 초대한 사용자에 대해, 챌린지 초대 알림 생성
+        inviteUserList.forEach(inviteUser -> {
+            inviteChallengeNotificationFactory.createNotification(inviteUser, challenge.getId());
+        });
     }
 
     // 챌린지 가입
