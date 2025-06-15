@@ -23,11 +23,11 @@ public class FriendRequestNotificationFactory extends NotificationFactory
     @Override
     protected Notification createNotificationEntity(User user, Object data)
     {
-        Long senderId;
+        Long friendRequestId;
 
         // 데이터를 Long 타입으로 변환 시도
         try {
-            senderId = (Long) data;
+            friendRequestId = (Long) data;
         } catch (ClassCastException e) {
             throw new CustomException(CustomExceptionCode.INVALID_NOTIFICATION_DATA, data);
         }
@@ -36,7 +36,7 @@ public class FriendRequestNotificationFactory extends NotificationFactory
                 .user(user)
                 .type(NotificationType.FRIEND_REQUEST)
                 .title("친구 요청이 들어왔습니다.")
-                .content(senderId.toString())
+                .content(friendRequestId.toString())
                 .isRead(false)
                 .viewedAt(null)
                 .build();

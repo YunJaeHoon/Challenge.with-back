@@ -90,7 +90,7 @@ public class FriendService
             friendRequestRepository.save(friendRequest);
 
             // 친구 요청 알림 생성
-            friendRequestNotificationFactory.createNotification(receiver, sender.getId());
+            friendRequestNotificationFactory.createNotification(receiver, friendRequest.getId());
         }
     }
 
