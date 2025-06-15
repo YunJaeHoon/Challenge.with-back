@@ -51,7 +51,8 @@ public enum CustomExceptionCode
     // 알림 예외
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다."),
     NOTIFICATION_OWNERSHIP_INVALID(HttpStatus.FORBIDDEN, "해당 사용자의 알림이 아닙니다."),
-    
+    INVALID_NOTIFICATION_DATA(HttpStatus.BAD_REQUEST, "유효하지 않은 알림 데이터입니다."),
+
     // 챌린지 예외
     PARTICIPATE_CHALLENGE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 챌린지 참여 정보가 아닙니다."),
     PARTICIPATE_PHASE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 페이즈 참여 정보가 아닙니다."),

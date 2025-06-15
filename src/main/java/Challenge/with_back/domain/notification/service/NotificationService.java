@@ -29,6 +29,7 @@ public class NotificationService
 	private final TestNotificationFactory testNotificationFactory;
 	
 	// 알림 조회
+	@Transactional
 	public NotificationListDto getNotifications(User user, Pageable pageable)
 	{
 		// 사용자 ID로 알림 조회
@@ -47,12 +48,15 @@ public class NotificationService
 		List<NotificationDto> notificationList = notificationPage.stream()
 			.map(notification -> {
 				boolean isRead = notification.isRead();
-				
-				if (!isRead) {
+
+				// 알림을 읽지 않았다면 읽음으로 변경
+				if(!isRead)
+				{
+					// 알림을 읽음으로 표시
 					notification.markAsRead();
+
+					// 사용자의 읽지 않은 알림 개수 감소
 					user.decreaseCountUnreadNotification();
-					
-					notificationRepository.save(notification);
 				}
 				
 				return NotificationDto.builder()
@@ -95,6 +99,6 @@ public class NotificationService
 	@Transactional
 	public void sendTestNotification(User user)
 	{
-		testNotificationFactory.createNotification(user);
+		testNotificationFactory.createNotification(user, null);
 	}
 }

@@ -88,7 +88,7 @@ public class AccountService
         userRepository.save(user);
 
         // 회원가입 환영 알림 생성
-        welcomeNotificationFactory.createNotification(user);
+        welcomeNotificationFactory.createNotification(user, null);
     }
 
     // 사용자 기본 정보 조회

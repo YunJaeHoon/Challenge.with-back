@@ -14,6 +14,7 @@ import Challenge.with_back.domain.friend.dto.FriendBlockDto;
 import Challenge.with_back.domain.friend.dto.FriendBlockListDto;
 import Challenge.with_back.domain.friend.dto.FriendDto;
 import Challenge.with_back.domain.friend.dto.FriendListDto;
+import Challenge.with_back.domain.notification.FriendRequestNotificationFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,8 @@ public class FriendService
     private final FriendRequestRepository friendRequestRepository;
     private final FriendBlockRepository friendBlockRepository;
     private final UserRepository userRepository;
+
+    private final FriendRequestNotificationFactory friendRequestNotificationFactory;
 
     @Value("${PROFILE_IMAGE_BUCKET_URL}")
     String profileImageBucketUrl;
@@ -86,6 +89,11 @@ public class FriendService
             // 새로운 친구 요청 데이터 추가
             friendRequestRepository.save(friendRequest);
         }
+
+        /// 친구 요청 알림 생성
+
+        // 친구 요청 알림 생성
+        friendRequestNotificationFactory.createNotification(receiver, sender.getId());
     }
 
     // 친구 요청 수락 또는 거절
