@@ -17,9 +17,14 @@ public class BasicEntity
 {
     @NotNull
     @CreatedDate
-    protected LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @NotNull
     @LastModifiedDate
-    protected LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
+
+    // 생성 날짜 갱신
+    public void renew() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

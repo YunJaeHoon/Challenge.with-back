@@ -108,7 +108,7 @@ public class InviteChallengeService
     @Transactional
     public void inviteChallenge(User sender, List<User> userList, Challenge challenge)
     {
-        /// 기존에 이미 초대를 받은 사용자는 알림 생성 날짜만 갱신
+        /// 기존에 이미 초대를 받은 사용자는 챌린지 초대 데이터와 알림의 생성 날짜만 갱신
 
         // 새롭게 챌린지에 초대된 사용자 리스트
         List<User> newInvitedUserList = new ArrayList<>();
@@ -123,15 +123,15 @@ public class InviteChallengeService
                     challenge.getId()
             );
 
-            // 챌린지 초대 데이터가 존재하는 경우, 알림 생성 날짜만 갱신
+            // 챌린지 초대 데이터가 존재하는 경우, 챌린지 초대 데이터와 알림의 생성 날짜만 갱신
             // 챌린지 초대 데이터가 존재하지 않는 경우, 새롭게 챌린지에 초대된 사용자 리스트에 추가
             if(inviteChallengeOptional.isPresent()) {
 
-                // 알림 조회
-                Notification notification = inviteChallengeOptional.get().getNotification();
+                // 챌린지 초대 데이터 생성 날짜 갱신
+                inviteChallengeOptional.get().renew();
 
                 // 알림 생성 날짜 갱신
-                notification.renew();
+                inviteChallengeOptional.get().getNotification().renew();
 
             } else {
                 newInvitedUserList.add(user);

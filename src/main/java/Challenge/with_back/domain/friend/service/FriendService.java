@@ -71,15 +71,21 @@ public class FriendService
             return;
         }
 
-        /// 친구 요청 데이터가 이미 존재하는 경우, 친구 요청 알림 생성 날짜만 갱신
+        /// 친구 요청 데이터가 이미 존재하는 경우, 친구 요청 데이터와 알림의 생성 날짜만 갱신
         /// 친구 요청 데이터가 이미 존재하지 않는 경우, 친구 요청 데이터 및 알림 생성
 
         // 기존에 존재하던 친구 요청 데이터
         Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findBySenderIdAndReceiverId(sender.getId(), receiverId);
 
-        // 기존에 친구 요청 데이터가 존재한다면, 친구 요청 알림 생성 날짜 갱신
+        // 기존에 친구 요청 데이터가 존재한다면, 친구 요청 데이터와 알림의 생성 날짜 갱신
         if(friendRequestOptional.isPresent()) {
+
+            // 친구 요청 데이터 생성 날짜 갱신
+            friendRequestOptional.get().renew();
+
+            // 알림 생성 날짜 갱신
             friendRequestOptional.get().getNotification().renew();
+
         } else {
 
             // 친구 요청 알림 생성
