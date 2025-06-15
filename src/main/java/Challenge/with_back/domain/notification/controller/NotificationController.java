@@ -54,8 +54,8 @@ public class NotificationController
     }
 
     // 테스트 알림 전송
-    @PostMapping("/notification/send/test")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @PostMapping("/notification/test")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<SuccessResponseDto> sendTestNotification(@AuthenticationPrincipal CustomUserDetails userDetails)
     {
         User user = userDetails.getUser();
