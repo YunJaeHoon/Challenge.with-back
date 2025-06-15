@@ -9,6 +9,7 @@ import Challenge.with_back.domain.friend.dto.FriendBlockListDto;
 import Challenge.with_back.domain.friend.dto.FriendDto;
 import Challenge.with_back.domain.friend.dto.FriendListDto;
 import Challenge.with_back.domain.notification.FriendRequestNotificationFactory;
+import Challenge.with_back.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,8 @@ public class FriendService
     private final FriendBlockRepository friendBlockRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+
+    private final NotificationService notificationService;
 
     private final FriendRequestNotificationFactory friendRequestNotificationFactory;
 
@@ -144,7 +147,7 @@ public class FriendService
         friendRequestRepository.delete(friendRequest);
 
         // 친구 요청 알림 삭제
-        notificationRepository.delete(friendRequest.getNotification());
+        notificationService.deleteNotificationEntity(friendRequest.getNotification());
     }
 
     // 친구 차단
