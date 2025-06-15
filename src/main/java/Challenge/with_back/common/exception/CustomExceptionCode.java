@@ -73,6 +73,10 @@ public enum CustomExceptionCode
     FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지 인원수가 이미 가득찼습니다."),
     PRIVATE_CHALLENGE(HttpStatus.FORBIDDEN, "비공개 챌린지입니다."),
 
+    // 챌린지 초대 예외
+    INVITE_CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 초대 데이터가 존재하지 않습니다."),
+    LOW_CHALLENGE_ROLE(HttpStatus.FORBIDDEN, "챌린지에 다른 사람을 초대할 권한이 없습니다."),
+
     // S3 예외
     TOO_MANY_EVIDENCE_PHOTO(HttpStatus.BAD_REQUEST, "증거사진 최대 개수를 초과합니다."),
     FILE_IS_EMPTY(HttpStatus.NOT_FOUND, "파일이 비어있습니다."),

@@ -80,6 +80,8 @@ public class FriendService
             friendRequestOptional.ifPresent(friendRequestRepository::delete);
             friendRequestRepository.flush();
 
+            // TODO: 기존의 친구 요청 알림도 삭제해야 함
+
             // 새로운 친구 요청 데이터
             FriendRequest friendRequest = FriendRequest.builder()
                     .sender(sender)

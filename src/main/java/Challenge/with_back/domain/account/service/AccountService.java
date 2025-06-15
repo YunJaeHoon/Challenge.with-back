@@ -222,4 +222,11 @@ public class AccountService
         // 생성한 인증번호 확인 정보 저장
         checkVerificationCodeRepository.save(checkVerificationCode);
     }
+
+    // 사용자가 참여 중인 챌린지 개수가 최대인지 확인
+    @Transactional(readOnly = true)
+    public boolean isParticipatingInMaxChallenges(User user)
+    {
+        return participateChallengeRepository.countAllOngoing(user) >= user.getMaxChallengeCount();
+    }
 }

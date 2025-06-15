@@ -34,7 +34,7 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
 
         return Notification.builder()
                 .user(user)
-                .type(NotificationType.FRIEND_REQUEST)
+                .type(NotificationType.INVITE_CHALLENGE)
                 .title("챌린지에 초대되었습니다.")
                 .content(inviteChallengeId.toString())
                 .isRead(false)

@@ -7,6 +7,7 @@ import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
+import Challenge.with_back.domain.account.service.AccountService;
 import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
@@ -34,6 +35,7 @@ public class ChallengeService
     private final FriendRepository friendRepository;
     private final InviteChallengeRepository inviteChallengeRepository;
 
+    private final AccountService accountService;
     private final InviteChallengeService inviteChallengeService;
 
     private final ChallengeValidator challengeValidator;
@@ -78,7 +80,7 @@ public class ChallengeService
         /// 4
 
         // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
-        if(isParticipatingInMaxChallenges(user))
+        if(accountService.isParticipatingInMaxChallenges(user))
             throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
 
         /// 5
@@ -88,33 +90,7 @@ public class ChallengeService
                 user.isPremium() ? 100 : 5;
 
         // 초대한 사용자 리스트
-        List<User> inviteUserList = new ArrayList<>();
-
-        createChallengeDto.getInviteUserIdList().forEach(inviteUserId -> {
-
-            // 초대한 사용자 정보
-            Optional<User> InviteUserOptional = userRepository.findById(inviteUserId);
-
-            // 존재하지 않는 사용자면 그냥 넘어감
-            if(InviteUserOptional.isEmpty()) {
-                return;
-            }
-
-            User inviteUser = InviteUserOptional.get();
-
-            // 초대한 사용자가 최대 개수로 챌린지를 참여하고 있다면 그냥 넘어감
-            if(isParticipatingInMaxChallenges(inviteUser)) {
-                return;
-            }
-
-            // 본인과 초대한 사용자가 친구가 아니라면 그냥 넘어감
-            if(friendRepository.findByUser1IdAndUser2Id(user.getId(), inviteUser.getId()).isEmpty()) {
-                return;
-            }
-
-            inviteUserList.add(inviteUser);
-
-        });
+        List<User> inviteUserList = inviteChallengeService.mapUserIdListToUserList(user, createChallengeDto.getInviteUserIdList());
 
         // 참가자들의 인원수가 챌린지 최대 참여자 인원수보다 많으면 예외 처리
         if(inviteUserList.size() + 1 > maxParticipantCount)
@@ -165,7 +141,7 @@ public class ChallengeService
 
         /// 챌린지 초대
 
-        // 챌린지 초대
+        // 챌린지 초대 데이터 생성 및 챌린지 초대 알림 전송
         inviteChallengeService.inviteChallenge(user, inviteUserList, challenge);
     }
 
@@ -185,20 +161,24 @@ public class ChallengeService
         /// 3. 이미 사용자가 해당 챌린지에 가입했는지 확인
 
         // 공개 챌린지인지 확인
-        if(!challenge.isPublic())
+        if(!challenge.isPublic()) {
             throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
+        }
 
         // 이미 챌린지에 참여자가 가득 찼는지 확인
-        if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallenge(challenge))
+        if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallenge(challenge)) {
             throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
+        }
 
         // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
-        if(isParticipatingInMaxChallenges(user))
+        if(accountService.isParticipatingInMaxChallenges(user)) {
             throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
+        }
 
         // 이미 사용자가 해당 챌린지에 가입했는지 확인
-        if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent())
+        if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent()) {
             throw new CustomException(CustomExceptionCode.ALREADY_PARTICIPATING_CHALLENGE, null);
+        }
 
         /// 챌린지 참여 데이터 생성
 
@@ -355,13 +335,6 @@ public class ChallengeService
     }
 
     /// 공통 로직
-
-    // 사용자가 참여 중인 챌린지 개수가 최대인지 확인
-    @Transactional(readOnly = true)
-    public boolean isParticipatingInMaxChallenges(User user)
-    {
-        return participateChallengeRepository.countAllOngoing(user) >= user.getMaxChallengeCount();
-    }
 
     // 현재 페이즈 조회
     @Transactional(readOnly = true)

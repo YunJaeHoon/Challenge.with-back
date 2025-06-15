@@ -41,4 +41,10 @@ public class InviteChallenge extends BasicEntity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge")
     private Challenge challenge;
+
+    // 챌린지 초대 알림
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notification")
+    private Notification notification;
 }
