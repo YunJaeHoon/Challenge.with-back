@@ -19,6 +19,6 @@ public interface PhaseRepository extends JpaRepository<Phase, Long>
     Optional<Phase> findByChallengeIdAndNumber(Long challengeId, int number);
 
     // 특정 번호 이상의 페이즈 리스트 조회
-    @Query("SELECT p FROM Phase p WHERE p.challenge = :challengeId AND p.number >= :number")
+    @Query("SELECT p FROM Phase p WHERE p.challenge.id = :challengeId AND p.number >= :number")
     List<Phase> findAllFromNumber(Long challengeId, int number);
 }

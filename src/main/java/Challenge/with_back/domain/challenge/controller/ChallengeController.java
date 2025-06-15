@@ -38,6 +38,23 @@ public class ChallengeController
                         .build());
     }
 
+    // 챌린지 가입
+    @PostMapping("/challenge/join")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> joinChallenge(@Valid @RequestBody JoinChallengeDto dto,
+                                                            @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        User user = userDetails.getUser();
+        challengeService.joinChallenge(user, dto.getChallengeId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("챌린지 가입을 성공적으로 완료하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
     // 현재 진행 중인 내 챌린지 조회
     @GetMapping("/challenge/me/ongoing")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")

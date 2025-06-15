@@ -184,8 +184,14 @@ public class ChallengeService
 
     // 챌린지 가입
     @Transactional
-    public void joinChallenge(Challenge challenge, User user, ChallengeRole role)
+    public void joinChallenge(User user, Long challengeId)
     {
+        /// 챌린지 조회
+
+        // 챌린지 조회
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, challengeId));
+
         /// 예외 처리
         /// 1. 공개 챌린지인지 확인
         /// 2. 이미 챌린지에 참여자가 가득 찼는지 확인
@@ -214,7 +220,7 @@ public class ChallengeService
                 .user(user)
                 .challenge(challenge)
                 .determination("")
-                .challengeRole(role)
+                .challengeRole(ChallengeRole.USER)
                 .countSuccess(0)
                 .countExemption(0)
                 .isPublic(true)
