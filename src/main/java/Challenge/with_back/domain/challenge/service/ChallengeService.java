@@ -11,6 +11,7 @@ import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
 import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
+import Challenge.with_back.domain.invite_challenge.service.InviteChallengeService;
 import Challenge.with_back.domain.notification.InviteChallengeNotificationFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,8 @@ public class ChallengeService
     private final EvidencePhotoRepository evidencePhotoRepository;
     private final FriendRepository friendRepository;
     private final InviteChallengeRepository inviteChallengeRepository;
+
+    private final InviteChallengeService inviteChallengeService;
 
     private final ChallengeValidator challengeValidator;
 
@@ -160,26 +163,10 @@ public class ChallengeService
         // 페이즈 10개 생성
         createPhases(challenge, 10);
 
-        /// 챌린지 초대 데이터 생성
+        /// 챌린지 초대
 
-        // 챌린지 초대 데이터 생성
-        List<InviteChallenge> inviteChallengeList = inviteUserList.stream().map(inviteUser -> {
-            return InviteChallenge.builder()
-                    .sender(user)
-                    .receiver(inviteUser)
-                    .challenge(challenge)
-                    .build();
-        }).toList();
-
-        // 챌린지 초대 데이터 저장
-        inviteChallengeRepository.saveAll(inviteChallengeList);
-
-        /// 초대한 사용자들에게 챌린지 초대 알림 전송
-
-        // 각각의 초대한 사용자에 대해, 챌린지 초대 알림 생성
-        inviteUserList.forEach(inviteUser -> {
-            inviteChallengeNotificationFactory.createNotification(inviteUser, challenge.getId());
-        });
+        // 챌린지 초대
+        inviteChallengeService.inviteChallenge(user, inviteUserList, challenge);
     }
 
     // 챌린지 가입
