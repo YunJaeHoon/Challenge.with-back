@@ -88,12 +88,10 @@ public class FriendService
 
             // 새로운 친구 요청 데이터 추가
             friendRequestRepository.save(friendRequest);
+
+            // 친구 요청 알림 생성
+            friendRequestNotificationFactory.createNotification(receiver, sender.getId());
         }
-
-        /// 친구 요청 알림 생성
-
-        // 친구 요청 알림 생성
-        friendRequestNotificationFactory.createNotification(receiver, sender.getId());
     }
 
     // 친구 요청 수락 또는 거절
