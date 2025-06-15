@@ -1,4 +1,4 @@
-package Challenge.with_back.domain.invite_challenge.dto;
+package Challenge.with_back.domain.challenge.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
