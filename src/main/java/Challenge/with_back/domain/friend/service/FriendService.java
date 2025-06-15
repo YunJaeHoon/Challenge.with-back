@@ -1,10 +1,7 @@
 package Challenge.with_back.domain.friend.service;
 
 import Challenge.with_back.common.entity.rdbms.*;
-import Challenge.with_back.common.repository.rdbms.FriendBlockRepository;
-import Challenge.with_back.common.repository.rdbms.FriendRepository;
-import Challenge.with_back.common.repository.rdbms.FriendRequestRepository;
-import Challenge.with_back.common.repository.rdbms.UserRepository;
+import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.friend.dto.FriendBlockDto;
@@ -32,6 +29,7 @@ public class FriendService
     private final FriendRequestRepository friendRequestRepository;
     private final FriendBlockRepository friendBlockRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     private final FriendRequestNotificationFactory friendRequestNotificationFactory;
 
@@ -144,6 +142,9 @@ public class FriendService
 
         // 친구 요청 데이터 삭제
         friendRequestRepository.delete(friendRequest);
+
+        // 친구 요청 알림 삭제
+        notificationRepository.delete(friendRequest.getNotification());
     }
 
     // 친구 차단
