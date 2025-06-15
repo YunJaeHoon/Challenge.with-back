@@ -7,7 +7,6 @@ import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
 import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseMessage;
-import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhoto;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseStrategy;
@@ -226,7 +225,7 @@ public class UpdateParticipatePhaseService
         Challenge challenge = phase.getChallenge();
 
         // 챌린지 참여 데이터 조회
-        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(participatePhase.getUser(), challenge)
+        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(participatePhase.getUser().getId(), challenge.getId())
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
 
         // 마지막 활동 날짜 갱신
@@ -241,7 +240,7 @@ public class UpdateParticipatePhaseService
         Challenge challenge = phase.getChallenge();
 
         // 챌린지 참여 데이터 조회
-        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challenge.getId())
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
 
         // 마지막 활동 날짜 갱신

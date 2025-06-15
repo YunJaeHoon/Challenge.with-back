@@ -50,7 +50,7 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
         if(originalValue < challenge.getGoalCount() && value == challenge.getGoalCount())
         {
             // 챌린지 참여 정보
-            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challenge.getId())
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
 
             participateChallenge.increaseCountSuccess();
@@ -58,7 +58,7 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
         else if(originalValue == challenge.getGoalCount() && value < challenge.getGoalCount())
         {
             // 챌린지 참여 정보
-            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challenge.getId())
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
 
             participateChallenge.decreaseCountSuccess();

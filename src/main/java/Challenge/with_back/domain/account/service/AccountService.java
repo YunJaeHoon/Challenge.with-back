@@ -227,6 +227,6 @@ public class AccountService
     @Transactional(readOnly = true)
     public boolean isParticipatingInMaxChallenges(User user)
     {
-        return participateChallengeRepository.countAllOngoing(user) >= user.getMaxChallengeCount();
+        return participateChallengeRepository.countAllOngoing(user.getId()) >= user.getMaxChallengeCount();
     }
 }

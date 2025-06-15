@@ -185,7 +185,7 @@ public class ChallengeService
         }
 
         // 2. 이미 챌린지에 참여자가 가득 찼는지 확인
-        if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallenge(challenge)) {
+        if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallengeId(challengeId)) {
             throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
         }
 
@@ -195,7 +195,7 @@ public class ChallengeService
         }
 
         // 4. 이미 사용자가 해당 챌린지에 가입했는지 확인
-        if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent()) {
+        if(participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challengeId).isPresent()) {
             throw new CustomException(CustomExceptionCode.ALREADY_PARTICIPATING_CHALLENGE, null);
         }
 
@@ -261,7 +261,7 @@ public class ChallengeService
         /// 2. 초대하는 사용자가 챌린지의 관리자 이상의 권한을 가지고 있는지 확인
 
         // 챌린지 참여 데이터 조회
-        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(sender, challenge)
+        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(sender.getId(), challengeId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
 
         // 초대하는 사용자가 챌린지의 관리자 이상의 권한을 가지고 있는지 확인
@@ -292,7 +292,7 @@ public class ChallengeService
             }
 
             // 3. 이미 해당 챌린지에 참여하고 있는지 확인
-            if(participateChallengeRepository.findByUserAndChallenge(invitedUser, challenge).isPresent()) {
+            if(participateChallengeRepository.findByUserIdAndChallengeId(invitedUser.getId(), challengeId).isPresent()) {
                 return false;
             }
 
@@ -304,7 +304,7 @@ public class ChallengeService
         /// 챌린지에 초대 가능한 인원수가 초대할 사용자의 인원수를 수용할 수 있는지 확인
 
         // 챌린지에 초대 가능한 인원수가 초대할 사용자의 인원수를 수용할 수 있는지 확인
-        if(invitedUserList.size() + participateChallengeRepository.countAllByChallenge(challenge) > challenge.getMaxParticipantCount()) {
+        if(invitedUserList.size() + participateChallengeRepository.countAllByChallengeId(challengeId) > challenge.getMaxParticipantCount()) {
             throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
         }
 
@@ -355,7 +355,7 @@ public class ChallengeService
         int maxChallengeCount = user.getMaxChallengeCount();
 
         // 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
-        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllOngoing(user);
+        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllOngoing(user.getId());
 
         // 챌린지 참여 정보 리스트를 dto 리스트로 변경
         // 현재 진행 중인 챌린지만 필터링
@@ -540,7 +540,7 @@ public class ChallengeService
         /// 3. 페이즈 참여 정보 생성
 
         // 챌린지 참여 정보 리스트
-        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByChallengeOrderByCreatedAtDesc(challenge);
+        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByChallengeIdOrderByCreatedAtDesc(challenge.getId());
 
         // 페이즈 리스트
         List<Phase> phaseList = new ArrayList<>();
