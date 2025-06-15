@@ -23,11 +23,11 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
     @Override
     protected Notification createNotificationEntity(User user, Object data)
     {
-        Long challengeId;
+        Long inviteChallengeId;
 
         // 데이터를 Long 타입으로 변환 시도
         try {
-            challengeId = (Long) data;
+            inviteChallengeId = (Long) data;
         } catch (ClassCastException e) {
             throw new CustomException(CustomExceptionCode.INVALID_NOTIFICATION_DATA, data);
         }
@@ -36,7 +36,7 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
                 .user(user)
                 .type(NotificationType.FRIEND_REQUEST)
                 .title("챌린지에 초대되었습니다.")
-                .content(challengeId.toString())
+                .content(inviteChallengeId.toString())
                 .isRead(false)
                 .viewedAt(null)
                 .build();

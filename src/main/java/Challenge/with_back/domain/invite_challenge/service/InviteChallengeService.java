@@ -42,8 +42,8 @@ public class InviteChallengeService
         /// 초대한 사용자들에게 챌린지 초대 알림 전송
 
         // 각각의 초대한 사용자에 대해, 챌린지 초대 알림 생성
-        userList.forEach(user -> {
-            inviteChallengeNotificationFactory.createNotification(user, challenge.getId());
+        inviteChallengeList.forEach(inviteChallenge -> {
+            inviteChallengeNotificationFactory.createNotification(inviteChallenge.getReceiver(), inviteChallenge.getId());
         });
     }
 }
