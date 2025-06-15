@@ -35,4 +35,10 @@ public class FriendRequest extends BasicEntity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver")
     private User receiver;
+
+    // 친구 요청 알림
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notification")
+    private Notification notification;
 }

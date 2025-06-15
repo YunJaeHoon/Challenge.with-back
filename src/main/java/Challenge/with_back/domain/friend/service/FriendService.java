@@ -1,9 +1,6 @@
 package Challenge.with_back.domain.friend.service;
 
-import Challenge.with_back.common.entity.rdbms.Friend;
-import Challenge.with_back.common.entity.rdbms.FriendBlock;
-import Challenge.with_back.common.entity.rdbms.FriendRequest;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.rdbms.*;
 import Challenge.with_back.common.repository.rdbms.FriendBlockRepository;
 import Challenge.with_back.common.repository.rdbms.FriendRepository;
 import Challenge.with_back.common.repository.rdbms.FriendRequestRepository;
@@ -65,34 +62,39 @@ public class FriendService
         }
 
         /// 차단된 상태인 경우, 친구 요청 데이터를 생성하지 않음
-        /// 차단되지 않은 상태인 경우, 친구 요청 데이터 생성
 
         // 친구 요청 수신자의 친구 요청 송신자에 대한 친구 차단 데이터 조회
         Optional<FriendBlock> friendBlockOptional = friendBlockRepository.findByBlockingUserIdAndBlockedUserId(receiver.getId(), sender.getId());
 
-        // 친구 요청 수신자가 친구 요청 송신자를 차단하지 않은 경우
-        if(friendBlockOptional.isEmpty())
-        {
-            // 기존에 존재하던 친구 요청 데이터
-            Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findBySenderIdAndReceiverId(sender.getId(), receiverId);
+        // 친구 요청 수신자가 친구 요청 송신자를 차단한 경우, 그냥 넘어감
+        if(friendBlockOptional.isPresent()) {
+            return;
+        }
 
-            // 기존에 친구 요청 데이터가 존재한다면, 해당 데이터를 삭제
-            friendRequestOptional.ifPresent(friendRequestRepository::delete);
-            friendRequestRepository.flush();
+        /// 친구 요청 데이터가 이미 존재하는 경우, 친구 요청 알림 생성 날짜만 갱신
+        /// 친구 요청 데이터가 이미 존재하지 않는 경우, 친구 요청 데이터 및 알림 생성
 
-            // TODO: 기존의 친구 요청 알림도 삭제해야 함
+        // 기존에 존재하던 친구 요청 데이터
+        Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findBySenderIdAndReceiverId(sender.getId(), receiverId);
 
-            // 새로운 친구 요청 데이터
+        // 기존에 친구 요청 데이터가 존재한다면, 친구 요청 알림 생성 날짜 갱신
+        if(friendRequestOptional.isPresent()) {
+            friendRequestOptional.get().getNotification().renew();
+        } else {
+
+            // 친구 요청 알림 생성
+            Notification notification = friendRequestNotificationFactory.createNotification(receiver, sender.getId());
+
+            // 친구 요청 데이터 생성
             FriendRequest friendRequest = FriendRequest.builder()
                     .sender(sender)
                     .receiver(receiver)
+                    .notification(notification)
                     .build();
 
-            // 새로운 친구 요청 데이터 추가
+            // 친구 요청 데이터 저장
             friendRequestRepository.save(friendRequest);
 
-            // 친구 요청 알림 생성
-            friendRequestNotificationFactory.createNotification(receiver, friendRequest.getId());
         }
     }
 
