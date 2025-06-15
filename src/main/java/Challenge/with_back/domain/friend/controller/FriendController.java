@@ -43,7 +43,7 @@ public class FriendController
     @PostMapping("/friend-request/accept")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> acceptFriendRequest(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                  @Valid @RequestBody AcceptFriendRequestDto dto)
+                                                                  @Valid @RequestBody AnswerFriendRequestDto dto)
     {
         User receiver = userDetails.getUser();
         friendService.answerFriendRequest(receiver, dto.getFriendRequestId(), true);
@@ -60,7 +60,7 @@ public class FriendController
     @PostMapping("/friend-request/reject")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> rejectFriendRequest(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                  @Valid @RequestBody RejectFreindRequestDto dto)
+                                                                  @Valid @RequestBody AnswerFriendRequestDto dto)
     {
         User receiver = userDetails.getUser();
         friendService.answerFriendRequest(receiver, dto.getFriendRequestId(), false);

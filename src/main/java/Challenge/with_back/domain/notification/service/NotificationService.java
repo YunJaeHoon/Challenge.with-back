@@ -27,6 +27,8 @@ public class NotificationService
 	private final NotificationRepository notificationRepository;
 	
 	private final TestNotificationFactory testNotificationFactory;
+
+	/// 서비스
 	
 	// 알림 조회
 	@Transactional
@@ -85,14 +87,14 @@ public class NotificationService
 	{
 		// 알림 조회
 		Notification notification = notificationRepository.findById(notificationId)
-											.orElseThrow(() -> new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, notificationId));
+				.orElseThrow(() -> new CustomException(CustomExceptionCode.NOTIFICATION_NOT_FOUND, notificationId));
 		
 		// 해당 사용자의 알림인지 확인
 		if(!Objects.equals(notification.getUser().getId(), user.getId()))
 			throw new CustomException(CustomExceptionCode.NOTIFICATION_OWNERSHIP_INVALID, user.getId());
 		
 		// 알림 삭제
-		notificationRepository.delete(notification);
+		deleteNotificationEntity(notification);
 	}
 	
 	// 테스트 알림 생성
@@ -100,5 +102,18 @@ public class NotificationService
 	public void sendTestNotification(User user)
 	{
 		testNotificationFactory.createNotification(user, null);
+	}
+
+	/// 공통 로직
+
+	// 알림 엔티티 삭제
+	@Transactional
+	public void deleteNotificationEntity(Notification notification)
+	{
+		if(!notification.isRead()) {
+			notification.getUser().decreaseCountUnreadNotification();
+		}
+
+		notificationRepository.delete(notification);
 	}
 }

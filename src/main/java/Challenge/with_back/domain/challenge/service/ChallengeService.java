@@ -13,6 +13,7 @@ import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.domain.notification.InviteChallengeNotificationFactory;
+import Challenge.with_back.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class ChallengeService
 {
     private final UserRepository userRepository;
     private final ChallengeRepository challengeRepository;
+    private final ChallengeBlockRepository challengeBlockRepository;
     private final PhaseRepository phaseRepository;
     private final ParticipateChallengeRepository participateChallengeRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
@@ -36,6 +38,7 @@ public class ChallengeService
     private final NotificationRepository notificationRepository;
 
     private final AccountService accountService;
+    private final NotificationService notificationService;
 
     private final ChallengeValidator challengeValidator;
 
@@ -89,10 +92,25 @@ public class ChallengeService
                 user.isPremium() ? 100 : 5;
 
         // 초대한 사용자 리스트
-        List<User> inviteUserList = mapUserIdListToUserList(user, createChallengeDto.getInviteUserIdList());
+        List<User> invitedUserList = userRepository.findAllById(createChallengeDto.getInviteUserIdList());
+
+        // 필터링
+        // 1. 초대한 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+        // 2. 초대한 사용자와 친구 사이인지 확인
+        invitedUserList = invitedUserList.stream().filter(invitedUser -> {
+
+            // 1. 초대한 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+            if(accountService.isParticipatingInMaxChallenges(invitedUser)) {
+                return false;
+            }
+
+            // 2. 초대한 사용자와 친구 사이인지 확인
+            return friendRepository.findByUser1IdAndUser2Id(user.getId(), invitedUser.getId()).isPresent();
+
+        }).toList();
 
         // 참가자들의 인원수가 챌린지 최대 참여자 인원수보다 많으면 예외 처리
-        if(inviteUserList.size() + 1 > maxParticipantCount)
+        if(invitedUserList.size() + 1 > maxParticipantCount)
             throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, createChallengeDto.getInviteUserIdList().size() + 1);
 
         /// 챌린지 생성
@@ -141,12 +159,12 @@ public class ChallengeService
         /// 챌린지 초대
 
         // 챌린지 초대 데이터 생성 및 챌린지 초대 알림 전송
-        inviteChallenge(user, inviteUserList, challenge);
+        inviteChallenge(user, invitedUserList, challenge);
     }
 
     // 챌린지 가입
     @Transactional
-    public void joinChallenge(User user, Long challengeId)
+    public void joinChallenge(User user, Long challengeId, boolean isInvited)
     {
         /// 챌린지 조회
 
@@ -157,26 +175,33 @@ public class ChallengeService
         /// 예외 처리
         /// 1. 공개 챌린지인지 확인
         /// 2. 이미 챌린지에 참여자가 가득 찼는지 확인
-        /// 3. 이미 사용자가 해당 챌린지에 가입했는지 확인
+        /// 3. 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+        /// 4. 이미 사용자가 해당 챌린지에 가입했는지 확인
+        /// 5. 사용자가 챌린지로부터 차단되었는지 확인
 
-        // 공개 챌린지인지 확인
-        if(!challenge.isPublic()) {
+        // 1. 공개 챌린지인지 확인
+        if(!isInvited && !challenge.isPublic()) {
             throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
         }
 
-        // 이미 챌린지에 참여자가 가득 찼는지 확인
+        // 2. 이미 챌린지에 참여자가 가득 찼는지 확인
         if(challenge.getMaxParticipantCount() == participateChallengeRepository.countAllByChallenge(challenge)) {
             throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
         }
 
-        // 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+        // 3. 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
         if(accountService.isParticipatingInMaxChallenges(user)) {
             throw new CustomException(CustomExceptionCode.TOO_MANY_PARTICIPATE_CHALLENGE, null);
         }
 
-        // 이미 사용자가 해당 챌린지에 가입했는지 확인
+        // 4. 이미 사용자가 해당 챌린지에 가입했는지 확인
         if(participateChallengeRepository.findByUserAndChallenge(user, challenge).isPresent()) {
             throw new CustomException(CustomExceptionCode.ALREADY_PARTICIPATING_CHALLENGE, null);
+        }
+
+        // 5. 사용자가 챌린지로부터 차단되었는지 확인
+        if(challengeBlockRepository.findByUserIdAndChallengeId(user.getId(), challengeId).isPresent()) {
+            throw new CustomException(CustomExceptionCode.ALREADY_BLOCKED_FROM_CHALLENGE, null);
         }
 
         /// 챌린지 참여 데이터 생성
@@ -246,29 +271,80 @@ public class ChallengeService
 
         /// 초대 사용자 리스트 조회
 
-        // 초대 사용자 ID 리스트를 초대 사용자 리스트로 매핑
-        List<User> userList = mapUserIdListToUserList(sender, userIdList);
+        // 초대 사용자 리스트
+        List<User> invitedUserList = userRepository.findAllById(userIdList);
 
-        /// 이미 해당 챌린지에 참여하고 있는 사용자 필터링
+        // 필터링
+        // 1. 초대한 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+        // 2. 초대한 사용자와 친구 사이인지 확인
+        // 3. 이미 해당 챌린지에 참여하고 있는지 확인
+        // 4. 해당 챌린지로부터 차단되었는지 확인
+        invitedUserList = invitedUserList.stream().filter(invitedUser -> {
 
-        // 이미 해당 챌린지에 참여하고 있는 사용자 필터링
-        userList = userList.stream()
-                .filter(user -> {
-                    return participateChallengeRepository.findByUserAndChallenge(user, challenge).isEmpty();
-                })
-                .toList();
+            // 1. 초대한 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
+            if(accountService.isParticipatingInMaxChallenges(invitedUser)) {
+                return false;
+            }
+
+            // 2. 초대한 사용자와 친구 사이인지 확인
+            if(friendRepository.findByUser1IdAndUser2Id(sender.getId(), invitedUser.getId()).isEmpty()) {
+                return false;
+            }
+
+            // 3. 이미 해당 챌린지에 참여하고 있는지 확인
+            if(participateChallengeRepository.findByUserAndChallenge(invitedUser, challenge).isPresent()) {
+                return false;
+            }
+
+            // 4. 해당 챌린지로부터 차단되었는지 확인
+            return challengeBlockRepository.findByUserIdAndChallengeId(invitedUser.getId(), challengeId).isEmpty();
+
+        }).toList();
 
         /// 챌린지에 초대 가능한 인원수가 초대할 사용자의 인원수를 수용할 수 있는지 확인
 
         // 챌린지에 초대 가능한 인원수가 초대할 사용자의 인원수를 수용할 수 있는지 확인
-        if(userList.size() + participateChallengeRepository.countAllByChallenge(challenge) > challenge.getMaxParticipantCount()) {
+        if(invitedUserList.size() + participateChallengeRepository.countAllByChallenge(challenge) > challenge.getMaxParticipantCount()) {
             throw new CustomException(CustomExceptionCode.FULL_CHALLENGE, null);
         }
 
         /// 챌린지 초대 데이터 생성 및 챌린지 초대 알림 전송
 
         // 챌린지 초대 데이터 생성 및 챌린지 초대 알림 전송
-        inviteChallenge(sender, userList, challenge);
+        inviteChallenge(sender, invitedUserList, challenge);
+    }
+
+    // 챌린지 초대 수락 또는 거절
+    @Transactional
+    public void answerInviteChallenge(User receiver, Long inviteChallengeId, boolean isAccept)
+    {
+        /// 예외 처리
+        /// 1. 챌린지 초대 데이터가 존재하지 않는 경우, 예외 처리
+        /// 2. 초대를 보낸 사용자와 초대를 받은 사용자가 친구 사이가 아닌 경우, 예외 처리
+
+        // 챌린지 초대 데이터 조회
+        InviteChallenge inviteChallenge = inviteChallengeRepository.findById(inviteChallengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.INVITE_CHALLENGE_NOT_FOUND, inviteChallengeId));
+
+        // 초대를 보낸 사용자와 초대를 받은 사용자가 친구 사이가 아닌 경우, 예외 처리
+        if(friendRepository.findByUser1IdAndUser2Id(inviteChallenge.getSender().getId(), receiver.getId()).isEmpty()) {
+            throw new CustomException(CustomExceptionCode.FRIEND_NOT_FOUND, null);
+        }
+
+        /// 챌린지 초대를 수락하는 경우, 챌린지 가입
+
+        // 챌린지 초대를 수락하는 경우, 챌린지 가입
+        if(isAccept) {
+            joinChallenge(receiver, inviteChallenge.getChallenge().getId(), true);
+        }
+
+        /// 챌린지 초대 데이터 및 알림 삭제
+
+        // 챌린지 초대 데이터 삭제
+        inviteChallengeRepository.delete(inviteChallenge);
+
+        // 챌린지 초대 알림 삭제
+        notificationService.deleteNotificationEntity(inviteChallenge.getNotification());
     }
 
     // 현재 진행 중인 내 챌린지 조회
@@ -384,27 +460,6 @@ public class ChallengeService
     }
 
     /// 공통 로직
-
-    // 초대 사용자 ID 리스트를 초대 사용자 리스트로 매핑
-    @Transactional(readOnly = true)
-    public List<User> mapUserIdListToUserList(User sender, List<Long> userIdList)
-    {
-        // 초대 사용자 리스트
-        List<User> userList = userRepository.findAllById(userIdList);
-
-        // 필터링
-        return userList.stream().filter(user -> {
-
-            // 초대한 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
-            if(accountService.isParticipatingInMaxChallenges(user)) {
-                return false;
-            }
-
-            // 초대한 사용자와 친구 사이인지 확인
-            return friendRepository.findByUser1IdAndUser2Id(sender.getId(), user.getId()).isPresent();
-
-        }).toList();
-    }
 
     // 챌린지 초대 데이터 생성 및 챌린지 초대 알림 전송
     @Transactional

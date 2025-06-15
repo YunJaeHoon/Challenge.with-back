@@ -45,7 +45,7 @@ public class ChallengeController
                                                             @AuthenticationPrincipal CustomUserDetails userDetails)
     {
         User user = userDetails.getUser();
-        challengeService.joinChallenge(user, dto.getChallengeId());
+        challengeService.joinChallenge(user, dto.getChallengeId(), false);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -68,6 +68,40 @@ public class ChallengeController
                 .body(SuccessResponseDto.builder()
                         .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 초대를 성공적으로 완료하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 챌린지 초대 수락
+    @PostMapping("/invite-challenge/accept")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> acceptInviteChallenge(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                    @Valid @RequestBody AnswerInviteChallengeDto dto)
+    {
+        User receiver = userDetails.getUser();
+        challengeService.answerInviteChallenge(receiver, dto.getInviteChallengeId(), true);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("챌린지 초대를 성공적으로 수락하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
+    // 챌린지 초대 거절
+    @PostMapping("/invite-challenge/reject")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<SuccessResponseDto> rejectInviteChallenge(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                    @Valid @RequestBody AnswerInviteChallengeDto dto)
+    {
+        User receiver = userDetails.getUser();
+        challengeService.answerInviteChallenge(receiver, dto.getInviteChallengeId(), false);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("챌린지 초대를 성공적으로 거절하였습니다.")
                         .data(null)
                         .build());
     }
