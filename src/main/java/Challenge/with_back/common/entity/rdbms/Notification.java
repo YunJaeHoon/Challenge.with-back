@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -48,6 +49,12 @@ public class Notification extends BasicEntity
 
     // 열람 날짜
     private LocalDateTime viewedAt;
+
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FriendRequest> friendRequestList;
+
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InviteChallenge> inviteChallengeList;
 
     // 알림을 읽음으로 표시
     public void markAsRead() {

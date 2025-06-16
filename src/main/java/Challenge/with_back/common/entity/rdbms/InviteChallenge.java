@@ -44,7 +44,13 @@ public class InviteChallenge extends BasicEntity
 
     // 챌린지 초대 알림
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notification")
+    @JoinColumn(
+            name = "notification",
+            foreignKey = @ForeignKey(
+                    name = "fk_invite_challenge_to_notification",
+                    foreignKeyDefinition = "FOREIGN KEY (notification) REFERENCES notification(id) ON DELETE CASCADE"
+            )
+    )
     @Setter
     private Notification notification;
 }
