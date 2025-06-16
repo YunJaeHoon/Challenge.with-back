@@ -121,7 +121,7 @@ public class ChallengeService
                 .icon(createChallengeDto.getIcon())
                 .colorTheme(colorTheme)
                 .name(createChallengeDto.getName().trim())
-                .description(createChallengeDto.getDescription().trim())
+                .description(createChallengeDto.getDescription() == null ? "" : createChallengeDto.getDescription().trim())
                 .goalCount(createChallengeDto.getGoalCount())
                 .unit(unit)
                 .isPublic(createChallengeDto.getIsPublic())
