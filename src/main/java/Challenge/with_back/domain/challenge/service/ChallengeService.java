@@ -35,7 +35,6 @@ public class ChallengeService
     private final FriendRepository friendRepository;
     private final EvidencePhotoRepository evidencePhotoRepository;
     private final InviteChallengeRepository inviteChallengeRepository;
-    private final NotificationRepository notificationRepository;
 
     private final AccountService accountService;
     private final NotificationService notificationService;

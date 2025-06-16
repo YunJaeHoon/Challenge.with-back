@@ -22,7 +22,7 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
     private final InviteChallengeRepository inviteChallengeRepository;
 
     @Value("${PROFILE_IMAGE_BUCKET_URL}")
-    static String profileImageBucketUrl;
+    String profileImageBucketUrl;
 
     // 생성자
     @Autowired
@@ -71,7 +71,7 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
         InviteChallenge inviteChallenge = inviteChallengeRepository.findById(inviteChallengeId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.INVITE_CHALLENGE_NOT_FOUND, inviteChallengeId));
 
-        return Content.from(inviteChallenge);
+        return Content.from(inviteChallenge, profileImageBucketUrl);
     }
 
     // 알림 내용 클래스
@@ -96,7 +96,7 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
         private int challengeGoalCount;
         private String challengeUnit;
 
-        public static Content from(InviteChallenge inviteChallenge)
+        public static Content from(InviteChallenge inviteChallenge, String profileImageBucketUrl)
         {
             return Content.builder()
                     .inviteChallengeId(inviteChallenge.getId())
