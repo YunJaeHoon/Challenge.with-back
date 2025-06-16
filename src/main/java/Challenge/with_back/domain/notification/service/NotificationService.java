@@ -49,6 +49,8 @@ public class NotificationService
 		// 알림 페이지를 알림 리스트로 변경
 		List<NotificationDto> notificationList = notificationPage.stream()
 			.map(notification -> {
+
+				// 알림 읽음 여부
 				boolean isRead = notification.isRead();
 
 				// 알림을 읽지 않았다면 읽음으로 변경
@@ -61,16 +63,8 @@ public class NotificationService
 					user.decreaseCountUnreadNotification();
 				}
 				
-				return NotificationDto.builder()
-						   .notificationId(notification.getId())
-						   .userId(notification.getUser().getId())
-						   .type(notification.getType().name())
-						   .title(notification.getTitle())
-						   .content(notification.getContent())
-						   .isRead(isRead)
-						   .createdAt(notification.getCreatedAt())
-						   .viewedAt(notification.getViewedAt())
-						   .build();
+				return NotificationDto.from(notification, isRead);
+
 			}).toList();
 		
 		userRepository.save(user);
@@ -110,6 +104,7 @@ public class NotificationService
 	@Transactional
 	public void deleteNotificationEntity(Notification notification)
 	{
+		// 읽지 않은 알림이라면, 사용자의 읽지 않은 알림 개수 감소
 		if(!notification.isRead()) {
 			notification.getUser().decreaseCountUnreadNotification();
 		}
