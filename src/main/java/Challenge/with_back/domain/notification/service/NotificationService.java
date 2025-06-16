@@ -1,7 +1,9 @@
 package Challenge.with_back.domain.notification.service;
 
+import Challenge.with_back.common.enums.NotificationType;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
+import Challenge.with_back.domain.notification.NotificationFactory;
 import Challenge.with_back.domain.notification.dto.NotificationDto;
 import Challenge.with_back.domain.notification.TestNotificationFactory;
 import Challenge.with_back.domain.notification.dto.NotificationListDto;
@@ -9,6 +11,7 @@ import Challenge.with_back.common.entity.rdbms.Notification;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.repository.rdbms.NotificationRepository;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
+import Challenge.with_back.domain.update_participate_phase.UpdateParticipatePhaseStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +28,8 @@ public class NotificationService
 {
 	private final UserRepository userRepository;
 	private final NotificationRepository notificationRepository;
-	
-	private final TestNotificationFactory testNotificationFactory;
+
+	private final Map<String, NotificationFactory> notificationFactoryMap;
 
 	/// 서비스
 	
@@ -62,8 +65,13 @@ public class NotificationService
 					// 사용자의 읽지 않은 알림 개수 감소
 					user.decreaseCountUnreadNotification();
 				}
+
+				// 알리 내용 파싱
+				Object content = notificationFactoryMap
+						.get(notification.getType().name())
+						.parseContent(notification.getContent());
 				
-				return NotificationDto.from(notification, isRead);
+				return NotificationDto.from(notification, content, isRead);
 
 			}).toList();
 		
@@ -95,7 +103,7 @@ public class NotificationService
 	@Transactional
 	public void sendTestNotification(User user)
 	{
-		testNotificationFactory.createNotification(user, null);
+		notificationFactoryMap.get(NotificationType.TEST.name()).createNotification(user, null);
 	}
 
 	/// 공통 로직

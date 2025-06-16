@@ -31,5 +31,9 @@ public abstract class NotificationFactory
 	}
 	
 	// 알림 엔티티 생성
+	@Transactional
 	protected abstract Notification createNotificationEntity(User user, Object data);
+
+	// 알림 내용을 반환 형식으로 파싱
+	public abstract Object parseContent(String rawContent);
 }

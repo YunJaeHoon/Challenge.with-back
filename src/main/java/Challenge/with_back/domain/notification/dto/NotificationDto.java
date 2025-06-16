@@ -15,19 +15,19 @@ public class NotificationDto
 
     private final String type;
     private final String title;
-    private final String content;
+    private final Object content;
     private final Boolean isRead;
     private final LocalDateTime createdAt;
     private final LocalDateTime viewedAt;
 
-    public static NotificationDto from(Notification notification, boolean isRead)
+    public static NotificationDto from(Notification notification, Object content, boolean isRead)
     {
         return NotificationDto.builder()
                 .notificationId(notification.getId())
                 .userId(notification.getUser().getId())
                 .type(notification.getType().name())
                 .title(notification.getTitle())
-                .content(notification.getContent())
+                .content(content)
                 .isRead(isRead)
                 .createdAt(notification.getCreatedAt())
                 .viewedAt(notification.getViewedAt())

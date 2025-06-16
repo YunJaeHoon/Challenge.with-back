@@ -8,7 +8,7 @@ import Challenge.with_back.common.repository.rdbms.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("TEST")
 public class TestNotificationFactory extends NotificationFactory
 {
     // 생성자
@@ -29,5 +29,12 @@ public class TestNotificationFactory extends NotificationFactory
 				.isRead(false)
 				.viewedAt(null)
 				.build();
+    }
+
+    // 알림 내용을 반환 형식으로 파싱
+    @Override
+    public String parseContent(String rawContent)
+    {
+        return rawContent;
     }
 }

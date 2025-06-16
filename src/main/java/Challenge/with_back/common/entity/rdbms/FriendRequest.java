@@ -37,8 +37,8 @@ public class FriendRequest extends BasicEntity
     private User receiver;
 
     // 친구 요청 알림
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notification")
+    @Setter
     private Notification notification;
 }

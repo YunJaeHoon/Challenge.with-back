@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Component("WELCOME")
 public class WelcomeNotificationFactory extends NotificationFactory
 {
     // 생성자
@@ -30,5 +30,12 @@ public class WelcomeNotificationFactory extends NotificationFactory
 				.isRead(false)
 				.viewedAt(null)
 				.build();
+    }
+
+    // 알림 내용을 반환 형식으로 파싱
+    @Override
+    public String parseContent(String rawContent)
+    {
+        return rawContent;
     }
 }

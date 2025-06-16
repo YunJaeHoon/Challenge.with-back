@@ -36,6 +36,7 @@ public class Notification extends BasicEntity
     @Column(length = 255)
     private String title;
 
+    // 알림 내용 변경
     // 내용
     @NotNull
     @Column(columnDefinition = "TEXT")

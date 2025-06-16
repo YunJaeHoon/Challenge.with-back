@@ -495,24 +495,25 @@ public class ChallengeService
             }
         });
 
-        // 챌린지 초대 데이터 생성
-        List<InviteChallenge> inviteChallengeList = newInvitedUserList.stream().map(user -> {
-
-            // 챌린지 초대 알림 생성
-            Notification notification = inviteChallengeNotificationFactory.createNotification(user, sender.getId());
+        // 챌린지 초대 데이터 및 알림 생성
+        newInvitedUserList.forEach(user -> {
 
             // 챌린지 초대 데이터 생성
-            return InviteChallenge.builder()
+            InviteChallenge inviteChallenge = InviteChallenge.builder()
                     .sender(sender)
                     .receiver(user)
                     .challenge(challenge)
-                    .notification(notification)
                     .build();
 
-        }).toList();
+            inviteChallengeRepository.save(inviteChallenge);
 
-        // 챌린지 초대 데이터 저장
-        inviteChallengeRepository.saveAll(inviteChallengeList);
+            // 챌린지 초대 알림 생성
+            Notification notification = inviteChallengeNotificationFactory.createNotification(user, inviteChallenge.getId());
+
+            // 챌린지 초대 데이터의 알림 컬럼 갱신
+            inviteChallenge.setNotification(notification);
+
+        });
     }
 
     // 현재 페이즈 조회

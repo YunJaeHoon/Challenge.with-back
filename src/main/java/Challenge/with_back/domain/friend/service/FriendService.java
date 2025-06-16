@@ -89,18 +89,20 @@ public class FriendService
 
         } else {
 
-            // 친구 요청 알림 생성
-            Notification notification = friendRequestNotificationFactory.createNotification(receiver, sender.getId());
-
             // 친구 요청 데이터 생성
             FriendRequest friendRequest = FriendRequest.builder()
                     .sender(sender)
                     .receiver(receiver)
-                    .notification(notification)
                     .build();
 
             // 친구 요청 데이터 저장
             friendRequestRepository.save(friendRequest);
+
+            // 친구 요청 알림 생성
+            Notification notification = friendRequestNotificationFactory.createNotification(receiver, friendRequest.getId());
+
+            // 친구 요청 데이터의 알림 컬럼 갱신
+            friendRequest.setNotification(notification);
 
         }
     }
