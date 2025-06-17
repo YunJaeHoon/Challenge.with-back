@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.basic.controller;
 
-import Challenge.with_back.common.response.success.CustomSuccessCode;
-import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.common.response.CustomSuccessCode;
+import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;

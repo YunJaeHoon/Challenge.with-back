@@ -1,12 +1,14 @@
 package Challenge.with_back.domain.account.controller;
 
-import Challenge.with_back.common.response.success.CustomSuccessCode;
-import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.common.response.CustomSuccessCode;
+import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.common.security.dto.AccessTokenDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,7 @@ public class AccountController
 	// 회원가입
 	@PostMapping("/join")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> join(@RequestBody JoinDto dto)
+	public ResponseEntity<SuccessResponseDto> join(@Valid @RequestBody JoinDto dto)
 	{
 		accountService.join(dto);
 		
@@ -33,22 +35,6 @@ public class AccountController
 									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("회원가입을 성공적으로 완료하였습니다.")
 									 .data(null)
-									 .build());
-	}
-	
-	// 계정 권한 확인
-	@GetMapping("/user/role")
-	@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-	public ResponseEntity<SuccessResponseDto> getRole(@AuthenticationPrincipal CustomUserDetails userDetails)
-	{
-		User user = userDetails.getUser();
-		UserRoleDto dto = accountService.getRole(user);
-		
-		return ResponseEntity.status(HttpStatus.OK)
-					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
-									 .message("계정 권한을 성공적으로 확인하였습니다.")
-									 .data(dto)
 									 .build());
 	}
 	
@@ -71,22 +57,25 @@ public class AccountController
 	// Access token 재발급
 	@PostMapping("/reissue-access-token")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> reissueAccessToken(@CookieValue(name = "refreshToken", required = false) String refreshToken)
+	public ResponseEntity<SuccessResponseDto> reissueAccessToken(
+			@CookieValue(name = "refreshToken", required = false) String refreshToken,
+			HttpServletResponse response)
 	{
-		AccessTokenDto dto = accountService.reissueAccessToken(refreshToken);
+		Cookie cookie = accountService.reissueAccessToken(refreshToken);
+		response.addCookie(cookie);
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
 									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("Access token을 성공적으로 재발급하였습니다.")
-									 .data(dto)
+									 .data(null)
 									 .build());
 	}
 	
 	// 이메일 인증번호 전송
 	@PostMapping("/send-verification-code")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> sendVerificationCode(@RequestBody SendVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> sendVerificationCode(@Valid @RequestBody SendVerificationCodeDto dto)
 	{
 		accountService.sendVerificationCode(dto);
 		
@@ -101,7 +90,7 @@ public class AccountController
 	// 이메일 인증번호 확인: 회원가입
 	@PostMapping("/check-verification-code/join")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForJoin(@RequestBody CheckVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForJoin(@Valid @RequestBody CheckVerificationCodeDto dto)
 	{
 		accountService.checkVerificationCodeForJoin(dto);
 		
@@ -116,7 +105,7 @@ public class AccountController
 	// 이메일 인증번호 확인: 비밀번호 초기화
 	@PostMapping("/check-verification-code/reset-password")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForResetPassword(@RequestBody CheckVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> checkVerificationCodeForResetPassword(@Valid @RequestBody CheckVerificationCodeDto dto)
 	{
 		accountService.checkVerificationCodeForResetPassword(dto);
 		
@@ -131,7 +120,7 @@ public class AccountController
 	// 비밀번호 초기화
 	@PostMapping("/user/reset-password")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<SuccessResponseDto> resetPassword(@RequestBody CheckVerificationCodeDto dto)
+	public ResponseEntity<SuccessResponseDto> resetPassword(@Valid @RequestBody CheckVerificationCodeDto dto)
 	{
 		accountService.resetPassword(dto);
 		

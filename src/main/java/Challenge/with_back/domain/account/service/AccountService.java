@@ -1,23 +1,29 @@
 package Challenge.with_back.domain.account.service;
 
+import Challenge.with_back.common.entity.redis.CheckVerificationCode;
+import Challenge.with_back.common.entity.redis.VerificationCode;
 import Challenge.with_back.common.enums.ProfileImage;
+import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepository;
+import Challenge.with_back.common.repository.redis.VerificationCodeRepository;
+import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.common.security.jwt.Token;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.notification.WelcomeNotificationFactory;
-import Challenge.with_back.domain.account.util.AccountUtil;
+import Challenge.with_back.domain.account.util.AccountValidator;
 import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.common.repository.redis.CheckVerificationCodeRepository;
-import Challenge.with_back.common.security.dto.AccessTokenDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.LoginMethod;
-import Challenge.with_back.common.response.exception.CustomException;
+import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import Challenge.with_back.common.security.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +35,11 @@ import java.time.LocalDate;
 public class AccountService
 {
     private final UserRepository userRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
     private final CheckVerificationCodeRepository checkVerificationCodeRepository;
+    private final ParticipateChallengeRepository participateChallengeRepository;
 
-    private final AccountUtil accountUtil;
+    private final AccountValidator accountValidator;
     private final JwtUtil jwtUtil;
 
     private final VerificationCodeEmailFactory verificationCodeEmailFactory;
@@ -43,6 +51,8 @@ public class AccountService
     @Value("${PROFILE_IMAGE_BUCKET_URL}")
     String profileImageBucketUrl;
 
+    /// 서비스
+
     // 회원가입
     @Transactional
     public void join(JoinDto dto)
@@ -52,11 +62,12 @@ public class AccountService
             throw new CustomException(CustomExceptionCode.CHECK_VERIFICATION_CODE_NOT_FOUND, dto.getEmail());
 
         // 계정 중복 확인
-        accountUtil.shouldNotExistingUser(dto.getEmail());
+        if(userRepository.findByEmailAndLoginMethod(dto.getEmail(), LoginMethod.NORMAL).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, dto.getEmail());
 
         // 데이터 형식 체크
-        accountUtil.checkPasswordFormat(dto.getPassword());
-        accountUtil.checkNicknameFormat(dto.getNickname());
+        accountValidator.checkPasswordFormat(dto.getPassword());
+        accountValidator.checkNicknameFormat(dto.getNickname());
 
         // 계정 생성
         User user = User.builder()
@@ -77,32 +88,24 @@ public class AccountService
         userRepository.save(user);
 
         // 회원가입 환영 알림 생성
-        welcomeNotificationFactory.createNotification(user);
-    }
-
-    // 계정 권한 확인
-    public UserRoleDto getRole(User user)
-    {
-        return UserRoleDto.builder()
-                .role(user.getAccountRole().name())
-                .build();
+        welcomeNotificationFactory.createNotification(user, null);
     }
 
     // 사용자 기본 정보 조회
+    @Transactional(readOnly = true)
     public BasicUserInfoDto getBasicInfo(User user)
     {
         return BasicUserInfoDto.builder()
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
                 .role(user.getAccountRole().name())
-                .isPremium(user.getPremiumExpirationDate().isAfter(LocalDate.now()))
+                .isPremium(user.isPremium())
+                .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
                 .countUnreadNotification(user.getCountUnreadNotification())
                 .build();
     }
 
     // Access token 재발급
-    public AccessTokenDto reissueAccessToken(String refreshToken)
+    @Transactional(readOnly = true)
+    public Cookie reissueAccessToken(String refreshToken)
     {
         // Refresh token 존재 여부 체크
         if(refreshToken == null)
@@ -122,9 +125,7 @@ public class AccountService
         // Access token 발급
         String accessToken = jwtUtil.getToken(id, Token.ACCESS_TOKEN);
 
-        return AccessTokenDto.builder()
-                .accessToken(accessToken)
-                .build();
+        return jwtUtil.parseTokenToCookie(accessToken, Token.ACCESS_TOKEN);
     }
 
     // 이메일 인증번호 전송
@@ -136,23 +137,27 @@ public class AccountService
     }
 
     // 이메일 인증번호 확인: 회원가입
+    @Transactional
     public void checkVerificationCodeForJoin(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
         // 계정 중복 확인
-        accountUtil.shouldNotExistingUser(dto.getEmail());
+        if(userRepository.findByEmailAndLoginMethod(dto.getEmail(), LoginMethod.NORMAL).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, dto.getEmail());
     }
 
     // 이메일 인증번호 확인: 비밀번호 초기화
+    @Transactional
     public void checkVerificationCodeForResetPassword(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
         // 계정 존재 확인
-        accountUtil.shouldExistingUser(dto.getEmail());
+        if(userRepository.findByEmailAndLoginMethod(dto.getEmail(), LoginMethod.NORMAL).isPresent())
+            throw new CustomException(CustomExceptionCode.ALREADY_EXISTING_USER, dto.getEmail());
     }
 
     // 비밀번호 초기화
@@ -160,9 +165,68 @@ public class AccountService
     public void resetPassword(CheckVerificationCodeDto dto)
     {
         // 인증번호 확인
-        accountUtil.checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
+        checkVerificationCodeCorrectness(dto.getEmail(), dto.getCode());
 
          // 이메일 전송
         resetPasswordEmailFactory.sendEmail(dto.getEmail());
+    }
+
+    /// 공통 로직
+
+    // Authentication 데이터에서 User 엔티티 추출
+    public User getUserFromAuthentication(Authentication authentication)
+    {
+        if(authentication == null || !authentication.isAuthenticated())
+            throw new CustomException(CustomExceptionCode.NOT_LOGIN, null);
+
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof CustomUserDetails userDetails))
+            throw new CustomException(CustomExceptionCode.INVALID_AUTHENTICATION, null);
+
+        // 사용자 객체 반환
+        return userDetails.getUser();
+    }
+
+    // 인증번호 일치 여부 확인
+    @Transactional(noRollbackFor = CustomException.class)
+    public void checkVerificationCodeCorrectness(String email, String code)
+    {
+        // 인증번호 존재 여부 확인
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.VERIFICATION_CODE_NOT_FOUND, email));
+
+        // 인증번호 일치 여부 확인
+        if(!verificationCode.getCode().equals(code))
+        {
+            if(verificationCode.getCountWrong() >= 5)
+            {
+                verificationCodeRepository.delete(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.TOO_MANY_WRONG_VERIFICATION_CODE, null);
+            }
+            else
+            {
+                verificationCode.increaseCountWrong();
+                verificationCodeRepository.save(verificationCode);
+
+                throw new CustomException(CustomExceptionCode.WRONG_VERIFICATION_CODE, null);
+            }
+        }
+
+        // 새로운 인증번호 확인 정보 등록
+        CheckVerificationCode checkVerificationCode = CheckVerificationCode.builder()
+                .email(email)
+                .build();
+
+        // 생성한 인증번호 확인 정보 저장
+        checkVerificationCodeRepository.save(checkVerificationCode);
+    }
+
+    // 사용자가 참여 중인 챌린지 개수가 최대인지 확인
+    @Transactional(readOnly = true)
+    public boolean isParticipatingInMaxChallenges(User user)
+    {
+        return participateChallengeRepository.countAllOngoing(user.getId()) >= user.getMaxChallengeCount();
     }
 }

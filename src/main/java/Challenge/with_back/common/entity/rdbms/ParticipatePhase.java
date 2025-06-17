@@ -3,6 +3,9 @@ package Challenge.with_back.common.entity.rdbms;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.util.List;
 
 @Entity
 @Table(
@@ -33,11 +36,18 @@ public class ParticipatePhase extends BasicEntity
     // 참가 대상 챌린지 페이즈
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "phase")
+    @JoinColumn(
+            name = "phase",
+            foreignKey = @ForeignKey(
+                    name = "fk_participate_phase_to_phase",
+                    foreignKeyDefinition = "FOREIGN KEY (phase) REFERENCES phase(id) ON DELETE CASCADE"
+            )
+    )
     private Phase phase;
 
     // 현재 개수
     @Column(columnDefinition = "SMALLINT")
+    @ColumnDefault("0")
     private int currentCount;
 
     // 면제 여부
@@ -47,6 +57,9 @@ public class ParticipatePhase extends BasicEntity
     // 한마디
     @Column(columnDefinition = "TEXT")
     private String comment;
+
+    @OneToMany(mappedBy = "participatePhase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EvidencePhoto> evidencePhotoList;
 
     // 한마디 수정
     public void updateComment(String comment) {

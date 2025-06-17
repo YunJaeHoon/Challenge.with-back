@@ -1,7 +1,7 @@
 package Challenge.with_back.common.security.handler;
 
-import Challenge.with_back.common.response.success.SuccessResponseDto;
-import Challenge.with_back.common.security.dto.AccessTokenDto;
+import Challenge.with_back.common.response.CustomSuccessCode;
+import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.common.security.jwt.JwtUtil;
@@ -42,22 +42,20 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 
         // Access token 생성
         String accessToken = jwtUtil.getToken(user.getId(), Token.ACCESS_TOKEN);
+        Cookie accessTokenCookie = jwtUtil.parseTokenToCookie(accessToken, Token.ACCESS_TOKEN);
+        response.addCookie(accessTokenCookie);
 
-        AccessTokenDto data = AccessTokenDto.builder()
-                .accessToken(accessToken)
-                .build();
-
+        // Refresh token 생성
         if(rememberMe)
         {
             String refreshToken = jwtUtil.getToken(user.getId(), Token.REFRESH_TOKEN);
             Cookie refreshTokenCookie = jwtUtil.parseTokenToCookie(refreshToken, Token.REFRESH_TOKEN);
-
             response.addCookie(refreshTokenCookie);
         }
 
         SuccessResponseDto responseDto = SuccessResponseDto.builder()
-                .code(rememberMe ? "SUCCESS_REMEMBER" : "SUCCESS_FORGET")
-                .data(data)
+                .code(rememberMe ? CustomSuccessCode.SUCCESS_REMEMBER.name() : CustomSuccessCode.SUCCESS_FORGET.name())
+                .data(null)
                 .message("로그인을 성공하였습니다.")
                 .build();
 

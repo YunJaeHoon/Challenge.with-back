@@ -1,6 +1,7 @@
 package Challenge.with_back.common.batch.configuration;
 
-import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.domain.challenge.service.ChallengeService;
+import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.common.entity.rdbms.Challenge;
 import Challenge.with_back.common.repository.rdbms.ChallengeRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class CreatePhaseConfig
 
     private final ChallengeRepository challengeRepository;
 
-    private final ChallengeUtil challengeUtil;
+    private final ChallengeService challengeService;
 
     /// Job
 
@@ -57,7 +58,7 @@ public class CreatePhaseConfig
     @Bean
     public ItemReader<Challenge> createPhaseReader()
     {
-        // 모든 챌린지 읽기
+        // 챌린지 읽기
         return new RepositoryItemReaderBuilder<Challenge>()
                 .repository(challengeRepository)
                 .methodName("findAll")
@@ -79,7 +80,7 @@ public class CreatePhaseConfig
                     continue;
                 }
 
-                challengeUtil.createPhases(challenge, challenge.calcCurrentPhaseNumber() + 10 - challenge.getCountPhase());
+                challengeService.createPhases(challenge, challenge.calcCurrentPhaseNumber() + 10 - challenge.getCountPhase());
             }
         };
     }

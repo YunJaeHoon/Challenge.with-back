@@ -1,7 +1,7 @@
 package Challenge.with_back.common.batch.scheduler;
 
-import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.exception.CustomException;
+import Challenge.with_back.common.exception.CustomExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -34,7 +34,7 @@ public class CreatePhaseScheduler
             jobLauncher.run(createPhaseJob, jobParameters);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new CustomException(CustomExceptionCode.SCHEDULER_ERROR, e.getMessage());
+            throw new CustomException(CustomExceptionCode.CREATE_PHASE_SCHEDULER_ERROR, e.getMessage());
         }
     }
 }

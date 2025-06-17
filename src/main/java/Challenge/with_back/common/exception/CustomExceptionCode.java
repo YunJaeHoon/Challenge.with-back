@@ -1,4 +1,4 @@
-package Challenge.with_back.common.response.exception;
+package Challenge.with_back.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,10 +38,21 @@ public enum CustomExceptionCode
     WRONG_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다."),
     TOO_MANY_WRONG_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "인증번호를 5회 이상 틀렸습니다."),
 
+    // 친구 관련 예외
+    FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 데이터가 존재하지 않습니다."),
+    FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 요청 데이터가 존재하지 않습니다."),
+    FRIEND_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 차단 데이터가 존재하지 않습니다."),
+    SAME_SENDER_AND_RECEIVER(HttpStatus.BAD_REQUEST, "본인에게 친구 요청을 보낼 수는 없습니다."),
+    SAME_BLOCKING_USER_AND_BLOCKED_USER(HttpStatus.BAD_REQUEST, "본인을 차단할 수는 없습니다."),
+    DIFFERENT_BLOCKING_USER_AND_REQUESTER(HttpStatus.BAD_REQUEST, "해당 친구 차단 데이터의 소유자가 아닙니다."),
+    ALREADY_FRIEND(HttpStatus.CONFLICT, "이미 둘은 친구 사이입니다."),
+    ALREADY_BLOCKED_FRIEND(HttpStatus.CONFLICT, "이미 차단한 사용자입니다."),
+
     // 알림 예외
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다."),
     NOTIFICATION_OWNERSHIP_INVALID(HttpStatus.FORBIDDEN, "해당 사용자의 알림이 아닙니다."),
-    
+    INVALID_NOTIFICATION_DATA(HttpStatus.BAD_REQUEST, "유효하지 않은 알림 데이터입니다."),
+
     // 챌린지 예외
     PARTICIPATE_CHALLENGE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 챌린지 참여 정보가 아닙니다."),
     PARTICIPATE_PHASE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 페이즈 참여 정보가 아닙니다."),
@@ -50,6 +61,7 @@ public enum CustomExceptionCode
     PARTICIPATE_CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 정보가 존재하지 않습니다."),
     PARTICIPATE_PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈 참여 정보가 존재하지 않습니다."),
     ALREADY_PARTICIPATING_CHALLENGE(HttpStatus.CONFLICT, "이미 참여 중인 챌린지입니다."),
+    ALREADY_BLOCKED_FROM_CHALLENGE(HttpStatus.CONFLICT, "챌린지로부터 차단되었습니다."),
     INVALID_CHALLENGE_ICON(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 아이콘입니다."),
     INVALID_CHALLENGE_COLOR_THEME(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 테마 색상입니다."),
     INVALID_CHALLENGE_NAME_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 챌린지 이름입니다."),
@@ -59,8 +71,12 @@ public enum CustomExceptionCode
     INVALID_PARTICIPATE_PHASE_COMMENT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 한마디입니다."),
     INVALID_PARTICIPATE_PHASE_CURRENT_COUNT(HttpStatus.BAD_REQUEST, "크기에 맞지 않는 달성 개수입니다."),
     INVALID_UPDATE_PARTICIPATE_PHASE_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이즈 참여 정보 변경 타입입니다."),
-    FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지가 최대 인원수를 초과하였습니다."),
+    FULL_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지 인원수가 이미 가득찼습니다."),
     PRIVATE_CHALLENGE(HttpStatus.FORBIDDEN, "비공개 챌린지입니다."),
+
+    // 챌린지 초대 예외
+    INVITE_CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 초대 데이터가 존재하지 않습니다."),
+    LOW_CHALLENGE_ROLE(HttpStatus.FORBIDDEN, "챌린지에 다른 사람을 초대할 권한이 없습니다."),
 
     // S3 예외
     TOO_MANY_EVIDENCE_PHOTO(HttpStatus.BAD_REQUEST, "증거사진 최대 개수를 초과합니다."),
@@ -74,7 +90,8 @@ public enum CustomExceptionCode
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 삭제 중 오류가 발생하였습니다."),
 
     // Spring Batch 예외
-    SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "스프링 배치를 통한 스케줄러 작업 중 오류가 발생하였습니다."),
+    CREATE_PHASE_SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "페이즈 생성: 스프링 배치를 통한 스케줄러 작업 중 오류가 발생하였습니다."),
+    DELETE_FRIEND_REQUEST_SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "친구 요청 데이터 삭제: 스프링 배치를 통한 스케줄러 작업 중 오류가 발생하였습니다."),
 
     UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 못한 에러가 발생하였습니다.");
 

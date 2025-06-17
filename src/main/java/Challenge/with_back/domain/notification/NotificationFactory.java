@@ -17,17 +17,23 @@ public abstract class NotificationFactory
 	
 	// 알림 엔티티 및 메시지 생성
 	@Transactional
-	public void createNotification(User user)
+	public Notification createNotification(User user, Object data)
 	{
 		// 알림 엔티티 생성
-		Notification notification = createNotificationEntity(user);
+		Notification notification = createNotificationEntity(user, data);
 		notificationRepository.save(notification);
 		
 		// 사용자 읽지 않은 알림 개수 1 증가
 		user.increaseCountUnreadNotification();
 		userRepository.save(user);
+
+		return notification;
 	}
 	
 	// 알림 엔티티 생성
-	abstract Notification createNotificationEntity(User user);
+	@Transactional
+	protected abstract Notification createNotificationEntity(User user, Object data);
+
+	// 알림 내용을 반환 형식으로 파싱
+	public abstract Object parseContent(String rawContent);
 }

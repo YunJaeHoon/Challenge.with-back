@@ -5,20 +5,22 @@ import Challenge.with_back.common.entity.rdbms.Notification;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.repository.rdbms.NotificationRepository;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Component("WELCOME")
 public class WelcomeNotificationFactory extends NotificationFactory
 {
     // 생성자
+    @Autowired
     public WelcomeNotificationFactory(UserRepository userRepository, NotificationRepository notificationRepository) {
         super(userRepository, notificationRepository);
     }
 
+    // 알림 엔티티 생성
     @Override
-    @Transactional
-    public Notification createNotificationEntity(User user)
+    protected Notification createNotificationEntity(User user, Object data)
     {
 		return Notification.builder()
 				.user(user)
@@ -28,5 +30,12 @@ public class WelcomeNotificationFactory extends NotificationFactory
 				.isRead(false)
 				.viewedAt(null)
 				.build();
+    }
+
+    // 알림 내용을 반환 형식으로 파싱
+    @Override
+    public String parseContent(String rawContent)
+    {
+        return rawContent;
     }
 }

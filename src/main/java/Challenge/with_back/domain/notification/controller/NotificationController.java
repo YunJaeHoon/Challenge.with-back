@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.notification.controller;
 
-import Challenge.with_back.common.response.success.CustomSuccessCode;
-import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.common.response.CustomSuccessCode;
+import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.notification.dto.NotificationListDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
@@ -26,8 +26,8 @@ public class NotificationController
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> getNotifications(Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails)
     {
-        Long userId = userDetails.getUser().getId();
-        NotificationListDto data = notificationService.getNotifications(userId, pageable);
+        User user = userDetails.getUser();
+        NotificationListDto data = notificationService.getNotifications(user, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
@@ -42,8 +42,8 @@ public class NotificationController
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> deleteNotification(@PathVariable("id") Long notificationId, @AuthenticationPrincipal CustomUserDetails userDetails)
     {
-        Long userId = userDetails.getUser().getId();
-        notificationService.deleteNotification(notificationId, userId);
+        User user = userDetails.getUser();
+        notificationService.deleteNotification(notificationId, user);
         
         return ResponseEntity.status(HttpStatus.OK)
                        .body(SuccessResponseDto.builder()
@@ -54,8 +54,8 @@ public class NotificationController
     }
 
     // 테스트 알림 전송
-    @PostMapping("/notification/send/test")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @PostMapping("/notification/test")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<SuccessResponseDto> sendTestNotification(@AuthenticationPrincipal CustomUserDetails userDetails)
     {
         User user = userDetails.getUser();

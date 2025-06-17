@@ -9,8 +9,8 @@ import java.util.List;
 public interface EvidencePhotoRepository extends JpaRepository<EvidencePhoto, Long>
 {
     // 페이즈 참여 정보로 모든 증거사진 조회
-    List<EvidencePhoto> findAllByParticipatePhase(ParticipatePhase participatePhase);
+    List<EvidencePhoto> findAllByParticipatePhaseId(Long participatePhaseId);
 
     // 페이즈 참여 정보로 모든 증거사진 개수 세기
-    int countAllByParticipatePhase(ParticipatePhase participatePhase);
+    int countAllByParticipatePhaseId(Long participatePhaseId);
 }

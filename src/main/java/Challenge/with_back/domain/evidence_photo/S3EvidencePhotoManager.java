@@ -1,12 +1,11 @@
 package Challenge.with_back.domain.evidence_photo;
 
-import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
+import Challenge.with_back.common.exception.CustomException;
+import Challenge.with_back.common.exception.CustomExceptionCode;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -24,7 +24,13 @@ public class EvidencePhoto extends BasicEntity
     // 챌린지 페이즈 참가
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "participate_phase")
+    @JoinColumn(
+            name = "participatePhase",
+            foreignKey = @ForeignKey(
+                    name = "fk_participate_phase_to_challenge",
+                    foreignKeyDefinition = "FOREIGN KEY (participate_phase) REFERENCES participate_phase(id) ON DELETE CASCADE"
+            )
+    )
     private ParticipatePhase participatePhase;
 
     // 증거사진 URL

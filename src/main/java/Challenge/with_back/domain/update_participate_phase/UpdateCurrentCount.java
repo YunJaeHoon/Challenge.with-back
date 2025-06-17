@@ -6,11 +6,12 @@ import Challenge.with_back.common.entity.rdbms.ParticipatePhase;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepository;
 import Challenge.with_back.common.repository.rdbms.ParticipatePhaseRepository;
-import Challenge.with_back.common.response.exception.CustomException;
-import Challenge.with_back.common.response.exception.CustomExceptionCode;
-import Challenge.with_back.domain.challenge.util.ChallengeUtil;
+import Challenge.with_back.common.exception.CustomException;
+import Challenge.with_back.common.exception.CustomExceptionCode;
+import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component("UPDATE_CURRENT_COUNT")
 @RequiredArgsConstructor
@@ -18,23 +19,25 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
 {
     private final ParticipateChallengeRepository participateChallengeRepository;
     private final ParticipatePhaseRepository participatePhaseRepository;
-    private final ChallengeUtil challengeUtil;
+    private final ChallengeValidator challengeValidator;
 
     // 현재 달성 개수 변경
     @Override
+    @Transactional
     public void updateParticipatePhase(User user, ParticipatePhase participatePhase, Object data) throws CustomException
     {
         // 달성 개수
         int value = (int) data;
 
         // 페이즈 참여 정보가 해당 사용자 것인지 확인
-        challengeUtil.checkParticipatePhaseOwnership(user, participatePhase);
+        if(!participatePhase.getUser().getId().equals(user.getId()))
+            throw new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_OWNED, null);
 
         // 챌린지
         Challenge challenge = participatePhase.getPhase().getChallenge();
 
         // 현재 달성 개수가 범위를 벗어나면 예외 처리
-        challengeUtil.checkCurrentCount(value, challenge);
+        challengeValidator.checkCurrentCount(value, challenge);
 
         // 기존 달성 개수
         int originalValue = participatePhase.getCurrentCount();
@@ -47,25 +50,18 @@ public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
         if(originalValue < challenge.getGoalCount() && value == challenge.getGoalCount())
         {
             // 챌린지 참여 정보
-            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challenge.getId())
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
 
             participateChallenge.increaseCountSuccess();
-            participateChallengeRepository.save(participateChallenge);
         }
         else if(originalValue == challenge.getGoalCount() && value < challenge.getGoalCount())
         {
             // 챌린지 참여 정보
-            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserAndChallenge(user, challenge)
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challenge.getId())
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, challenge.getId()));
 
             participateChallenge.decreaseCountSuccess();
-            participateChallengeRepository.save(participateChallenge);
         }
-
-        // 챌린지 및 챌린지 참여 정보 마지막 활동 날짜 갱신
-        challengeUtil.renewLastActiveDate(participatePhase);
-
-        participatePhaseRepository.save(participatePhase);
     }
 }

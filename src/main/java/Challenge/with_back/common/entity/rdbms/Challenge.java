@@ -1,5 +1,7 @@
 package Challenge.with_back.common.entity.rdbms;
 
+import Challenge.with_back.common.enums.ChallengeColorTheme;
+import Challenge.with_back.common.enums.ChallengeColorThemeConverter;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.enums.ChallengeUnitConverter;
 import jakarta.persistence.*;
@@ -7,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,8 +36,8 @@ public class Challenge extends BasicEntity
 	
 	// 색 테마
 	@NotNull
-	@Column(columnDefinition = "char(6)")
-	private String colorTheme;
+	@Convert(converter = ChallengeColorThemeConverter.class)
+	private ChallengeColorTheme colorTheme;
 	
 	// 이름
 	@NotNull
@@ -73,6 +76,18 @@ public class Challenge extends BasicEntity
 	// 종료했는가?
 	@NotNull
 	private boolean isFinished;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ReportChallenge> reportChallengeList;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ParticipateChallenge> participateChallengeList;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ChallengeBlock> challengeBlockList;
+
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Phase> phaseList;
 
 	// 페이즈 시작 날짜 계산
 	public LocalDate calcPhaseStartDate(int number) {

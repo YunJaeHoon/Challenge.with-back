@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(
@@ -26,7 +27,13 @@ public class Phase extends BasicEntity
     // 챌린지
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge")
+    @JoinColumn(
+            name = "challenge",
+            foreignKey = @ForeignKey(
+                    name = "fk_phase_to_challenge",
+                    foreignKeyDefinition = "FOREIGN KEY (challenge) REFERENCES challenge(id) ON DELETE CASCADE"
+            )
+    )
     private Challenge challenge;
 
     // 이름
@@ -49,4 +56,7 @@ public class Phase extends BasicEntity
     // 종료 날짜
     @NotNull
     private LocalDate endDate;
+
+    @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParticipatePhase> participatePhaseList;
 }

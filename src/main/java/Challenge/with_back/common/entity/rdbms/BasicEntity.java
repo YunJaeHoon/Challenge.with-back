@@ -22,4 +22,9 @@ public class BasicEntity
     @NotNull
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    // 생성 날짜 갱신
+    public void renew() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

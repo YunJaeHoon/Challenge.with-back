@@ -2,13 +2,14 @@ package Challenge.with_back.domain.update_participate_phase.controller;
 
 import Challenge.with_back.common.aop.annotation.PremiumOnly;
 import Challenge.with_back.common.entity.rdbms.User;
-import Challenge.with_back.common.response.success.CustomSuccessCode;
-import Challenge.with_back.common.response.success.SuccessResponseDto;
+import Challenge.with_back.common.response.CustomSuccessCode;
+import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
-import Challenge.with_back.domain.challenge.dto.UpdateCommentDto;
-import Challenge.with_back.domain.challenge.dto.UpdateCurrentCountDto;
+import Challenge.with_back.domain.update_participate_phase.dto.UpdateCommentDto;
+import Challenge.with_back.domain.update_participate_phase.dto.UpdateCurrentCountDto;
 import Challenge.with_back.domain.update_participate_phase.service.UpdateParticipatePhaseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +69,7 @@ public class UpdateParticipatePhaseController
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> updateParticipatePhaseComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                             @PathVariable Long participatePhaseId,
-                                                                            @RequestBody UpdateCommentDto dto)
+                                                                            @Valid @RequestBody UpdateCommentDto dto)
     {
         User user = userDetails.getUser();
         updateParticipatePhaseService.sendUpdateParticipatePhaseComment(user, participatePhaseId, dto.getComment());
@@ -86,7 +87,7 @@ public class UpdateParticipatePhaseController
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<SuccessResponseDto> updateParticipatePhaseCurrentCount(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                  @PathVariable Long participatePhaseId,
-                                                                                 @RequestBody UpdateCurrentCountDto dto)
+                                                                                 @Valid @RequestBody UpdateCurrentCountDto dto)
     {
         User user = userDetails.getUser();
         updateParticipatePhaseService.sendUpdateParticipatePhaseCurrentCount(user, participatePhaseId, dto.getValue());

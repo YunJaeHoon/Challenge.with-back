@@ -47,7 +47,7 @@ public class JwtUtil
     {
         Cookie cookie = new Cookie(tokenType.getName(), token);
 
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(tokenType.isHttpOnly());
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(tokenType.getValidTime());

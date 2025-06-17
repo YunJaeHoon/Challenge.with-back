@@ -8,14 +8,15 @@ import lombok.Getter;
 @Getter
 public enum ChallengeColorTheme
 {
-    RED("빨강", "#FF3D00"),
-    ORANGE("주황", "#FF9000"),
-    YELLOW("노랑", "#FFD400"),
-    GREEN("초록", "#30DE20"),
-    BLUE("파랑", "#59C5FF"),
-    WHITE("하양", "#FFFFFF"),
-    GRAY("회색", "#C4C4C4");
+    RED("빨강"),
+    ORANGE("주황"),
+    YELLOW("노랑"),
+    GREEN("초록"),
+    SKYBLUE("하늘"),
+    BLUE("파랑"),
+    PURPLE("보라"),
+    PINK("분홍"),
+    GRAY("회색");
 
     private final String description;
-    private final String color;
 }
