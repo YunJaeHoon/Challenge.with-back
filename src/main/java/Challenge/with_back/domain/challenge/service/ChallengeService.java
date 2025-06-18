@@ -1,6 +1,7 @@
 package Challenge.with_back.domain.challenge.service;
 
 import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.enums.ChallengeRole;
@@ -8,8 +9,7 @@ import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.domain.challenge.dto.CreateChallengeDto;
-import Challenge.with_back.domain.challenge.dto.GetMyChallengeDto;
+import Challenge.with_back.domain.challenge.dto.*;
 import Challenge.with_back.domain.challenge.util.ChallengeValidator;
 import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.domain.notification.InviteChallengeNotificationFactory;
@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -172,13 +172,13 @@ public class ChallengeService
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, challengeId));
 
         /// 예외 처리
-        /// 1. 공개 챌린지인지 확인
+        /// 1. 초대된 것이 아니라면, 공개 챌린지인지 확인
         /// 2. 이미 챌린지에 참여자가 가득 찼는지 확인
         /// 3. 이미 사용자가 최대 개수로 챌린지를 참여하고 있는지 확인
         /// 4. 이미 사용자가 해당 챌린지에 가입했는지 확인
         /// 5. 사용자가 챌린지로부터 차단되었는지 확인
 
-        // 1. 공개 챌린지인지 확인
+        // 1. 초대된 것이 아니라면, 공개 챌린지인지 확인
         if(!isInvited && !challenge.isPublic()) {
             throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
         }
@@ -385,7 +385,7 @@ public class ChallengeService
                             .toList();
 
                     // 증거사진 최대 개수
-                    long maxEvidencePhotoCount = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
+                    long maxEvidencePhotoCount = phase.countMaxEvidencePhoto();
 
                     return GetMyChallengeDto.ChallengeDto.builder()
                             .challengeId(challenge.getId())
@@ -456,6 +456,122 @@ public class ChallengeService
 
         // 챌린지 데이터 삭제
         challengeRepository.delete(challenge);
+    }
+
+    // 챌린지 상세 조회
+    @Transactional(readOnly = true)
+    public ChallengeDetailDto getChallenge(User user, Long challengeId)
+    {
+        /// 챌린지 조회
+
+        // 챌린지 조회
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, challengeId));
+
+        /// 챌린지 비공개 예외 처리
+
+        // 챌린지가 비공개인 경우
+        if(!challenge.isPublic())
+        {
+            // 로그인하지 않은 사용자 예외 처리
+            if(user == null) {
+                throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
+            }
+            else {
+
+                // 로그인 한 사용자는 다음의 경우 조회 가능
+                // 1. 관리자인 경우
+                // 2. 해당 챌린지에 참여 중인 경우
+                // 3. 해당 챌린지에 초대 받은 경우
+                if(
+                        user.getAccountRole() != AccountRole.ADMIN &&
+                        participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challengeId).isEmpty() &&
+                        inviteChallengeRepository.findByReceiverIdAndChallengeId(user.getId(), challengeId).isEmpty()
+                ) {
+                    throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
+                }
+
+            }
+        }
+
+        /// 현재 페이즈 조회
+
+        // 현재 페이즈 번호
+        int currentPhaseNumber = challenge.calcCurrentPhaseNumber();
+
+        // 현재 페이즈
+        Phase currentPhase = phaseRepository.findByChallengeIdAndNumber(challengeId, currentPhaseNumber)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, currentPhaseNumber));
+
+        /// 전체 챌린지 참여 정보 리스트
+
+        // 챌린지 참여 데이터 리스트
+        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByChallengeId(challengeId);
+
+        // 정렬
+        // challengeRole 기준 : SUPER_ADMIN > ADMIN > USER
+        // 동일한 challengeRole 내에서는 createAt 오름차순
+        participateChallengeList.sort(
+                Comparator
+                        .comparing((ParticipateChallenge participateChallenge) -> participateChallenge.getChallengeRole().ordinal())
+                        .thenComparing(ParticipateChallenge::getCreatedAt)
+        );
+
+        /// 챌린지에 참여 중인 사용자인 경우, 현재 페이즈 현황 정보를 포함
+        /// 그 외의 경우, 챌린지 로드맵 정보를 포함
+
+        if(
+                user != null &&
+                participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challengeId).isPresent()
+        )
+        {
+            /// 요청자의 챌린지 참여 정보 조회
+
+            // 챌린지 참여 정보
+            ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challengeId)
+                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
+
+            /// 요청자의 현재 페이즈 참여 정보 조회
+
+            // 현재 페이즈 참여 정보
+            ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseIdAndUserId(currentPhase.getId(), user.getId())
+                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
+
+            // 증거사진 리스트
+            List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhaseId(participatePhase.getId());
+
+            /// 현재 페이즈 현황 정보
+
+            // 현재 페이즈 현황 정보
+            PhaseStatusDto currentPhaseInfo = PhaseStatusDto.from(participateChallenge, participatePhase, evidencePhotoList);
+
+            /// 챌린지 상세 정보 반환 (+현재 페이즈 현황 정보)
+            
+            // 챌린지 상세 정보 반환
+            return ChallengeDetailDto.from(challenge, participateChallengeList, currentPhaseInfo, true);
+        }
+        else
+        {
+            /// (챌린지 참여 정보, 현재 페이즈 참여 정보) 리스트 생성
+
+            // (챌린지 참여 정보, 현재 페이즈 참여 정보) 리스트 생성
+            Map<ParticipateChallenge, ParticipatePhase> map = participateChallengeList.stream()
+                    .collect(Collectors.toMap(
+                            participateChallenge -> participateChallenge,
+                            participateChallenge -> participatePhaseRepository.findByPhaseIdAndUserId(currentPhase.getId(), participateChallenge.getUser().getId())
+                                    .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null))
+                    ));
+
+            /// 챌린지 로드맵 정보
+
+            // 챌린지 로드맵 정보
+            ChallengeRoadmapDto challengeRoadmapInfo = ChallengeRoadmapDto.from(currentPhase, map);
+
+            /// 챌린지 상세 정보 반환 (+챌린지 로드맵 정보)
+
+            // 챌린지 상세 정보 반환
+            return ChallengeDetailDto.from(challenge, participateChallengeList, challengeRoadmapInfo, false);
+        }
     }
 
     /// 공통 로직

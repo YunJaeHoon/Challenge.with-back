@@ -10,6 +10,9 @@ import java.util.Optional;
 @Repository
 public interface InviteChallengeRepository extends JpaRepository<InviteChallenge, Long>
 {
-    // 송신자 ID 및 수신자 ID로 친구 요청 데이터 조회
+    // 송신자 ID, 수신자 ID, 챌린지 ID로 친구 요청 데이터 조회
     Optional<InviteChallenge> findBySenderIdAndReceiverIdAndChallengeId(Long senderId, Long receiverId, Long challengeId);
+
+    // 수신자 ID, 챌린지 ID로 친구 요청 데이터 조회
+    Optional<InviteChallenge> findByReceiverIdAndChallengeId(Long receiverId, Long challengeId);
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Entity
@@ -59,4 +60,9 @@ public class Phase extends BasicEntity
 
     @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParticipatePhase> participatePhaseList;
+
+    // 증거사진 최대 개수 계산
+    public long countMaxEvidencePhoto() {
+        return ChronoUnit.DAYS.between(startDate, endDate) + 1;
+    }
 }

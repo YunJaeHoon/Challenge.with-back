@@ -21,9 +21,6 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
 {
     private final InviteChallengeRepository inviteChallengeRepository;
 
-    @Value("${PROFILE_IMAGE_BUCKET_URL}")
-    String profileImageBucketUrl;
-
     // 생성자
     @Autowired
     public InviteChallengeNotificationFactory(UserRepository userRepository, NotificationRepository notificationRepository, InviteChallengeRepository inviteChallengeRepository) {
@@ -71,7 +68,7 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
         InviteChallenge inviteChallenge = inviteChallengeRepository.findById(inviteChallengeId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.INVITE_CHALLENGE_NOT_FOUND, inviteChallengeId));
 
-        return Content.from(inviteChallenge, profileImageBucketUrl);
+        return Content.from(inviteChallenge);
     }
 
     // 알림 내용 클래스
@@ -96,13 +93,13 @@ public class InviteChallengeNotificationFactory extends NotificationFactory
         private int challengeGoalCount;
         private String challengeUnit;
 
-        public static Content from(InviteChallenge inviteChallenge, String profileImageBucketUrl)
+        public static Content from(InviteChallenge inviteChallenge)
         {
             return Content.builder()
                     .inviteChallengeId(inviteChallenge.getId())
                     .userId(inviteChallenge.getSender().getId())
                     .userNickname(inviteChallenge.getSender().getNickname())
-                    .userProfileImageUrl(profileImageBucketUrl + inviteChallenge.getSender().getProfileImageUrl())
+                    .userProfileImageUrl(inviteChallenge.getSender().getProfileImageUrl())
                     .challengeId(inviteChallenge.getChallenge().getId())
                     .challengeIcon(inviteChallenge.getChallenge().getIcon())
                     .challengeColorTheme(inviteChallenge.getChallenge().getColorTheme().name())

@@ -30,6 +30,9 @@ public interface ParticipateChallengeRepository extends JpaRepository<Participat
     """)
     int countAllOngoing(Long userId);
 
+    // 특정 챌린지로 모든 챌린지 참여 정보 조회
+    List<ParticipateChallenge> findAllByChallengeId(Long challengeId);
+
     // 특정 챌린지로 모든 챌린지 참여 정보를 생성 날짜 내림차순으로 조회
     List<ParticipateChallenge> findAllByChallengeIdOrderByCreatedAtDesc(Long challengeId);
 

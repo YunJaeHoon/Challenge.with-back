@@ -75,7 +75,7 @@ public class AccountService
                 .email(dto.getEmail())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .nickname(dto.getNickname())
-                .profileImageUrl(ProfileImage.BASIC.getUrl())
+                .profileImageUrl(profileImageBucketUrl + ProfileImage.BASIC.getUrl())
                 .selfIntroduction("")
                 .allowEmailMarketing(dto.isAllowEmailMarketing())
                 .premiumExpirationDate(LocalDate.now().minusDays(1))
@@ -98,7 +98,7 @@ public class AccountService
         return BasicUserInfoDto.builder()
                 .role(user.getAccountRole().name())
                 .isPremium(user.isPremium())
-                .profileImageUrl(profileImageBucketUrl + user.getProfileImageUrl())
+                .profileImageUrl(user.getProfileImageUrl())
                 .countUnreadNotification(user.getCountUnreadNotification())
                 .build();
     }

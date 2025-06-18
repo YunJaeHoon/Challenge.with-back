@@ -20,9 +20,6 @@ public class FriendRequestNotificationFactory extends NotificationFactory
 {
     private final FriendRequestRepository friendRequestRepository;
 
-    @Value("${PROFILE_IMAGE_BUCKET_URL}")
-    String profileImageBucketUrl;
-
     // 생성자
     @Autowired
     public FriendRequestNotificationFactory(UserRepository userRepository, NotificationRepository notificationRepository, FriendRequestRepository friendRequestRepository) {
@@ -70,7 +67,7 @@ public class FriendRequestNotificationFactory extends NotificationFactory
         FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.FRIEND_REQUEST_NOT_FOUND, friendRequestId));
 
-        return Content.from(friendRequest, profileImageBucketUrl);
+        return Content.from(friendRequest);
     }
 
     // 알림 내용 클래스
@@ -86,13 +83,13 @@ public class FriendRequestNotificationFactory extends NotificationFactory
         String nickname;            // 닉네임
         String profileImageUrl;     // 프로필 이미지 URL
 
-        public static Content from(FriendRequest friendRequest, String profileImageBucketUrl)
+        public static Content from(FriendRequest friendRequest)
         {
             return Content.builder()
                     .friendRequestId(friendRequest.getId())
                     .userId(friendRequest.getSender().getId())
                     .nickname(friendRequest.getSender().getNickname())
-                    .profileImageUrl(profileImageBucketUrl + friendRequest.getSender().getProfileImageUrl())
+                    .profileImageUrl(friendRequest.getSender().getProfileImageUrl())
                     .build();
         }
     }

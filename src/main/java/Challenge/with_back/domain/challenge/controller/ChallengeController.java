@@ -136,4 +136,21 @@ public class ChallengeController
                         .data(null)
                         .build());
     }
+
+    // 챌린지 상세 조회
+    @GetMapping("/challenge/{challengeId}")
+    @PreAuthorize("permitAll")
+    public ResponseEntity<SuccessResponseDto> getChallenge(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                           @PathVariable Long challengeId)
+    {
+        User user = userDetails != null ? userDetails.getUser() : null;
+        ChallengeDetailDto data = challengeService.getChallenge(user, challengeId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .code(CustomSuccessCode.SUCCESS.name())
+                        .message("챌린지 상세 조회를 성공적으로 완료하였습니다.")
+                        .data(data)
+                        .build());
+    }
 }
