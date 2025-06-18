@@ -1,6 +1,5 @@
 package Challenge.with_back.domain.notification.controller;
 
-import Challenge.with_back.common.response.CustomSuccessCode;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.notification.dto.NotificationListDto;
 import Challenge.with_back.common.entity.rdbms.User;
@@ -31,7 +30,6 @@ public class NotificationController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("알림 조회를 성공적으로 마쳤습니다.")
                         .data(data)
                         .build());
@@ -46,11 +44,10 @@ public class NotificationController
         notificationService.deleteNotification(notificationId, user);
         
         return ResponseEntity.status(HttpStatus.OK)
-                       .body(SuccessResponseDto.builder()
-                                     .code(CustomSuccessCode.SUCCESS.name())
-                                     .message("알림을 성공적으로 삭제하였습니다.")
-                                     .data(null)
-                                     .build());
+                .body(SuccessResponseDto.builder()
+                        .message("알림을 성공적으로 삭제하였습니다.")
+                        .data(null)
+                        .build());
     }
 
     // 테스트 알림 전송
@@ -63,7 +60,6 @@ public class NotificationController
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("테스트 알림을 성공적으로 전송하였습니다.")
                         .data(null)
                         .build());

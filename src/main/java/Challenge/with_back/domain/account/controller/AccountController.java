@@ -1,6 +1,5 @@
 package Challenge.with_back.domain.account.controller;
 
-import Challenge.with_back.common.response.CustomSuccessCode;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.account.service.AccountService;
@@ -32,7 +31,6 @@ public class AccountController
 		
 		return ResponseEntity.status(HttpStatus.CREATED)
 					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("회원가입을 성공적으로 완료하였습니다.")
 									 .data(null)
 									 .build());
@@ -48,7 +46,6 @@ public class AccountController
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("사용자 기본 정보를 성공적으로 조회하였습니다.")
 									 .data(dto)
 									 .build());
@@ -66,7 +63,6 @@ public class AccountController
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("Access token을 성공적으로 재발급하였습니다.")
 									 .data(null)
 									 .build());
@@ -81,7 +77,6 @@ public class AccountController
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("인증번호 이메일을 성공적으로 전송하였습니다.")
 									 .data(null)
 									 .build());
@@ -96,7 +91,6 @@ public class AccountController
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("회원가입을 위한 인증번호를 성공적으로 확인하였습니다.")
 									 .data(null)
 									 .build());
@@ -111,7 +105,6 @@ public class AccountController
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("비밀번호 초기화를 위한 인증번호를 성공적으로 확인하였습니다.")
 									 .data(null)
 									 .build());
@@ -126,7 +119,6 @@ public class AccountController
 		
 		return ResponseEntity.status(HttpStatus.OK)
 					   .body(SuccessResponseDto.builder()
-									 .code(CustomSuccessCode.SUCCESS.name())
 									 .message("비밀번호를 성공적으로 초기화하였습니다.")
 									 .data(null)
 									 .build());

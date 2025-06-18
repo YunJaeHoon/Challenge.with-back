@@ -2,7 +2,6 @@ package Challenge.with_back.domain.update_participate_phase.controller;
 
 import Challenge.with_back.common.aop.annotation.PremiumOnly;
 import Challenge.with_back.common.entity.rdbms.User;
-import Challenge.with_back.common.response.CustomSuccessCode;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.domain.challenge.dto.EvidencePhotoDto;
@@ -40,7 +39,6 @@ public class UpdateParticipatePhaseController
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("증거사진을 성공적으로 등록하였습니다.")
                         .data(data)
                         .build());
@@ -58,7 +56,6 @@ public class UpdateParticipatePhaseController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("증거사진을 성공적으로 삭제하였습니다.")
                         .data(null)
                         .build());
@@ -76,7 +73,6 @@ public class UpdateParticipatePhaseController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("한마디 변경을 성공적으로 요청하였습니다.")
                         .data(null)
                         .build());
@@ -94,7 +90,6 @@ public class UpdateParticipatePhaseController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("현재 달성 개수 변경을 성공적으로 요청하였습니다.")
                         .data(null)
                         .build());
@@ -111,7 +106,6 @@ public class UpdateParticipatePhaseController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("면제 여부 변경을 성공적으로 요청하였습니다.")
                         .data(null)
                         .build());

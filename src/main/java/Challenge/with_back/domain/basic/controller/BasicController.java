@@ -1,6 +1,5 @@
 package Challenge.with_back.domain.basic.controller;
 
-import Challenge.with_back.common.response.CustomSuccessCode;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
@@ -24,7 +23,6 @@ public class BasicController
     {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("버전 확인을 성공적으로 완료하였습니다.")
                         .data(version)
                         .build());
@@ -39,7 +37,6 @@ public class BasicController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("사용자 권한 이상입니다.")
                         .data(user.getId())
                         .build());
@@ -54,7 +51,6 @@ public class BasicController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("관리자 권한 이상입니다.")
                         .data(user.getId())
                         .build());

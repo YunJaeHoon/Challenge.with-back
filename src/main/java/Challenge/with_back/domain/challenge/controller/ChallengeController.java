@@ -1,7 +1,6 @@
 package Challenge.with_back.domain.challenge.controller;
 
 import Challenge.with_back.domain.challenge.dto.*;
-import Challenge.with_back.common.response.CustomSuccessCode;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.challenge.service.ChallengeService;
 import Challenge.with_back.common.entity.rdbms.User;
@@ -32,7 +31,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 생성을 성공적으로 완료하였습니다.")
                         .data(null)
                         .build());
@@ -49,7 +47,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 가입을 성공적으로 완료하였습니다.")
                         .data(null)
                         .build());
@@ -66,7 +63,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 초대를 성공적으로 완료하였습니다.")
                         .data(null)
                         .build());
@@ -83,7 +79,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 초대를 성공적으로 수락하였습니다.")
                         .data(null)
                         .build());
@@ -100,7 +95,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 초대를 성공적으로 거절하였습니다.")
                         .data(null)
                         .build());
@@ -116,7 +110,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("현재 진행 중인 내 챌린지 조회를 성공적으로 완료하였습니다.")
                         .data(data)
                         .build());
@@ -131,7 +124,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 삭제를 성공적으로 완료하였습니다.")
                         .data(null)
                         .build());
@@ -148,7 +140,6 @@ public class ChallengeController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("챌린지 상세 조회를 성공적으로 완료하였습니다.")
                         .data(data)
                         .build());

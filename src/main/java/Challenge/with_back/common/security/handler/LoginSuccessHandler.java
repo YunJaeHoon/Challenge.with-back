@@ -1,6 +1,5 @@
 package Challenge.with_back.common.security.handler;
 
-import Challenge.with_back.common.response.CustomSuccessCode;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
@@ -54,7 +53,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
         }
 
         SuccessResponseDto responseDto = SuccessResponseDto.builder()
-                .code(rememberMe ? CustomSuccessCode.SUCCESS_REMEMBER.name() : CustomSuccessCode.SUCCESS_FORGET.name())
                 .data(null)
                 .message("로그인을 성공하였습니다.")
                 .build();

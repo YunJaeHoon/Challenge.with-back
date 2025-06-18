@@ -1,7 +1,6 @@
 package Challenge.with_back.domain.friend.controller;
 
 import Challenge.with_back.common.entity.rdbms.User;
-import Challenge.with_back.common.response.CustomSuccessCode;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.common.security.CustomUserDetails;
 import Challenge.with_back.domain.friend.dto.*;
@@ -33,7 +32,6 @@ public class FriendController
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 요청을 성공하였습니다.")
                         .data(null)
                         .build());
@@ -50,7 +48,6 @@ public class FriendController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 요청을 성공적으로 수락하였습니다.")
                         .data(null)
                         .build());
@@ -67,7 +64,6 @@ public class FriendController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 요청을 성공적으로 거절하였습니다.")
                         .data(null)
                         .build());
@@ -84,7 +80,6 @@ public class FriendController
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 차단을 성공하였습니다.")
                         .data(null)
                         .build());
@@ -101,7 +96,6 @@ public class FriendController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 차단을 성공적으로 해제하였습니다.")
                         .data(null)
                         .build());
@@ -117,7 +111,6 @@ public class FriendController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 리스트를 성공적으로 조회하였습니다.")
                         .data(data)
                         .build());
@@ -133,7 +126,6 @@ public class FriendController
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .code(CustomSuccessCode.SUCCESS.name())
                         .message("친구 차단 리스트를 성공적으로 조회하였습니다.")
                         .data(data)
                         .build());
