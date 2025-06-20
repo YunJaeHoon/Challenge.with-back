@@ -145,7 +145,7 @@ public class ChallengeController
                         .build());
     }
 
-    // 페이즈 현황 정보 조회
+    // 챌린지 서브 정보: 페이즈 현황 정보 조회
     @GetMapping("/challenge/{challengeId}/phase-status")
     @PreAuthorize("permitAll")
     public ResponseEntity<SuccessResponseDto> getPhaseStatus(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -159,6 +159,23 @@ public class ChallengeController
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
                         .message("챌린지 서브 정보: 페이즈 현황 정보를 성공적으로 조회하였습니다.")
+                        .data(data)
+                        .build());
+    }
+
+    // 챌린지 서브 정보: 로드맵 정보 조회
+    @GetMapping("/challenge/{challengeId}/roadmap")
+    @PreAuthorize("permitAll")
+    public ResponseEntity<SuccessResponseDto> getRoadmap(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                         @PathVariable Long challengeId,
+                                                         @RequestParam Integer phaseNumber)
+    {
+        User requester = userDetails != null ? userDetails.getUser() : null;
+        ChallengeRoadmapDto data = challengeService.getRoadmap(requester, challengeId, phaseNumber);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponseDto.builder()
+                        .message("챌린지 서브 정보: 로드맵 정보를 성공적으로 조회하였습니다.")
                         .data(data)
                         .build());
     }

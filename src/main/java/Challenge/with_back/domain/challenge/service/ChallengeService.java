@@ -553,7 +553,7 @@ public class ChallengeService
         }
     }
 
-    // 페이즈 현황 정보 조회
+    // 챌린지 서브 정보: 페이즈 현황 정보 조회
     @Transactional(readOnly = true)
     public PhaseStatusDto getPhaseStatus(User requester, Long challengeId, Long userId, Integer phaseNumber)
     {
@@ -595,6 +595,59 @@ public class ChallengeService
         /// 페이즈 현황 정보 반환
 
         return PhaseStatusDto.from(participateChallenge, participatePhase, evidencePhotoList);
+    }
+
+    // 챌린지 서브 정보: 로드맵 정보 조회
+    @Transactional(readOnly = true)
+    public ChallengeRoadmapDto getRoadmap(User requester, Long challengeId, Integer phaseNumber)
+    {
+        /// 챌린지 조회
+
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, challengeId));
+
+        /// 챌린지 비공개 예외 처리
+
+        checkChallengePublicity(challenge, requester);
+
+        /// 페이즈 조회
+
+        // 현재 페이즈 번호보다 요청한 페이즈의 번호가 큰지 확인
+        if(phaseNumber > challenge.calcCurrentPhaseNumber()) {
+            throw new CustomException(CustomExceptionCode.INVALID_PHASE_NUMBER, phaseNumber);
+        }
+
+        // 페이즈 조회
+        Phase phase = phaseRepository.findByChallengeIdAndNumber(challengeId, phaseNumber)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, phaseNumber));
+
+        /// 전체 챌린지 참여 정보 리스트
+
+        // 챌린지 참여 데이터 리스트
+        List<ParticipateChallenge> participateChallengeList = participateChallengeRepository.findAllByChallengeId(challengeId);
+
+        // 정렬
+        // challengeRole 기준 : SUPER_ADMIN > ADMIN > USER
+        // 동일한 challengeRole 내에서는 createAt 오름차순
+        participateChallengeList.sort(
+                Comparator
+                        .comparing((ParticipateChallenge participateChallenge) -> participateChallenge.getChallengeRole().ordinal())
+                        .thenComparing(ParticipateChallenge::getCreatedAt)
+        );
+
+        /// (챌린지 참여 정보, 현재 페이즈 참여 정보) 리스트 생성
+
+        // (챌린지 참여 정보, 현재 페이즈 참여 정보) 리스트 생성
+        Map<ParticipateChallenge, ParticipatePhase> map = participateChallengeList.stream()
+                .collect(Collectors.toMap(
+                        participateChallenge -> participateChallenge,
+                        participateChallenge -> participatePhaseRepository.findByPhaseIdAndUserId(phase.getId(), participateChallenge.getUser().getId())
+                                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null))
+                ));
+
+        /// 로드맵 반환
+
+        return ChallengeRoadmapDto.from(phase, map);
     }
 
     /// 공통 로직
