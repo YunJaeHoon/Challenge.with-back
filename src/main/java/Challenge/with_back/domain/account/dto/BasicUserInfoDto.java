@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class BasicUserInfoDto
 {
+    private Long userId;
     private String role;
     private Boolean isPremium;
     private String profileImageUrl;

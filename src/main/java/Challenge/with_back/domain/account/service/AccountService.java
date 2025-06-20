@@ -96,6 +96,7 @@ public class AccountService
     public BasicUserInfoDto getBasicInfo(User user)
     {
         return BasicUserInfoDto.builder()
+                .userId(user.getId())
                 .role(user.getAccountRole().name())
                 .isPremium(user.isPremium())
                 .profileImageUrl(user.getProfileImageUrl())
