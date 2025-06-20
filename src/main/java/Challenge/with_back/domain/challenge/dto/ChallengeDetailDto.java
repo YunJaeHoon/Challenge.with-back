@@ -52,6 +52,7 @@ public class ChallengeDetailDto
         private ChallengeUnit unit;                 // 챌린지 단위
         private Boolean isPublic;                   // 챌린지 공개 여부
         private LocalDate startDate;                // 챌린지 시작 날짜
+        private int currentPhaseNumber;
 
         protected static ChallengeInfo from(Challenge challenge)
         {
@@ -66,6 +67,7 @@ public class ChallengeDetailDto
                     .unit(challenge.getUnit())
                     .isPublic(challenge.isPublic())
                     .startDate(challenge.getCreatedAt().toLocalDate())
+                    .currentPhaseNumber(challenge.calcCurrentPhaseNumber())
                     .build();
         }
     }
