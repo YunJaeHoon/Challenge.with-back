@@ -68,6 +68,7 @@ public enum CustomExceptionCode
     INVALID_CHALLENGE_DESCRIPTION_FORMAT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 챌린지 설명입니다."),
     INVALID_CHALLENGE_GOAL_COUNT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 목표 개수입니다."),
     INVALID_CHALLENGE_UNIT(HttpStatus.BAD_REQUEST, "유효하지 않은 챌린지 단위입니다."),
+    INVALID_PHASE_NUMBER(HttpStatus.BAD_REQUEST, "유효하지 않은 페이즈 번호입니다."),
     INVALID_PARTICIPATE_PHASE_COMMENT(HttpStatus.BAD_REQUEST, "형식에 맞지 않는 한마디입니다."),
     INVALID_PARTICIPATE_PHASE_CURRENT_COUNT(HttpStatus.BAD_REQUEST, "크기에 맞지 않는 달성 개수입니다."),
     INVALID_UPDATE_PARTICIPATE_PHASE_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 페이즈 참여 정보 변경 타입입니다."),

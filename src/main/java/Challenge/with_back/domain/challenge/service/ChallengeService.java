@@ -470,29 +470,8 @@ public class ChallengeService
 
         /// 챌린지 비공개 예외 처리
 
-        // 챌린지가 비공개인 경우
-        if(!challenge.isPublic())
-        {
-            // 로그인하지 않은 사용자 예외 처리
-            if(user == null) {
-                throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
-            }
-            else {
-
-                // 로그인 한 사용자는 다음의 경우 조회 가능
-                // 1. 관리자인 경우
-                // 2. 해당 챌린지에 참여 중인 경우
-                // 3. 해당 챌린지에 초대 받은 경우
-                if(
-                        user.getAccountRole() != AccountRole.ADMIN &&
-                        participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challengeId).isEmpty() &&
-                        inviteChallengeRepository.findByReceiverIdAndChallengeId(user.getId(), challengeId).isEmpty()
-                ) {
-                    throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
-                }
-
-            }
-        }
+        // 챌린지 비공개 예외 처리
+        checkChallengePublicity(challenge, user);
 
         /// 현재 페이즈 조회
 
@@ -572,6 +551,50 @@ public class ChallengeService
             // 챌린지 상세 정보 반환
             return ChallengeDetailDto.from(challenge, participateChallengeList, challengeRoadmapInfo, false);
         }
+    }
+
+    // 페이즈 현황 정보 조회
+    @Transactional(readOnly = true)
+    public PhaseStatusDto getPhaseStatus(User requester, Long challengeId, Long userId, Integer phaseNumber)
+    {
+        /// 챌린지 조회
+
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, challengeId));
+
+        /// 챌린지 비공개 예외 처리
+
+        checkChallengePublicity(challenge, requester);
+
+        /// 페이즈 조회
+
+        // 현재 페이즈 번호보다 요청한 페이즈의 번호가 큰지 확인
+        if(phaseNumber > challenge.calcCurrentPhaseNumber()) {
+            throw new CustomException(CustomExceptionCode.INVALID_PHASE_NUMBER, phaseNumber);
+        }
+
+        // 페이즈 조회
+        Phase phase = phaseRepository.findByChallengeIdAndNumber(challengeId, phaseNumber)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PHASE_NOT_FOUND, phaseNumber));
+
+        /// 챌린지 참여 데이터 조회
+
+        ParticipateChallenge participateChallenge = participateChallengeRepository.findByUserIdAndChallengeId(userId, challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_CHALLENGE_NOT_FOUND, null));
+
+        /// 페이즈 참여 데이터 조회
+
+        ParticipatePhase participatePhase = participatePhaseRepository.findByPhaseIdAndUserId(phase.getId(), userId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.PARTICIPATE_PHASE_NOT_FOUND, null));
+
+        /// 증거사진 리스트 조회
+
+        // 증거사진 리스트
+        List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhaseId(participatePhase.getId());
+
+        /// 페이즈 현황 정보 반환
+
+        return PhaseStatusDto.from(participateChallenge, participatePhase, evidencePhotoList);
     }
 
     /// 공통 로직
@@ -702,5 +725,33 @@ public class ChallengeService
 
         phaseRepository.saveAll(phaseList);
         participatePhaseRepository.saveAll(participatePhaseList);
+    }
+
+    // 챌린지 비공개 예외 처리
+    public void checkChallengePublicity(Challenge challenge, User user)
+    {
+        // 챌린지가 비공개인 경우
+        if(!challenge.isPublic())
+        {
+            // 로그인하지 않은 사용자 예외 처리
+            if(user == null) {
+                throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
+            }
+            else {
+
+                // 로그인 한 사용자는 다음의 경우 조회 가능
+                // 1. 관리자인 경우
+                // 2. 해당 챌린지에 참여 중인 경우
+                // 3. 해당 챌린지에 초대 받은 경우
+                if(
+                        user.getAccountRole() != AccountRole.ADMIN &&
+                        participateChallengeRepository.findByUserIdAndChallengeId(user.getId(), challenge.getId()).isEmpty() &&
+                        inviteChallengeRepository.findByReceiverIdAndChallengeId(user.getId(), challenge.getId()).isEmpty()
+                ) {
+                    throw new CustomException(CustomExceptionCode.PRIVATE_CHALLENGE, null);
+                }
+
+            }
+        }
     }
 }
