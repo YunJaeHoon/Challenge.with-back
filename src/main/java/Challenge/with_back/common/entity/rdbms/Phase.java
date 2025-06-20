@@ -39,7 +39,7 @@ public class Phase extends BasicEntity
 
     // 이름
     @NotNull
-    @Column(length = 18)
+    @Column(length = 12)
     private String name;
 
     // 설명
