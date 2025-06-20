@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UpdateCurrentCount implements UpdateParticipatePhaseStrategy
 {
     private final ParticipateChallengeRepository participateChallengeRepository;
-    private final ParticipatePhaseRepository participatePhaseRepository;
     private final ChallengeValidator challengeValidator;
 
     // 현재 달성 개수 변경

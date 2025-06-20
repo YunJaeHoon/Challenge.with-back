@@ -73,7 +73,6 @@ public class ChallengeRoadmapDto extends ChallengeSubInfo
             private String nickname;                // 닉네임
             private String profileImageUrl;         // 프로필 이미지 URL
             private ChallengeRole challengeRole;    // 챌린지 권한
-            private String determination;           // 각오 한마디
 
             protected static UserInfo from(ParticipateChallenge participateChallenge)
             {
@@ -84,7 +83,6 @@ public class ChallengeRoadmapDto extends ChallengeSubInfo
                         .nickname(user.getNickname())
                         .profileImageUrl(user.getProfileImageUrl())
                         .challengeRole(participateChallenge.getChallengeRole())
-                        .determination(participateChallenge.getDetermination())
                         .build();
             }
         }

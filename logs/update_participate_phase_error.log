@@ -1,1 +1,23 @@
 
+2025-06-19 13:59:28 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=2)
+2025-06-19 13:59:29 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=3)
+2025-06-19 13:59:32 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=2)
+2025-06-19 13:59:36 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=3)
+2025-06-19 13:59:54 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=2)
+2025-06-19 14:20:01 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=2)
+2025-06-19 14:52:29 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=141, data=2)
+2025-06-19 15:21:00 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=2)
+2025-06-19 15:21:02 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=3)
+2025-06-19 15:25:25 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=141, data=2)
+2025-06-19 15:25:30 ERROR - INVALID_PARTICIPATE_PHASE_CURRENT_COUNT: 크기에 맞지 않는 달성 개수입니다.
+UpdateParticipatePhaseMessage(type=UPDATE_CURRENT_COUNT, userId=2, participatePhaseId=101, data=11)
