@@ -30,14 +30,10 @@ public class FriendService
     private final FriendRequestRepository friendRequestRepository;
     private final FriendBlockRepository friendBlockRepository;
     private final UserRepository userRepository;
-    private final NotificationRepository notificationRepository;
 
     private final NotificationService notificationService;
 
     private final FriendRequestNotificationFactory friendRequestNotificationFactory;
-
-    @Value("${PROFILE_IMAGE_BUCKET_URL}")
-    String profileImageBucketUrl;
 
     // 친구 요청
     @Transactional
@@ -237,7 +233,7 @@ public class FriendService
                             .userId(friendUser.getId())
                             .email(friendUser.getEmail())
                             .nickname(friendUser.getNickname())
-                            .profileImageUrl(profileImageBucketUrl + friendUser.getProfileImageUrl())
+                            .profileImageUrl(friendUser.getProfileImageUrl())
                             .build();
                 }).toList();
 
@@ -273,7 +269,7 @@ public class FriendService
                         .userId(friendBlock.getBlockedUser().getId())
                         .email(friendBlock.getBlockedUser().getEmail())
                         .nickname(friendBlock.getBlockedUser().getNickname())
-                        .profileImageUrl(profileImageBucketUrl + friendBlock.getBlockedUser().getProfileImageUrl())
+                        .profileImageUrl(friendBlock.getBlockedUser().getProfileImageUrl())
                         .build()
                 ).toList();
 
