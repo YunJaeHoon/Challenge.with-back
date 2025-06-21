@@ -30,6 +30,7 @@ public class FriendService
     private final FriendRequestRepository friendRequestRepository;
     private final FriendBlockRepository friendBlockRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     private final NotificationService notificationService;
 
@@ -104,21 +105,28 @@ public class FriendService
     }
 
     // 친구 요청 수락 또는 거절
-    @Transactional
+    @Transactional(noRollbackFor = CustomException.class)
     public void answerFriendRequest(User receiver, Long friendRequestId, boolean isAccept)
     {
-        /// 예외 처리
-        /// 1. 친구 요청 데이터가 존재하지 않는 경우, 예외 처리
-        /// 2. 이미 둘이 친구 사이인 경우, 예외 처리
+        /// 친구 요청 데이터 조회
 
-        // 친구 요청 데이터 조회
         FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.FRIEND_REQUEST_NOT_FOUND, friendRequestId));
 
-        // 이미 둘이 친구 사이인 경우, 예외 처리
+        /// 친구 요청 데이터 및 알림 삭제
+
+        friendRequestRepository.delete(friendRequest);
+        notificationService.deleteNotificationEntity(friendRequest.getNotification());
+
+        /// 이미 둘이 친구 사이인 경우 예외 처리
+
         if(friendRepository.findByUser1IdAndUser2Id(friendRequest.getSender().getId(), receiver.getId()).isPresent()) {
             throw new CustomException(CustomExceptionCode.ALREADY_FRIEND, null);
         }
+
+        /// 친구 요청을 수락하는 경우
+        /// - 친구 요청 수신자가 친구 요청 송신자를 차단한 경우, 예외 처리
+        /// - 그 외의 경우, 친구 데이터 생성
 
         // 친구 요청을 수락하는 경우
         if(isAccept)
@@ -140,12 +148,6 @@ public class FriendService
             // 친구 데이터 저장
             friendRepository.save(friend);
         }
-
-        // 친구 요청 데이터 삭제
-        friendRequestRepository.delete(friendRequest);
-
-        // 친구 요청 알림 삭제
-        notificationService.deleteNotificationEntity(friendRequest.getNotification());
     }
 
     // 친구 차단
