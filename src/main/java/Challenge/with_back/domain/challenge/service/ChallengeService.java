@@ -15,6 +15,8 @@ import Challenge.with_back.domain.evidence_photo.S3EvidencePhotoManager;
 import Challenge.with_back.domain.notification.InviteChallengeNotificationFactory;
 import Challenge.with_back.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -346,6 +348,44 @@ public class ChallengeService
         notificationService.deleteNotificationEntity(inviteChallenge.getNotification());
     }
 
+    // 챌린지 삭제
+    @Transactional
+    public void deleteChallenge(Long challengeId)
+    {
+        /// 증거사진을 S3에서 삭제
+
+        // 챌린지 데이터 조회
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, null));
+
+        // 페이즈 리스트 조회
+        List<Phase> phaseList = phaseRepository.findAllByChallengeId(challenge.getId());
+
+        phaseList.forEach(phase -> {
+
+            // 페이즈 참가 데이터 리스트 조회
+            List<ParticipatePhase> participatePhaseList = participatePhaseRepository.findAllByPhaseId(phase.getId());
+
+            participatePhaseList.forEach(participatePhase -> {
+
+                // 증거사진 데이터 리스트 조회
+                List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhaseId(participatePhase.getId());
+
+                // S3에서 증거사진 삭제
+                evidencePhotoList.forEach(evidencePhoto -> {
+                    s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
+                });
+
+            });
+
+        });
+
+        /// 챌린지 삭제
+
+        // 챌린지 데이터 삭제
+        challengeRepository.delete(challenge);
+    }
+
     // 현재 진행 중인 내 챌린지 조회
     @Transactional(readOnly = true)
     public GetMyChallengeDto getMyChallenges(User user)
@@ -420,42 +460,33 @@ public class ChallengeService
                 .build();
     }
 
-    // 챌린지 삭제
-    @Transactional
-    public void deleteChallenge(Long challengeId)
+    // 공개 챌린지 조회
+    @Transactional(readOnly = true)
+    public BasicChallengeInfoPageDto getPublicChallenges(Pageable pageable)
     {
-        /// 증거사진을 S3에서 삭제
+        /// 공개 챌린지 페이지 조회
 
-        // 챌린지 데이터 조회
-        Challenge challenge = challengeRepository.findById(challengeId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, null));
+        // 공개 챌린지 페이지 조회
+        Page<Challenge> challengePage = challengeRepository.findAll(pageable);
 
-        // 페이즈 리스트 조회
-        List<Phase> phaseList = phaseRepository.findAllByChallengeId(challenge.getId());
+        // 페이지가 존재하지 않는 경우, 예외 처리
+        if(challengePage.isEmpty()) {
+            throw new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, Map.of(
+                    "pageSize", pageable.getPageSize(),
+                    "currentPage", pageable.getPageNumber(),
+                    "totalPage", challengePage.getTotalPages()
+            ));
+        }
 
-        phaseList.forEach(phase -> {
+        /// 챌린지 페이지를 Map(챌린지, 현재 챌린지 참가자 인원수)으로 변경
 
-            // 페이즈 참가 데이터 리스트 조회
-            List<ParticipatePhase> participatePhaseList = participatePhaseRepository.findAllByPhaseId(phase.getId());
+        Map<Challenge, Integer> map = challengePage.stream()
+                .collect(Collectors.toMap(
+                        challenge -> challenge,
+                        challenge -> participateChallengeRepository.countAllByChallengeId(challenge.getId())
+                ));
 
-            participatePhaseList.forEach(participatePhase -> {
-
-                // 증거사진 데이터 리스트 조회
-                List<EvidencePhoto> evidencePhotoList = evidencePhotoRepository.findAllByParticipatePhaseId(participatePhase.getId());
-
-                // S3에서 증거사진 삭제
-                evidencePhotoList.forEach(evidencePhoto -> {
-                    s3EvidencePhotoManager.delete(evidencePhoto.getFilename());
-                });
-
-            });
-
-        });
-
-        /// 챌린지 삭제
-
-        // 챌린지 데이터 삭제
-        challengeRepository.delete(challenge);
+        return BasicChallengeInfoPageDto.of(map, pageable.getPageNumber(), challengePage.getTotalPages());
     }
 
     // 챌린지 상세 조회

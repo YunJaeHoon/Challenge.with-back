@@ -7,6 +7,7 @@ import Challenge.with_back.common.entity.rdbms.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -100,6 +101,20 @@ public class ChallengeController
                         .build());
     }
 
+    // 챌린지 삭제
+    @DeleteMapping("/challenge/{challengeId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<SuccessResponseDto> deleteChallenge(@PathVariable Long challengeId)
+    {
+        challengeService.deleteChallenge(challengeId);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(SuccessResponseDto.builder()
+                        .message("챌린지 삭제를 성공적으로 완료하였습니다.")
+                        .data(null)
+                        .build());
+    }
+
     // 현재 진행 중인 내 챌린지 조회
     @GetMapping("/challenge/me/ongoing")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
@@ -115,17 +130,17 @@ public class ChallengeController
                         .build());
     }
 
-    // 챌린지 삭제
-    @DeleteMapping("/challenge/{challengeId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<SuccessResponseDto> deleteChallenge(@PathVariable Long challengeId)
+    // 공개 챌린지 조회
+    @GetMapping("/challenge/public")
+    @PreAuthorize("permitAll")
+    public ResponseEntity<SuccessResponseDto> getPublicChallenges(Pageable pageable)
     {
-        challengeService.deleteChallenge(challengeId);
+        BasicChallengeInfoPageDto data = challengeService.getPublicChallenges(pageable);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
-                        .message("챌린지 삭제를 성공적으로 완료하였습니다.")
-                        .data(null)
+                        .message("공개 챌린지 조회를 성공적으로 마쳤습니다.")
+                        .data(data)
                         .build());
     }
 
