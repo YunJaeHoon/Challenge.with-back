@@ -8,8 +8,8 @@ import org.springframework.data.elasticsearch.annotations.*;
 import java.time.LocalDateTime;
 
 @Document(indexName = "challenge", createIndex = true)
-@Setting(settingPath = "elastic_search/challenge-setting.json")
-@Mapping(mappingPath = "elastic_search/challenge-mapping.json")
+@Setting(settingPath = "challenge-setting.json")
+@Mapping(mappingPath = "challenge-mapping.json")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
