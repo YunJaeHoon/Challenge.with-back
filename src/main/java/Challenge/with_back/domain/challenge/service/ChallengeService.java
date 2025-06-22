@@ -138,13 +138,17 @@ public class ChallengeService
         // 챌린지 저장
         challengeRepository.save(challenge);
 
-        /// (Elastic Search) 챌린지 Document 생성
+        /// (Elastic Search) 공개 챌린지인 경우, 챌린지 Document 생성
 
-        // 챌린지 Document 생성
-        ChallengeDocument challengeDocument = ChallengeDocument.from(challenge);
+        // 공개 챌린지인 경우
+        if(challenge.isPublic())
+        {
+            // 챌린지 Document 생성
+            ChallengeDocument challengeDocument = ChallengeDocument.from(challenge);
 
-        // 챌린지 Document 저장
-        challengeDocumentRepository.save(challengeDocument);
+            // 챌린지 Document 저장
+            challengeDocumentRepository.save(challengeDocument);
+        }
 
         /// 챌린지 참여 데이터 생성
 
@@ -395,14 +399,18 @@ public class ChallengeService
 
         challengeRepository.delete(challenge);
 
-        /// 챌린지 Document 삭제
+        /// 공개 챌린지인 경우, 챌린지 Document 삭제
 
-        // 챌린지 Document 조회
-        ChallengeDocument challengeDocument = challengeDocumentRepository.findById(challengeId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_DOCUMENT_NOT_FOUND, challengeId));
+        // 공개 챌린지인 경우
+        if(challenge.isPublic())
+        {
+            // 챌린지 Document 조회
+            ChallengeDocument challengeDocument = challengeDocumentRepository.findById(challengeId)
+                    .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_DOCUMENT_NOT_FOUND, challengeId));
 
-        // 챌린지 Document 삭제
-        challengeDocumentRepository.delete(challengeDocument);
+            // 챌린지 Document 삭제
+            challengeDocumentRepository.delete(challengeDocument);
+        }
     }
 
     // 현재 진행 중인 내 챌린지 조회
