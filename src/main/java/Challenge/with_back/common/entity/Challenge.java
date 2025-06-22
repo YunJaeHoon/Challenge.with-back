@@ -89,6 +89,9 @@ public class Challenge extends BasicEntity
 	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Phase> phaseList;
 
+	@OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<InviteChallenge> inviteChallengeList;
+
 	// 페이즈 시작 날짜 계산
 	public LocalDate calcPhaseStartDate(int number) {
 		return this.unit.calcPhaseStartDate(this.getCreatedAt().toLocalDate(), number);
