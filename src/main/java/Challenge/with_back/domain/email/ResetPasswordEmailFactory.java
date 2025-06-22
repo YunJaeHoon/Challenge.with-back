@@ -1,12 +1,10 @@
 package Challenge.with_back.domain.email;
 
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.LoginMethod;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
-import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.domain.account.util.AccountValidator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;

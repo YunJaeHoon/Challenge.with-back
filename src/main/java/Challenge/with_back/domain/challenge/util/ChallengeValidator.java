@@ -1,6 +1,6 @@
 package Challenge.with_back.domain.challenge.util;
 
-import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.entity.Challenge;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.exception.CustomException;

@@ -1,6 +1,6 @@
 package Challenge.with_back.domain.notification.dto;
 
-import Challenge.with_back.common.entity.rdbms.Notification;
+import Challenge.with_back.common.entity.Notification;
 import lombok.Builder;
 import lombok.Getter;
 

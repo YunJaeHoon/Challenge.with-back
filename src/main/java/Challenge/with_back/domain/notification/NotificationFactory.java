@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.notification;
 
-import Challenge.with_back.common.entity.rdbms.Notification;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.Notification;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.repository.rdbms.NotificationRepository;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package Challenge.with_back.common.repository.rdbms;
 
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.LoginMethod;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,6 @@
 package Challenge.with_back.domain.challenge.service;
 
-import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.entity.*;
 import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
 import Challenge.with_back.common.repository.rdbms.*;

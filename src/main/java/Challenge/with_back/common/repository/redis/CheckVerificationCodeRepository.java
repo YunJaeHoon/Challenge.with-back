@@ -1,6 +1,6 @@
 package Challenge.with_back.common.repository.redis;
 
-import Challenge.with_back.common.entity.redis.CheckVerificationCode;
+import Challenge.with_back.common.entity.CheckVerificationCode;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

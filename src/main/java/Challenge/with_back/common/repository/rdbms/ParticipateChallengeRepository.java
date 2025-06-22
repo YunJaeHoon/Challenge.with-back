@@ -1,7 +1,6 @@
 package Challenge.with_back.common.repository.rdbms;
 
-import Challenge.with_back.common.entity.rdbms.Challenge;
-import Challenge.with_back.common.entity.rdbms.ParticipateChallenge;
+import Challenge.with_back.common.entity.ParticipateChallenge;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

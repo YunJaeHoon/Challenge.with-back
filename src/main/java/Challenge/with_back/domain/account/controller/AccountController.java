@@ -3,7 +3,7 @@ package Challenge.with_back.domain.account.controller;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.account.dto.*;
 import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

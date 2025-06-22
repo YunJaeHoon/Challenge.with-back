@@ -1,6 +1,6 @@
 package Challenge.with_back.common.security;
 
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

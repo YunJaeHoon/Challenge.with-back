@@ -1,39 +1,30 @@
-package Challenge.with_back.common.entity.rdbms;
+package Challenge.with_back.common.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class Coupon extends BasicEntity
+public class FriendBlock extends BasicEntity
 {
     @Id
     @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 계정
+    // 차단한 계정
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user")
-    private User user;
+    @JoinColumn(name = "blocking_user")
+    private User blockingUser;
 
-    // 이름
+    // 차단된 계정
     @NotNull
-    @Column(length = 255)
-    private String name;
-
-    // 설명
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    // 만료 날짜
-    @NotNull
-    private LocalDate expirationDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blocked_user")
+    private User blockedUser;
 }

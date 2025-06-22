@@ -1,4 +1,4 @@
-package Challenge.with_back.common.entity.rdbms;
+package Challenge.with_back.common.entity;
 
 import Challenge.with_back.common.enums.NotificationType;
 import Challenge.with_back.common.enums.NotificationTypeConverter;

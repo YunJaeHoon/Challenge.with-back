@@ -1,4 +1,4 @@
-package Challenge.with_back.common.entity.redis;
+package Challenge.with_back.common.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

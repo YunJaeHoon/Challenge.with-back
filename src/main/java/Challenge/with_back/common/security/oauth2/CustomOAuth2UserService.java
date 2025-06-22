@@ -2,7 +2,7 @@ package Challenge.with_back.common.security.oauth2;
 
 import Challenge.with_back.common.enums.ProfileImage;
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.LoginMethod;
 import Challenge.with_back.common.exception.CustomException;

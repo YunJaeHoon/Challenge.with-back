@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.challenge.dto;
 
-import Challenge.with_back.common.entity.rdbms.Challenge;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.Challenge;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
 import Challenge.with_back.common.enums.ChallengeUnit;
 import lombok.Builder;

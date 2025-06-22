@@ -1,6 +1,6 @@
 package Challenge.with_back.common.repository.rdbms;
 
-import Challenge.with_back.common.entity.rdbms.Friend;
+import Challenge.with_back.common.entity.Friend;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

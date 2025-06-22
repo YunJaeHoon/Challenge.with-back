@@ -1,9 +1,8 @@
 package Challenge.with_back.domain.notification;
 
-import Challenge.with_back.common.entity.rdbms.FriendRequest;
-import Challenge.with_back.common.entity.rdbms.InviteChallenge;
-import Challenge.with_back.common.entity.rdbms.Notification;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.InviteChallenge;
+import Challenge.with_back.common.entity.Notification;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.NotificationType;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
@@ -13,7 +12,6 @@ import Challenge.with_back.common.repository.rdbms.UserRepository;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component("INVITE_CHALLENGE")

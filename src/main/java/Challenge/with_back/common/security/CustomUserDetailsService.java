@@ -1,7 +1,7 @@
 package Challenge.with_back.common.security;
 
 import Challenge.with_back.common.exception.CustomExceptionCode;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.LoginMethod;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.repository.rdbms.UserRepository;

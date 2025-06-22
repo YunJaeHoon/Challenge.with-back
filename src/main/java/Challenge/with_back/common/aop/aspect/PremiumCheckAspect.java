@@ -1,8 +1,7 @@
 package Challenge.with_back.common.aop.aspect;
 
 import Challenge.with_back.domain.account.service.AccountService;
-import Challenge.with_back.domain.account.util.AccountValidator;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import lombok.RequiredArgsConstructor;

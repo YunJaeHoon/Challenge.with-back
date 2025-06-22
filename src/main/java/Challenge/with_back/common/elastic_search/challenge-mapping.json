@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "id": {
+      "type": "long"
+    },
+    "superAdminId": {
+      "type": "long"
+    },
+    "icon": {
+      "type": "text"
+    },
+    "colorTheme": {
+      "type": "text"
+    },
+    "name": {
+      "type": "text",
+      "analyzer": "korean"
+    },
+    "description": {
+      "type": "text",
+      "analyzer": "korean"
+    },
+    "goalCount": {
+      "type": "integer"
+    },
+    "unit": {
+      "type": "text"
+    },
+    "maxParticipantCount": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "type": "date",
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSS||epoch_millis"
+    }
+  }
+}

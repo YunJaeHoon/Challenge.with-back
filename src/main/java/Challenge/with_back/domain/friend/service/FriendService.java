@@ -1,6 +1,6 @@
 package Challenge.with_back.domain.friend.service;
 
-import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.entity.*;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
@@ -11,7 +11,6 @@ import Challenge.with_back.domain.friend.dto.FriendListDto;
 import Challenge.with_back.domain.notification.FriendRequestNotificationFactory;
 import Challenge.with_back.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package Challenge.with_back.domain.challenge.dto;
 
-import Challenge.with_back.common.entity.rdbms.Challenge;
-import Challenge.with_back.common.entity.rdbms.ParticipateChallenge;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.Challenge;
+import Challenge.with_back.common.entity.ParticipateChallenge;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
 import Challenge.with_back.common.enums.ChallengeRole;
 import Challenge.with_back.common.enums.ChallengeUnit;

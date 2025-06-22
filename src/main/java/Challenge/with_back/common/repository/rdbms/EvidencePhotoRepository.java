@@ -1,7 +1,6 @@
 package Challenge.with_back.common.repository.rdbms;
 
-import Challenge.with_back.common.entity.rdbms.EvidencePhoto;
-import Challenge.with_back.common.entity.rdbms.ParticipatePhase;
+import Challenge.with_back.common.entity.EvidencePhoto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -3,7 +3,7 @@ package Challenge.with_back.domain.challenge.controller;
 import Challenge.with_back.domain.challenge.dto.*;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.challenge.service.ChallengeService;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package Challenge.with_back.common.entity.rdbms;
+package Challenge.with_back.common.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

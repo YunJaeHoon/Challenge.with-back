@@ -1,6 +1,6 @@
 package Challenge.with_back.common.batch.configuration;
 
-import Challenge.with_back.common.entity.rdbms.FriendRequest;
+import Challenge.with_back.common.entity.FriendRequest;
 import Challenge.with_back.common.repository.rdbms.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableBatchProcessing

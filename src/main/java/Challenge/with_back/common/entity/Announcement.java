@@ -1,30 +1,28 @@
-package Challenge.with_back.common.entity.rdbms;
+package Challenge.with_back.common.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+// 공지사항
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@Getter
-public class FriendBlock extends BasicEntity
+public class Announcement extends BasicEntity
 {
     @Id
     @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 차단한 계정
+    // 제목
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "blocking_user")
-    private User blockingUser;
+    @Column(length = 255)
+    private String title;
 
-    // 차단된 계정
+    // 내용
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "blocked_user")
-    private User blockedUser;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 }

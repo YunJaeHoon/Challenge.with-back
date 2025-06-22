@@ -1,7 +1,6 @@
 package Challenge.with_back.common.repository.rdbms;
 
-import Challenge.with_back.common.entity.rdbms.Phase;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.Phase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

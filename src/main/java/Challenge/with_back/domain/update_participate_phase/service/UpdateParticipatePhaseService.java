@@ -1,6 +1,6 @@
 package Challenge.with_back.domain.update_participate_phase.service;
 
-import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.entity.*;
 import Challenge.with_back.common.enums.UpdateParticipatePhaseType;
 import Challenge.with_back.common.repository.rdbms.*;
 import Challenge.with_back.common.exception.CustomException;

@@ -1,7 +1,7 @@
 package Challenge.with_back.domain.account.service;
 
-import Challenge.with_back.common.entity.redis.CheckVerificationCode;
-import Challenge.with_back.common.entity.redis.VerificationCode;
+import Challenge.with_back.common.entity.CheckVerificationCode;
+import Challenge.with_back.common.entity.VerificationCode;
 import Challenge.with_back.common.enums.ProfileImage;
 import Challenge.with_back.common.repository.rdbms.ParticipateChallengeRepository;
 import Challenge.with_back.common.repository.redis.VerificationCodeRepository;
@@ -14,7 +14,7 @@ import Challenge.with_back.domain.email.ResetPasswordEmailFactory;
 import Challenge.with_back.domain.email.VerificationCodeEmailFactory;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.common.repository.redis.CheckVerificationCodeRepository;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.LoginMethod;
 import Challenge.with_back.common.exception.CustomException;

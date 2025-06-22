@@ -1,13 +1,12 @@
 package Challenge.with_back.domain.notification;
 
 import Challenge.with_back.common.enums.NotificationType;
-import Challenge.with_back.common.entity.rdbms.Notification;
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.Notification;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.repository.rdbms.NotificationRepository;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component("WELCOME")
 public class WelcomeNotificationFactory extends NotificationFactory

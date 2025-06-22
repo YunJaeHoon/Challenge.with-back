@@ -1,6 +1,9 @@
 package Challenge.with_back.domain.challenge.dto;
 
-import Challenge.with_back.common.entity.rdbms.*;
+import Challenge.with_back.common.entity.ParticipateChallenge;
+import Challenge.with_back.common.entity.ParticipatePhase;
+import Challenge.with_back.common.entity.Phase;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.ChallengeRole;
 import lombok.Builder;
 import lombok.Getter;

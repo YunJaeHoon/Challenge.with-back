@@ -1,6 +1,6 @@
 package Challenge.with_back.common.security.jwt;
 
-import Challenge.with_back.common.entity.rdbms.User;
+import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.repository.rdbms.UserRepository;
 import Challenge.with_back.common.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;

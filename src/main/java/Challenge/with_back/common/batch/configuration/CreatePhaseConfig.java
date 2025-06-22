@@ -1,8 +1,7 @@
 package Challenge.with_back.common.batch.configuration;
 
 import Challenge.with_back.domain.challenge.service.ChallengeService;
-import Challenge.with_back.domain.challenge.util.ChallengeValidator;
-import Challenge.with_back.common.entity.rdbms.Challenge;
+import Challenge.with_back.common.entity.Challenge;
 import Challenge.with_back.common.repository.rdbms.ChallengeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
