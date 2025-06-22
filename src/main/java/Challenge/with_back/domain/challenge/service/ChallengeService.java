@@ -1,5 +1,7 @@
 package Challenge.with_back.domain.challenge.service;
 
+import Challenge.with_back.common.elastic_search.ChallengeDocument;
+import Challenge.with_back.common.elastic_search.ChallengeDocumentRepository;
 import Challenge.with_back.common.entity.*;
 import Challenge.with_back.common.enums.AccountRole;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
@@ -30,6 +32,7 @@ public class ChallengeService
 {
     private final UserRepository userRepository;
     private final ChallengeRepository challengeRepository;
+    private final ChallengeDocumentRepository challengeDocumentRepository;
     private final ChallengeBlockRepository challengeBlockRepository;
     private final PhaseRepository phaseRepository;
     private final ParticipateChallengeRepository participateChallengeRepository;
@@ -134,6 +137,14 @@ public class ChallengeService
 
         // 챌린지 저장
         challengeRepository.save(challenge);
+
+        /// (Elastic Search) 챌린지 Document 생성
+
+        // 챌린지 Document 생성
+        ChallengeDocument challengeDocument = ChallengeDocument.from(challenge);
+
+        // 챌린지 Document 저장
+        challengeDocumentRepository.save(challengeDocument);
 
         /// 챌린지 참여 데이터 생성
 
@@ -382,8 +393,16 @@ public class ChallengeService
 
         /// 챌린지 삭제
 
-        // 챌린지 데이터 삭제
         challengeRepository.delete(challenge);
+
+        /// 챌린지 Document 삭제
+
+        // 챌린지 Document 조회
+        ChallengeDocument challengeDocument = challengeDocumentRepository.findById(challengeId)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.CHALLENGE_DOCUMENT_NOT_FOUND, challengeId));
+
+        // 챌린지 Document 삭제
+        challengeDocumentRepository.delete(challengeDocument);
     }
 
     // 현재 진행 중인 내 챌린지 조회

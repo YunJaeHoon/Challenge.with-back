@@ -57,6 +57,7 @@ public enum CustomExceptionCode
     PARTICIPATE_CHALLENGE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 챌린지 참여 정보가 아닙니다."),
     PARTICIPATE_PHASE_NOT_OWNED(HttpStatus.FORBIDDEN, "해당 사용자의 페이즈 참여 정보가 아닙니다."),
     CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지가 존재하지 않습니다."),
+    CHALLENGE_DOCUMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 Document가 존재하지 않습니다."),
     PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈가 존재하지 않습니다."),
     PARTICIPATE_CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 정보가 존재하지 않습니다."),
     PARTICIPATE_PHASE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이즈 참여 정보가 존재하지 않습니다."),
