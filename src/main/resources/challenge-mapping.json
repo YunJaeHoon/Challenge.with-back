@@ -6,6 +6,12 @@
     "superAdminId": {
       "type": "long"
     },
+    "superAdminNickname": {
+      "type": "text"
+    },
+    "superAdminProfileImageUrl": {
+      "type": "text"
+    },
     "icon": {
       "type": "text"
     },
@@ -14,11 +20,29 @@
     },
     "name": {
       "type": "text",
-      "analyzer": "korean"
+      "fields": {
+        "korean": {
+          "type": "text",
+          "analyzer": "korean"
+        },
+        "english": {
+          "type": "text",
+          "analyzer": "standard"
+        }
+      }
     },
     "description": {
       "type": "text",
-      "analyzer": "korean"
+      "fields": {
+        "korean": {
+          "type": "text",
+          "analyzer": "korean"
+        },
+        "english": {
+          "type": "text",
+          "analyzer": "standard"
+        }
+      }
     },
     "goalCount": {
       "type": "integer"

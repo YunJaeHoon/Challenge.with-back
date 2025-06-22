@@ -24,6 +24,12 @@ public class ChallengeDocument
     private Long superAdminId;
 
     @Field(type = FieldType.Text)
+    private String superAdminNickname;
+
+    @Field(type = FieldType.Text)
+    private String superAdminProfileImageUrl;
+
+    @Field(type = FieldType.Text)
     private String icon;
 
     @Field(type = FieldType.Text)

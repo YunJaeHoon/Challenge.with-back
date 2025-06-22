@@ -1,5 +1,6 @@
 package Challenge.with_back.domain.challenge.dto;
 
+import Challenge.with_back.common.elastic_search.ChallengeDocument;
 import Challenge.with_back.common.entity.Challenge;
 import Challenge.with_back.common.entity.User;
 import Challenge.with_back.common.enums.ChallengeColorTheme;
@@ -19,7 +20,7 @@ public class BasicChallengeInfoPageDto
     private int currentPage;                                    // 현재 페이지
     private int totalPages;                                     // 전체 페이지 개수
 
-    public static BasicChallengeInfoPageDto of(Map<Challenge, Integer> map, int currentPage, int totalPages)
+    public static BasicChallengeInfoPageDto of(Map<ChallengeDocument, Integer> map, int currentPage, int totalPages)
     {
         return BasicChallengeInfoPageDto.builder()
                 .basicChallengeInfoList(map.entrySet().stream().map(entry ->
@@ -37,11 +38,11 @@ public class BasicChallengeInfoPageDto
         private ChallengeInfo challengeInfo;    // 챌린지 정보
         private SuperAdminInfo superAdminInfo;  // 최고 관리자 정보
 
-        protected static BasicChallengeInfo from(Challenge challenge, int currentParticipantCount)
+        protected static BasicChallengeInfo from(ChallengeDocument challengeDocument, int currentParticipantCount)
         {
             return BasicChallengeInfo.builder()
-                    .challengeInfo(ChallengeInfo.from(challenge, currentParticipantCount))
-                    .superAdminInfo(SuperAdminInfo.from(challenge.getSuperAdmin()))
+                    .challengeInfo(ChallengeInfo.from(challengeDocument, currentParticipantCount))
+                    .superAdminInfo(SuperAdminInfo.of(challengeDocument.getSuperAdminId(), challengeDocument.getSuperAdminNickname(), challengeDocument.getSuperAdminProfileImageUrl()))
                     .build();
         }
 
@@ -60,19 +61,19 @@ public class BasicChallengeInfoPageDto
             private ChallengeUnit unit;             // 챌린지 단위
             private LocalDate startDate;            // 챌린지 시작 날짜
 
-            protected static ChallengeInfo from(Challenge challenge, int currentParticipantCount)
+            protected static ChallengeInfo from(ChallengeDocument challengeDocument, int currentParticipantCount)
             {
                 return ChallengeInfo.builder()
-                        .challengeId(challenge.getId())
-                        .icon(challenge.getIcon())
-                        .colorTheme(challenge.getColorTheme())
-                        .name(challenge.getName())
-                        .description(challenge.getDescription())
+                        .challengeId(challengeDocument.getId())
+                        .icon(challengeDocument.getIcon())
+                        .colorTheme(ChallengeColorTheme.valueOf(challengeDocument.getColorTheme()))
+                        .name(challengeDocument.getName())
+                        .description(challengeDocument.getDescription())
                         .currentParticipantCount(currentParticipantCount)
-                        .maxParticipantCount(challenge.getMaxParticipantCount())
-                        .goalCount(challenge.getGoalCount())
-                        .unit(challenge.getUnit())
-                        .startDate(challenge.getCreatedAt().toLocalDate())
+                        .maxParticipantCount(challengeDocument.getMaxParticipantCount())
+                        .goalCount(challengeDocument.getGoalCount())
+                        .unit(ChallengeUnit.valueOf(challengeDocument.getUnit()))
+                        .startDate(challengeDocument.getCreatedAt().toLocalDate())
                         .build();
             }
         }
@@ -85,12 +86,12 @@ public class BasicChallengeInfoPageDto
             private String nickname;                // 닉네임
             private String profileImageUrl;         // 프로필 이미지 URL
 
-            protected static SuperAdminInfo from(User user)
+            protected static SuperAdminInfo of(Long userId, String nickname, String profileImageUrl)
             {
                 return SuperAdminInfo.builder()
-                        .userId(user.getId())
-                        .nickname(user.getNickname())
-                        .profileImageUrl(user.getProfileImageUrl())
+                        .userId(userId)
+                        .nickname(nickname)
+                        .profileImageUrl(profileImageUrl)
                         .build();
             }
         }

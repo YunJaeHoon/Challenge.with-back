@@ -3,11 +3,8 @@ package Challenge.with_back.domain.challenge.service;
 import Challenge.with_back.common.elastic_search.ChallengeDocument;
 import Challenge.with_back.common.elastic_search.ChallengeDocumentRepository;
 import Challenge.with_back.common.entity.*;
-import Challenge.with_back.common.enums.AccountRole;
-import Challenge.with_back.common.enums.ChallengeColorTheme;
+import Challenge.with_back.common.enums.*;
 import Challenge.with_back.common.repository.rdbms.*;
-import Challenge.with_back.common.enums.ChallengeRole;
-import Challenge.with_back.common.enums.ChallengeUnit;
 import Challenge.with_back.common.exception.CustomException;
 import Challenge.with_back.common.exception.CustomExceptionCode;
 import Challenge.with_back.domain.account.service.AccountService;
@@ -18,7 +15,9 @@ import Challenge.with_back.domain.notification.InviteChallengeNotificationFactor
 import Challenge.with_back.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -489,31 +488,36 @@ public class ChallengeService
 
     // 공개 챌린지 조회
     @Transactional(readOnly = true)
-    public BasicChallengeInfoPageDto getPublicChallenges(Pageable pageable)
+    public BasicChallengeInfoPageDto getPublicChallenges(Pageable pageable, SearchChallengeSortBy sortBy)
     {
+        /// 정렬 기준을 적용한 Pageable 객체 생성
+
+        Sort sort = sortBy.getSort();
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
         /// 공개 챌린지 페이지 조회
 
         // 공개 챌린지 페이지 조회
-        Page<Challenge> challengePage = challengeRepository.findAll(pageable);
+        Page<ChallengeDocument> challengeDocumentPage = challengeDocumentRepository.findAll(sortedPageable);
 
         // 페이지가 존재하지 않는 경우, 예외 처리
-        if(challengePage.isEmpty()) {
-            throw new CustomException(CustomExceptionCode.CHALLENGE_NOT_FOUND, Map.of(
-                    "pageSize", pageable.getPageSize(),
-                    "currentPage", pageable.getPageNumber(),
-                    "totalPage", challengePage.getTotalPages()
+        if(challengeDocumentPage.isEmpty()) {
+            throw new CustomException(CustomExceptionCode.CHALLENGE_DOCUMENT_NOT_FOUND, Map.of(
+                    "pageSize", sortedPageable.getPageSize(),
+                    "currentPage", sortedPageable.getPageNumber(),
+                    "totalPage", challengeDocumentPage.getTotalPages()
             ));
         }
 
         /// 챌린지 페이지를 Map(챌린지, 현재 챌린지 참가자 인원수)으로 변경
 
-        Map<Challenge, Integer> map = challengePage.stream()
+        Map<ChallengeDocument, Integer> map = challengeDocumentPage.stream()
                 .collect(Collectors.toMap(
-                        challenge -> challenge,
-                        challenge -> participateChallengeRepository.countAllByChallengeId(challenge.getId())
+                        challengeDocument -> challengeDocument,
+                        challengeDocument -> participateChallengeRepository.countAllByChallengeId(challengeDocument.getId())
                 ));
 
-        return BasicChallengeInfoPageDto.of(map, pageable.getPageNumber(), challengePage.getTotalPages());
+        return BasicChallengeInfoPageDto.of(map, pageable.getPageNumber(), challengeDocumentPage.getTotalPages());
     }
 
     // 챌린지 상세 조회

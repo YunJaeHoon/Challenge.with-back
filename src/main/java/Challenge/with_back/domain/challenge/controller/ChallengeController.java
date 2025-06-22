@@ -1,5 +1,6 @@
 package Challenge.with_back.domain.challenge.controller;
 
+import Challenge.with_back.common.enums.SearchChallengeSortBy;
 import Challenge.with_back.domain.challenge.dto.*;
 import Challenge.with_back.common.response.SuccessResponseDto;
 import Challenge.with_back.domain.challenge.service.ChallengeService;
@@ -133,9 +134,10 @@ public class ChallengeController
     // 공개 챌린지 조회
     @GetMapping("/challenge/public")
     @PreAuthorize("permitAll")
-    public ResponseEntity<SuccessResponseDto> getPublicChallenges(Pageable pageable)
+    public ResponseEntity<SuccessResponseDto> getPublicChallenges(Pageable pageable,
+                                                                  @RequestParam SearchChallengeSortBy sortBy)
     {
-        BasicChallengeInfoPageDto data = challengeService.getPublicChallenges(pageable);
+        BasicChallengeInfoPageDto data = challengeService.getPublicChallenges(pageable, sortBy);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDto.builder()
